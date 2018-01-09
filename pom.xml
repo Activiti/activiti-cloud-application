@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.activiti.cloud</groupId>
-  <version>7-201712-EA-SNAPSHOT</version>
+  <version>7-201801-EA-SNAPSHOT</version>
   <artifactId>activiti-cloud-modeling-backend</artifactId>
 
   <packaging>jar</packaging>
