@@ -10,7 +10,7 @@
   <name>Activiti Cloud :: Modeling Backend</name>
 
   <properties>
-    <version.activiti.cloud>${project.version}</version.activiti.cloud>
+    <version.activiti.cloud>7-201802-EA-SNAPSHOT</version.activiti.cloud>
 
     <postgres.version>9.4.1212.jre7</postgres.version>
     <spring-boot-maven-plugin.version>2.0.0.M6</spring-boot-maven-plugin.version>
