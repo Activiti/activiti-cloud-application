@@ -6,3 +6,5 @@
 [![CLA](https://cla-assistant.io/readme/badge/Activiti/activiti-cloud-modeling-backend)](https://cla-assistant.io/Activiti/activiti-cloud-modeling-backend)
 [![Docker Build Status](https://img.shields.io/docker/build/activiti/activiti-cloud-modeling-backend.svg)](https://hub.docker.com/r/activiti/activiti-cloud-modeling-backend)
 [![Known Vulnerabilities](https://snyk.io/test/github/Activiti/activiti-cloud-modeling-backend/badge.svg)](https://snyk.io/test/github/Activiti/activiti-cloud-modeling-backend)
+[![security status](https://www.meterian.com/badge/gh/Activiti/activiti-cloud-modeling-backend/security)](https://www.meterian.com/report/gh/Activiti/activiti-cloud-modeling-backend)
+[![stability status](https://www.meterian.com/badge/gh/Activiti/activiti-cloud-modeling-backend/stability)](https://www.meterian.com/report/gh/Activiti/activiti-cloud-modeling-backend)
