@@ -12,7 +12,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- dependencies -->
     <activiti-cloud.version>7-201802-EA-SNAPSHOT</activiti-cloud.version>
-    <spring-boot.version>2.0.0.M7</spring-boot.version>
+    <spring-boot.version>2.0.0.RC2</spring-boot.version>
     <!-- plugins -->
     <docker-maven-plugin.version>0.21.0</docker-maven-plugin.version>
     <git-commit-id-plugin.version>2.2.3</git-commit-id-plugin.version>
