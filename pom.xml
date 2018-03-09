@@ -17,10 +17,17 @@
     <developerConnection>scm:git:https://github.com/Activiti/${project.artifactId}.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
+  <properties>
+    <suppressionFile>${basedir}/dependency-check-suppression.xml</suppressionFile>
+  </properties>
   <dependencies>
     <dependency>
       <groupId>org.activiti.cloud</groupId>
       <artifactId>activiti-cloud-starter-process-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.activiti.cloud</groupId>
+      <artifactId>activiti-cloud-services-process-model-jpa</artifactId>
     </dependency>
     <dependency>
       <groupId>org.activiti.cloud</groupId>
