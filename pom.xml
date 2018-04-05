@@ -8,8 +8,8 @@
     <version>7-201803-EA-SNAPSHOT</version>
   </parent>
   <groupId>org.activiti.cloud.examples</groupId>
-  <artifactId>activiti-cloud-modeling-backend</artifactId>
-  <name>Activiti Cloud :: Modeling Backend</name>
+  <artifactId>activiti-cloud-modeling</artifactId>
+  <name>Activiti Cloud :: Modeling</name>
   <url>http://activiti.org</url>
   <scm>
     <url>https://github.com/Activiti/${project.artifactId}</url>
