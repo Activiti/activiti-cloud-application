@@ -41,11 +41,6 @@ import org.springframework.web.client.RestTemplate;
 @ComponentScan("org.activiti.cloud")
 public class ModelingApplication {
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
     public static void main(String[] args) {
         SpringApplication.run(ModelingApplication.class,
                               args);
