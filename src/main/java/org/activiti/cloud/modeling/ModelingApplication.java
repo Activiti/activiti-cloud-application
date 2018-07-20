@@ -35,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
 @EnableJpaRepositories(
         basePackages = {"org.activiti.cloud.services.process.model.jpa", "org.activiti.cloud.services.organization.jpa"},
         repositoryFactoryBeanClass = ExtendedJpaRepositoryFactoryBean.class)
-@EntityScan({"org.activiti.cloud.services.process.model.core.model", "org.activiti.cloud.organization.core.model"})
+@EntityScan({"org.activiti.cloud.services.process.model.core.model", "org.activiti.cloud.services.organization.entity"})
 @EnableActivitiProcessModel
 @EnableActivitiOrganization
 @ComponentScan("org.activiti.cloud")
