@@ -17,14 +17,27 @@
 package org.activiti.cloud.modeling;
 import org.activiti.cloud.organization.EnableActivitiOrganization;
 import org.activiti.cloud.process.model.EnableActivitiProcessModel;
+import org.activiti.cloud.services.process.model.jpa.version.ExtendedJpaRepositoryFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 
 /**
  * Modeling application
  */
 @SpringBootApplication
+// We need to remove this..
+@EnableJpaRepositories(
+        basePackages = {"org.activiti.cloud.services.organization.jpa", "org.activiti.cloud.services.process.model.jpa" },
+        repositoryFactoryBeanClass = ExtendedJpaRepositoryFactoryBean.class
+)
+@EntityScan(basePackages = {"org.activiti.cloud.services.process.model.core.model", "org.activiti.cloud.services.organization.entity"})
+
+// We need to definitely remove this
+@ComponentScan("org.activiti.cloud")
 @EnableActivitiOrganization
 @EnableActivitiProcessModel
 public class ModelingApplication {

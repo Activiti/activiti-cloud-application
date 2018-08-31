@@ -49,11 +49,11 @@ public class ModelingRestIT {
     @Test
     public void testGetModels() throws Exception {
         given()
-                .get("/v1/models")
+                .get("/v1/process-models")
                 .then().expect(status().isOk());
 
         given()
-                .get("/v1/process-models")
+                .get("/v1/models")
                 .then().expect(status().isOk());
     }
 }
