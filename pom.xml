@@ -17,6 +17,7 @@
   <properties>
     <java.version>1.8</java.version>
     <activiti.cloud.version>7.0.0-SNAPSHOT</activiti.cloud.version>
+    <spring-boot.version>2.0.4.RELEASE</spring-boot.version>
     <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
     <maven-failsafe-plugin.version>2.18.1</maven-failsafe-plugin.version>
     <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version> <!-- required for jx -->
@@ -24,7 +25,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.activiti.cloud</groupId>
+        <groupId>org.activiti.cloud.dependencies</groupId>
         <artifactId>activiti-cloud-dependencies</artifactId>
         <version>${activiti.cloud.version}</version>
         <scope>import</scope>
@@ -34,11 +35,11 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
-      <groupId>org.activiti.cloud</groupId>
+      <groupId>org.activiti.cloud.process.model</groupId>
       <artifactId>activiti-cloud-starter-process-model</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.activiti.cloud</groupId>
+      <groupId>org.activiti.cloud.modeling</groupId>
       <artifactId>activiti-cloud-starter-org</artifactId>
     </dependency>
     <dependency>
@@ -83,6 +84,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot.version}</version>
         <executions>
           <execution>
             <goals>
