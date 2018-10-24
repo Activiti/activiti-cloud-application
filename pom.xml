@@ -16,7 +16,7 @@
   </scm>
   <properties>
     <java.version>1.8</java.version>
-    <activiti.cloud.modeling.version>7.0.3</activiti.cloud.modeling.version>
+    <activiti-cloud-modeling-dependencies.version>7.0.5</activiti-cloud-modeling-dependencies.version>
     <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
     <maven-failsafe-plugin.version>2.18.1</maven-failsafe-plugin.version>
     <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version> <!-- required for jx -->
@@ -26,7 +26,7 @@
       <dependency>
         <groupId>org.activiti.cloud.dependencies</groupId>
         <artifactId>activiti-cloud-modeling-dependencies</artifactId>
-        <version>${activiti.cloud.modeling.version}</version>
+        <version>${activiti-cloud-modeling-dependencies.version}</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
