@@ -1,0 +1,86 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    draft: {{ default "draft-app" .Values.draft }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        draft: {{ default "draft-app" .Values.draft }}
+        app: {{ template "fullname" . }}
+{{- if .Values.podAnnotations }}
+      annotations:
+{{ toYaml .Values.podAnnotations | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}-backend
+        image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+        env:
+        - name: JAVA_OPTS
+          value: "-Xmx{{ .Values.backend.javaOpts.xmx }} -Xms{{ .Values.backend.javaOpts.xms }} {{ .Values.backend.javaOpts.other}}"
+        - name: SPRING_APPLICATION_NAME
+{{- if .Values.service.name }}
+          value: {{ .Values.service.name }}-backend
+{{- else }}
+          value: {{ template "fullname" . }}-backend
+{{- end }}
+        - name: SERVER_PORT
+          value: "{{ .Values.service.backend.internalPort }}"
+        - name: ACT_KEYCLOAK_URL
+          value: {{ .Values.global.keycloak.url }}
+        - name: ACTIVITI_CLOUD_MODELING_URL
+          value: "localhost:{{ .Values.service.backend.internalPort }}"
+        imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.backend.internalPort }}
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+        env:
+        - name: APP_CONFIG_OAUTH2_HOST
+          value: "{{ .Values.global.keycloak.url }}/realms/{{ .Values.global.keycloak.realm }}"
+        - name: APP_CONFIG_OAUTH2_CLIENTID
+          value: {{ .Values.global.keycloak.client }}
+        - name: API_URL
+{{- if .Values.backend.url }}
+          value: {{ .Values.backend.url }}
+{{- else }}
+          value: "http://{{ .Values.global.gateway.host }}"
+{{- end }}
+{{- if .Values.frontend.basepath }}
+        - name: BASE_PATH
+          value: "/{{ .Values.frontend.basepath }}/"
+        - name: APP_CONFIG_OAUTH2_REDIRECT_SILENT_IFRAME_URI
+          value: "/{{ .Values.frontend.basepath }}/assets/silent-refresh.html"
+        - name: APP_CONFIG_OAUTH2_REDIRECT_LOGIN
+          value: "/{{ .Values.frontend.basepath }}"
+        - name: APP_CONFIG_OAUTH2_REDIRECT_LOGOUT
+          value: "/{{ .Values.frontend.basepath }}"
+{{- end }}
+        - name: API_PATH_PREFIX
+          value: "{{ .Values.backend.prefix }}"
+        imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.frontend.internalPort }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.frontend.probePath }}
+            port: {{ .Values.service.frontend.internalPort }}
+          initialDelaySeconds: {{ .Values.frontend.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.frontend.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.frontend.livenessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.frontend.livenessProbe.timeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.frontend.probePath }}
+            port: {{ .Values.service.frontend.internalPort }}
+          periodSeconds: {{ .Values.frontend.readinessProbe.periodSeconds }}
+          successThreshold: {{ .Values.frontend.readinessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.frontend.readinessProbe.timeoutSeconds }}
+        resources:
+{{ toYaml .Values.frontend.resources | indent 12 }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
