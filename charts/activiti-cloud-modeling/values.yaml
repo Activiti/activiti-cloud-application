@@ -40,7 +40,7 @@ frontend:
   basepath: "activiti-cloud-modeling"
   image:
     repository: activiti/activiti-modeling-app
-    tag: 7.0.0.Beta3
+    tag: 0.0.1
     pullPolicy: Always
   resources:
     limits:
