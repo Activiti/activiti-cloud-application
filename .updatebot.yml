@@ -2,4 +2,4 @@ github:
   organisations:
   - name: activiti
     repositories:
-    - name: activiti-cloud-example-chart
+    - name: activiti-cloud-example-chart-modeling
