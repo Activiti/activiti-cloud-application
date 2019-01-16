@@ -1,0 +1,30 @@
+{
+    "run": {
+        "default": "",
+        "items": [
+            {
+                "name": "activiti-cloud-modeling",
+                "projectName": "activiti-cloud-modeling",
+                "workingDirectory": "/Users/almer/git/Activiti/activiti-cloud-modeling",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    },
+    "debug": {
+        "default": "",
+        "items": [
+            {
+                "name": "activiti-cloud-modeling",
+                "projectName": "activiti-cloud-modeling",
+                "workingDirectory": "/Users/almer/git/Activiti/activiti-cloud-modeling",
+                "args": [],
+                "vmargs": [],
+                "env": {},
+                "preLaunchTask": ""
+            }
+        ]
+    }
+}

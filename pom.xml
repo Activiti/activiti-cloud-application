@@ -19,10 +19,10 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <activiti-cloud-modeling-dependencies.version>0.0.0-SNAPSHOT-PR-57-3</activiti-cloud-modeling-dependencies.version>
-    <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-    <maven-failsafe-plugin.version>2.21.0</maven-failsafe-plugin.version>
-    <maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
-    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version> <!-- required for jx -->
+    <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+    <maven-failsafe-plugin.version>3.0.0-M3</maven-failsafe-plugin.version>
+    <maven-surefire-plugin.version>3.0.0-M3</maven-surefire-plugin.version>
+    <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version> <!-- required for jx -->
   </properties>
   <dependencyManagement>
     <dependencies>
