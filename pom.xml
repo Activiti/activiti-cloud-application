@@ -42,10 +42,6 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
-      <groupId>org.activiti.cloud.process.model</groupId>
-      <artifactId>activiti-cloud-starter-process-model</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.activiti.cloud.modeling</groupId>
       <artifactId>activiti-cloud-starter-org</artifactId>
     </dependency>
@@ -69,8 +65,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-contract-verifier</artifactId>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>spring-mock-mvc</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
