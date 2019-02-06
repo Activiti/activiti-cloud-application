@@ -3,3 +3,4 @@ github:
   - name: activiti
     repositories:
     - name: activiti-cloud-example-chart-modeling
+    - name: activiti-cloud-example-chart
