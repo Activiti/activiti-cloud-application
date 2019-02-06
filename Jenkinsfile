@@ -58,7 +58,9 @@ pipeline {
             sh "mvn versions:set -DnewVersion=\$(cat VERSION)"
 
             dir ("./charts/$APP_NAME") {
-              sh "make tag"
+              retry(5) {  
+                sh "make tag"
+              }
             }
             sh 'mvn clean deploy'
 
@@ -75,16 +77,19 @@ pipeline {
         steps {
           container('maven') {
             dir ("./charts/$APP_NAME") {
-              // sh 'jx step changelog --version v\$(cat ../../VERSION)'
+              sh 'jx step changelog --version v\$(cat ../../VERSION)'
 
               // release the helm chart
               sh 'make release'
-              sh 'make github'  
+              retry(5) {  
+                sh 'make github'
+              }
               // promote through all 'Auto' promotion Environments
               // sh 'jx promote -b --all-auto --timeout 1h --version \$(cat ../../VERSION) --no-wait'
               sh 'jx step git credentials'
-              sh 'make updatebot/push-version'
-
+              retry(5) {  
+                sh 'make updatebot/push-version'
+              } 
             }
           }
         }
