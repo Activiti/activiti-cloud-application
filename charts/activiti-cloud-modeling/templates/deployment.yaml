@@ -47,7 +47,7 @@ spec:
           value: "{{ .Values.global.keycloak.url }}/realms/{{ .Values.global.keycloak.realm }}"
         - name: APP_CONFIG_OAUTH2_CLIENTID
           value: {{ .Values.global.keycloak.client }}
-        - name: API_URL
+        - name: APP_CONFIG_BPM_HOST
 {{- if .Values.backend.url }}
           value: {{ .Values.backend.url }}
 {{- else }}
