@@ -1,10 +1,4 @@
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: {{ template "fullname" . }}
-  labels:
-    draft: {{ default "draft-app" .Values.draft }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+{{ include "common.deployment.head"  .}}
 spec:
   replicas: {{ .Values.replicaCount }}
   template:
@@ -12,11 +6,16 @@ spec:
       labels:
         draft: {{ default "draft-app" .Values.draft }}
         app: {{ template "fullname" . }}
+        release: "{{ .Release.Name }}"
 {{- if .Values.podAnnotations }}
       annotations:
 {{ toYaml .Values.podAnnotations | indent 8 }}
 {{- end }}
     spec:
+{{- if include "common.registry-pull-secrets" . }}
+      imagePullSecrets:
+      {{- include "common.registry-pull-secrets" . | indent 6 }}
+{{- end }}
       containers:
       - name: {{ .Chart.Name }}-backend
         image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
@@ -31,33 +30,64 @@ spec:
 {{- else }}
           value: {{ template "fullname" . }}-backend
 {{- end }}
+        - name: SERVER_SERVLET_CONTEXT_PATH
+          value: {{ include "activiti-cloud-modeling.ingress-path-backend" .|quote }}
         - name: SERVER_PORT
           value: "{{ .Values.service.backend.internalPort }}"
         - name: ACT_KEYCLOAK_URL
-          value: {{ .Values.global.keycloak.url }}
+          value: {{ include "common.keycloak-url" . | quote }}
+        - name: ACT_KEYCLOAK_REALM
+          value: {{ include "common.keycloak-realm" . | quote }}
+        - name: ACT_KEYCLOAK_RESOURCE
+          value: {{ include "common.keycloak-resource" . | quote }}
         - name: ACTIVITI_CLOUD_MODELING_URL
           value: "localhost:{{ .Values.service.backend.internalPort }}"
+{{ include "activiti-cloud-modeling.extra-env-backend" . | indent 8 }}
         imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.backend.internalPort }}
+        livenessProbe:
+          httpGet:
+            path: {{ tpl .Values.backend.probePath . }}
+            port: {{ .Values.service.backend.internalPort }}
+          initialDelaySeconds: {{ .Values.backend.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.backend.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.backend.livenessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.backend.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.backend.livenessProbe.failureThreshold }}
+        readinessProbe:
+          httpGet:
+            path: {{ tpl .Values.backend.probePath . }}
+            port: {{ .Values.service.backend.internalPort }}
+          initialDelaySeconds: {{ .Values.backend.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.backend.readinessProbe.periodSeconds }}
+          successThreshold: {{ .Values.backend.readinessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.backend.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.backend.readinessProbe.failureThreshold }}
+{{- if .Values.extraVolumeMounts }}
+        volumeMounts:
+{{- with .Values.extraVolumeMounts }}
+{{ tpl . $ | indent 10 }}
+{{- end }}
+{{- end }}
       - name: {{ .Chart.Name }}
         image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
         env:
         - name: APP_CONFIG_OAUTH2_HOST
-          value: "{{ .Values.global.keycloak.url }}/realms/{{ .Values.global.keycloak.realm }}"
+          value: {{ include "common.keycloak-url" . }}/realms/{{ include "common.keycloak-realm" . }}
         - name: APP_CONFIG_OAUTH2_CLIENTID
-          value: {{ .Values.global.keycloak.client }}
-        - name: APP_CONFIG_BPM_HOST
+          value: {{ include "common.keycloak-client" . | quote }}
+        - name: API_URL
 {{- if .Values.backend.url }}
           value: {{ .Values.backend.url }}
 {{- else }}
-          value: "http://{{ .Values.global.gateway.host }}"
+          value: {{ include "common.gateway-url" $ | quote }}
 {{- end }}
 {{- if .Values.frontend.basepath }}
         - name: BASE_PATH
           value: "/{{ .Values.frontend.basepath }}/"
         - name: APP_CONFIG_OAUTH2_REDIRECT_SILENT_IFRAME_URI
-          value: "/{{ .Values.frontend.basepath }}/assets/silent-refresh.html"
+          value: "{{ include "common.gateway-url" . }}/{{ .Values.frontend.basepath }}/assets/silent-refresh.html"
         - name: APP_CONFIG_OAUTH2_REDIRECT_LOGIN
           value: "/{{ .Values.frontend.basepath }}"
         - name: APP_CONFIG_OAUTH2_REDIRECT_LOGOUT
@@ -65,12 +95,13 @@ spec:
 {{- end }}
         - name: API_PATH_PREFIX
           value: "{{ .Values.backend.prefix }}"
+{{ include "activiti-cloud-modeling.extra-env-frontend" . | indent 8 }}
         imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.frontend.internalPort }}
         livenessProbe:
           httpGet:
-            path: {{ .Values.frontend.probePath }}
+            path: {{ tpl .Values.frontend.probePath . }}
             port: {{ .Values.service.frontend.internalPort }}
           initialDelaySeconds: {{ .Values.frontend.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.frontend.livenessProbe.periodSeconds }}
@@ -79,7 +110,7 @@ spec:
           failureThreshold: {{ .Values.frontend.livenessProbe.failureThreshold }}
         readinessProbe:
           httpGet:
-            path: {{ .Values.frontend.probePath }}
+            path: {{ tpl .Values.frontend.probePath . }}
             port: {{ .Values.service.frontend.internalPort }}
           initialDelaySeconds: {{ .Values.frontend.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.frontend.readinessProbe.periodSeconds }}
@@ -89,3 +120,9 @@ spec:
         resources:
 {{ toYaml .Values.frontend.resources | indent 12 }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+{{- if .Values.extraVolumes }}
+      volumes:
+{{- with .Values.extraVolumes }}
+{{ tpl . $ | indent 8 }}
+{{- end }}
+{{- end }}
