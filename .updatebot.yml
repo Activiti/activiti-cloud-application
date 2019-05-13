@@ -6,3 +6,5 @@ github:
       useSinglePullRequest: true
     - name: activiti-cloud-example-chart
       useSinglePullRequest: true
+    - name: activiti-cloud-full-chart
+      useSinglePullRequest: true
