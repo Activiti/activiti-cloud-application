@@ -24,8 +24,8 @@ global:
 service:
   type: ClusterIP
   backend:
-    externalPort: 80
-    internalPort: 8080
+      externalPort: 80
+      internalPort: 8080
   frontend:
     externalPort: 80
     internalPort: 80
@@ -101,7 +101,7 @@ backend:
     requests:
       cpu: 400m
       memory: 512Mi
-  probePath: '{{ if .Values.ingress.enabled }}{{ include "activiti-cloud-modeling.ingress-path-backend" . }}{{ end }}/actuator/health' #for ingress
+  probePath: '{{ if .Values.ingress.enabled }} {{ include "activiti-cloud-modeling.ingress-path-backend" . }}{{ end }}/actuator/health' #for ingress
 
   livenessProbe:
     initialDelaySeconds: 60
