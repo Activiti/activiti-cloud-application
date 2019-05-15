@@ -24,7 +24,7 @@ global:
 service:
   type: ClusterIP
   backend:
-      externalPort: 80
+    externalPort: 80
       internalPort: 8080
   frontend:
     externalPort: 80
@@ -119,7 +119,7 @@ backend:
 terminationGracePeriodSeconds: 20
 
 ingress:
-  enabled: true
+  enabled: false
   
   path: # configure base path for frontend and backend ingresses "/{{ .Release.Namespace }}"
   
@@ -139,11 +139,11 @@ ingress:
 
   frontend:
     path: "/activiti-cloud-modeling"
-#    suffix: ""
+#    suffix: "" #old version nginx
     suffix: "/?(.*)" #new versions nginx
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: "/$1" #new version of nginx
-#      nginx.ingress.kubernetes.io/rewrite-target: "/"
+#      nginx.ingress.kubernetes.io/rewrite-target: "/" #old version nginx
 
   ## Set this to true in order to enable TLS on the ingress record, i.e. true | false
   tls: 
