@@ -25,7 +25,7 @@ service:
   type: ClusterIP
   backend:
     externalPort: 80
-      internalPort: 8080
+    internalPort: 8080
   frontend:
     externalPort: 80
     internalPort: 80
@@ -119,7 +119,7 @@ backend:
 terminationGracePeriodSeconds: 20
 
 ingress:
-  enabled: false
+  enabled: true
   
   path: # configure base path for frontend and backend ingresses "/{{ .Release.Namespace }}"
   
