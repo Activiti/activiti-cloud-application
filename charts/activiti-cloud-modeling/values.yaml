@@ -74,6 +74,7 @@ frontend:
 ## Add additional volumes and mounts
 extraVolumes: |
 extraVolumeMounts: |
+extraEnv: |
 
 backend:
   # if not using gateway then external host and http method to reach backend here
@@ -92,7 +93,7 @@ backend:
   #       key: expose-keycloak-service-key
   image:
     repository: activiti/activiti-cloud-modeling
-    tag: 7.0.0.SR1
+    tag: 7.1.0.M1
     pullPolicy: Always
   resources:
     limits:
@@ -124,7 +125,7 @@ ingress:
   backend:
     path: "/activiti-cloud-modeling-backend"
     annotations: {}
-    # nginx.ingress.kubernetes.io/rewrite-target: /
+    #nginx.ingress.kubernetes.io/rewrite-target: /
 
   ## Set to override global.gateway.host value, i.e. "modeler.{{ include \"common.gateway-domain\" . }}"
   hostName: 
@@ -137,11 +138,11 @@ ingress:
 
   frontend:
     path: "/activiti-cloud-modeling"
-    suffix: ""
-    #suffix: "/?(.*)" new versions nginx
+#    suffix: ""
+    suffix: "/?(.*)" #new versions nginx
     annotations:
-#      nginx.ingress.kubernetes.io/rewrite-target: "/$1" new version of nginx
-      nginx.ingress.kubernetes.io/rewrite-target: "/"
+      nginx.ingress.kubernetes.io/rewrite-target: "/$1" #new version of nginx
+#      nginx.ingress.kubernetes.io/rewrite-target: "/"
 
   ## Set this to true in order to enable TLS on the ingress record, i.e. true | false
   tls: 
