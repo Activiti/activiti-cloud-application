@@ -101,7 +101,8 @@ backend:
     requests:
       cpu: 400m
       memory: 512Mi
-  probePath: '{{ include "activiti-cloud-modeling.ingress-path-backend" . }}/actuator/health'
+  probePath: '{{ if .Values.ingress.enabled }}{{ include "activiti-cloud-modeling.ingress-path-backend" . }}{{ end }}/actuator/health' #for ingress
+
   livenessProbe:
     initialDelaySeconds: 60
     periodSeconds: 15
