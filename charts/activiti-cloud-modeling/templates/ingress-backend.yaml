@@ -1,7 +1,7 @@
 {{- template "common.ingress" (list . "activiti.backend.ingress") -}}
 {{- define "activiti.backend.ingress" -}}
 metadata:
-  name: {{ template "fullname" . }}-backend
+  name: {{ template "fullname" . }}-service
 spec:
   rules:
     {{- if include "common.ingress-host" . }}
@@ -14,9 +14,9 @@ spec:
           - path: {{ template "activiti-cloud-modeling.ingress-path-backend" . }}
             backend:
             {{- if .Values.service.name }}
-              serviceName: {{ .Values.service.name }}-backend
+              serviceName: {{ .Values.service.name }}-service
             {{- else }}
-              serviceName: {{ template "fullname" . }}-backend
+              serviceName: {{ template "fullname" . }}-service
             {{- end }}
               servicePort: {{ .Values.service.backend.externalPort }}
   {{- if include "common.ingress-tls" . }}

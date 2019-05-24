@@ -3,9 +3,9 @@
 
 metadata:
 {{- if .Values.service.name }}
-  name: {{ .Values.service.name }}-backend
+  name: {{ .Values.service.name }}-service
 {{- else }}
-  name: {{ template "fullname" . }}-backend
+  name: {{ template "fullname" . }}-service
 {{- end }}
   labels:
     app: {{ .Chart.Name }}

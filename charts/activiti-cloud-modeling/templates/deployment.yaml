@@ -17,7 +17,7 @@ spec:
       {{- include "common.registry-pull-secrets" . | indent 6 }}
 {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-backend
+      - name: {{ .Chart.Name }}-service
         image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
         resources:
 {{ toYaml .Values.backend.resources | indent 10 }}
@@ -26,9 +26,9 @@ spec:
           value: "-Xmx{{ .Values.backend.javaOpts.xmx }} -Xms{{ .Values.backend.javaOpts.xms }} {{ .Values.backend.javaOpts.other}}"
         - name: SPRING_APPLICATION_NAME
 {{- if .Values.service.name }}
-          value: {{ .Values.service.name }}-backend
+          value: {{ .Values.service.name }}-service
 {{- else }}
-          value: {{ template "fullname" . }}-backend
+          value: {{ template "fullname" . }}-service
 {{- end }}
 {{- if .Values.ingress.enabled }}
         - name: SERVER_SERVLET_CONTEXT_PATH

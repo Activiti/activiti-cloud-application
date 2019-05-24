@@ -38,7 +38,7 @@ service:
 
 frontend:
 #if behind gateway or ingress should be gw path
-  basepath: "activiti-cloud-modeling"
+  basepath: "modeling"
   ## Allows the specification of additional environment variables
   extraEnv: |
   # - name: ACT_KEYCLOAK_URL
@@ -79,7 +79,7 @@ extraEnv: |
 backend:
   # if not using gateway then external host and http method to reach backend here
   url: ""
-  prefix: "activiti-cloud-modeling-backend"
+  prefix: "modeling-service"
   javaOpts:
     xmx: 1024m
     xms: 512m
@@ -124,7 +124,7 @@ ingress:
   path: # configure base path for frontend and backend ingresses "/{{ .Release.Namespace }}"
   
   backend:
-    path: "/activiti-cloud-modeling-backend"
+    path: "/modeling-service"
     annotations: {}
     #nginx.ingress.kubernetes.io/rewrite-target: /
 
@@ -138,7 +138,7 @@ ingress:
     enabled: false
 
   frontend:
-    path: "/activiti-cloud-modeling"
+    path: "/modeling"
 #    suffix: "" #old version nginx
     suffix: "/?(.*)" #new versions nginx
     annotations:
