@@ -48,7 +48,7 @@ frontend:
   #       key: expose-keycloak-service-key
   image:
     repository: activiti/activiti-modeling-app
-    tag: 0.0.81
+    tag: 0.0.87
     pullPolicy: Always
   resources:
     limits:
