@@ -21,6 +21,13 @@ global:
   gateway:
     host: ""
 
+postgres:
+  enabled: true
+  name: postgres
+  port: 5432
+  username: postgres
+  password:
+
 service:
   type: ClusterIP
   backend:
