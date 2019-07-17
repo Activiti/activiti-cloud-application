@@ -20,7 +20,20 @@ global:
       port: 80
   gateway:
     host: ""
+db:
+  uri:
+  username:
+  password:
+  driver:
+  platform:
+  generateDdl:
+  ddlAuto:
 
+init:
+  image:
+    repository: alpine
+    tag: 3.8
+    pullPolicy: IfNotPresent
 postgres:
   enabled: true
   name: postgres
@@ -82,6 +95,7 @@ frontend:
 extraVolumes: |
 extraVolumeMounts: |
 extraEnv: |
+extraInitContainers: |
 
 backend:
   # if not using gateway then external host and http method to reach backend here
