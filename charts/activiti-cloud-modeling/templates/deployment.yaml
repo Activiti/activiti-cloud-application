@@ -12,6 +12,23 @@ spec:
 {{ toYaml .Values.podAnnotations | indent 8 }}
 {{- end }}
     spec:
+      initContainers:
+      {{- if .Values.postgres.enabled }}
+      - name: wait-for-postgresql
+        image: "{{ .Values.init.image.repository }}:{{ .Values.init.image.tag }}"
+        imagePullPolicy: {{ .Values.init.image.pullPolicy }}
+        command:
+          - sh
+          - -c
+          - |
+            until printf "." && nc -z -w 2 {{ .Release.Name }}-{{ .Values.postgres.name }} {{ .Values.postgres.port }}; do
+                sleep 2;
+            done;
+            echo 'PostgreSQL OK ✓'
+      {{- end }}
+      {{- if .Values.extraInitContainers }}
+      {{ tpl .Values.extraInitContainers . | indent 8 }}
+      {{- end }}
 {{- if include "common.registry-pull-secrets" . }}
       imagePullSecrets:
       {{- include "common.registry-pull-secrets" . | indent 6 }}
