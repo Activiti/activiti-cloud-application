@@ -156,7 +156,7 @@ spec:
 {{- if .Values.backend.url }}
           value: {{ tpl .Values.backend.url .|quote }}
 {{- else }}
-          value: {{ tpl (printf "%s/%s"  (include "common.gateway-url" .) .Values.backend.prefix) .|quote }}
+          value: {{ include "common.gateway-url" . }}
 {{- end }}
 {{- if .Values.frontend.basepath }}
         - name: BASE_PATH
