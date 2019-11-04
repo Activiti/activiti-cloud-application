@@ -67,5 +67,5 @@ endif
 	git push origin v$(RELEASE_VERSION)
 
 updatebot/push-version:
-	$(eval MODELING_DEPENDENCIES_VERSION=$(shell mvn help:evaluate -Dexpression=activiti-cloud-modeling-dependencies.version> -q -DforceStdout -f ../../pom.xml))
+	$(eval MODELING_DEPENDENCIES_VERSION=$(shell mvn help:evaluate -Dexpression=activiti-cloud-modeling-dependencies.version -q -DforceStdout -f ../../pom.xml))
 	cd ../../ && updatebot push-version --kind make MODELING_DEPENDENCIES_VERSION $(MODELING_DEPENDENCIES_VERSION) ACTIVITI_CLOUD_MODELING  $(RELEASE_VERSION)
