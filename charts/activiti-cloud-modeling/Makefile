@@ -66,5 +66,7 @@ endif
 	git tag -fa v$(RELEASE_VERSION) -m "Release version $(RELEASE_VERSION)"
 	git push origin v$(RELEASE_VERSION)
 
-updatebot/push-version: 
+updatebot/push-version:
+    $(eval MODELING_DEPENDENCIES_VERSION=$(shell mvn help:evaluate -Dexpression=activiti-cloud-modeling-dependencies.version> -q -DforceStdout -f ../../pom.xml))
+    cd ../../ && updatebot push-version --make helm MODELING_DEPENDENCIES_VERSION $(MODELING_DEPENDENCIES_VERSION)
 	cd ../../ && updatebot push-version --kind helm $(RELEASE_ARTIFACT) $(RELEASE_VERSION)
