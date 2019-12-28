@@ -49,18 +49,11 @@ github:
 	   git push origin "$(GITHUB_CHARTS_BRANCH)"
 	rm -rf $(GITHUB_CHARTS_DIR)
 
-tag:
-ifeq ($(OS),Darwin)
-	sed -i "" -e "s/version:.*/version: $(RELEASE_VERSION)/" Chart.yaml
-	sed -i "" -e "s/tag: .*/tag: $(RELEASE_VERSION)/" values.yaml
-else ifeq ($(OS),Linux)
+version:
 	sed -i -e "s/version:.*/version: $(RELEASE_VERSION)/" Chart.yaml
-	#sed -i -e "s/tag: 7\.0\.[1-9]\d*/tag: $(RELEASE_VERSION)/" values.yaml
 	export RELEASE_VERSION=$(RELEASE_VERSION) && perl -0777 -pi -e '$$version = $$ENV{'RELEASE_VERSION'};s/repository: activiti\/activiti-cloud-modeling\n\s*tag: ([0-9]|[a-zA-Z]|\.)*/repository: activiti\/activiti-cloud-modeling\n    tag: $$version/' values.yaml
-else
-	echo "platfrom $(OS) not supported to release from"
-	exit -1
-endif
+
+tag: version
 	git add --all
 	git commit -m "release $(RELEASE_VERSION)" --allow-empty # if first release then no verion update is performed
 	git tag -fa v$(RELEASE_VERSION) -m "Release version $(RELEASE_VERSION)"
@@ -68,4 +61,10 @@ endif
 
 updatebot/push-version:
 	$(eval MODELING_DEPENDENCIES_VERSION=$(shell mvn help:evaluate -Dexpression=activiti-cloud-modeling-dependencies.version -q -DforceStdout -f ../../pom.xml))
-	cd ../../ && updatebot push-version --kind make MODELING_DEPENDENCIES_VERSION $(MODELING_DEPENDENCIES_VERSION) ACTIVITI_CLOUD_MODELING  $(RELEASE_VERSION)
+	
+	@echo Doing updatebot push-version.....
+	for number in 1 2; do \
+		updatebot -d ../../ push-version --kind maven activiti-cloud-modeling-dependencies.version $(MODELING_DEPENDENCIES_VERSION) activiti-cloud-modeling.version $(RELEASE_VERSION); \
+		rm -rf ../../.updatebot-repos/; \
+		sleep $$[ ( $$RANDOM % 10 )  + 1 ]s; \
+	done	
