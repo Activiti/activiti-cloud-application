@@ -16,7 +16,7 @@
 
 package org.activiti.cloud.modeling;
 
-import org.activiti.cloud.organization.EnableActivitiOrganization;
+import org.activiti.cloud.starter.modeling.configuration.EnableActivitiModeling;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -25,12 +25,12 @@ import org.springframework.context.annotation.ComponentScan;
  * Modeling application
  */
 @SpringBootApplication
-@EnableActivitiOrganization
+@EnableActivitiModeling
 @ComponentScan("org.activiti.cloud")
 public class ModelingApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ModelingApplication.class,
-                              args);
+        SpringApplication.run(ModelingApplication.class, args);
     }
+
 }
