@@ -61,7 +61,7 @@ tag: version
 
 updatebot/push-version:
 	$(eval MODELING_DEPENDENCIES_VERSION=$(shell mvn help:evaluate -Dexpression=activiti-cloud-modeling-dependencies.version -q -DforceStdout -f ../../pom.xml))
-	$(eval MAVEN_VERSIONS=org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $(MODELING_DEPENDENCIES_VERSION) org.activiti.cloud.examples:activiti-cloud-modeling $(RELEASE_VERSION))
+	$(eval MAVEN_VERSIONS=org.activiti.cloud.examples:activiti-cloud-modeling $(RELEASE_VERSION) org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $(MODELING_DEPENDENCIES_VERSION))
 	
 	@echo Doing updatebot push-version.....
 	for number in 1 2; do \
