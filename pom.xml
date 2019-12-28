@@ -3,10 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-parent</artifactId>
-	<version>2.1.10.RELEASE</version>
-  	<relativePath/> <!-- lookup parent from repository -->
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.1.10.RELEASE</version>
+    <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>org.activiti.cloud.examples</groupId>
   <artifactId>activiti-cloud-modeling</artifactId>
@@ -23,7 +23,7 @@
     <java.version>11</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <activiti-cloud-modeling-dependencies.version>7.1.314</activiti-cloud-modeling-dependencies.version>
+    <activiti-cloud-modeling-dependencies.version>7.1.315</activiti-cloud-modeling-dependencies.version>
     <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
     <maven-failsafe-plugin.version>3.0.0-M3</maven-failsafe-plugin.version>
     <maven-surefire-plugin.version>3.0.0-M3</maven-surefire-plugin.version>
@@ -32,7 +32,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.activiti.cloud.dependencies</groupId>
+        <groupId>org.activiti.cloud.modeling</groupId>
         <artifactId>activiti-cloud-modeling-dependencies</artifactId>
         <version>${activiti-cloud-modeling-dependencies.version}</version>
         <scope>import</scope>
@@ -43,7 +43,7 @@
   <dependencies>
     <dependency>
       <groupId>org.activiti.cloud.modeling</groupId>
-      <artifactId>activiti-cloud-starter-org</artifactId>
+      <artifactId>activiti-cloud-starter-modeling</artifactId>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
@@ -53,7 +53,7 @@
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
-    </dependency>	  
+    </dependency>   
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -118,7 +118,6 @@
           </execution>
         </executions>
       </plugin>
-    
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
