@@ -5,6 +5,5 @@
 [![ASL 2.0](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/Activiti/activiti-cloud-modeling/blob/master/LICENSE.txt)
 [![CLA](https://cla-assistant.io/readme/badge/Activiti/activiti-cloud-modeling)](https://cla-assistant.io/Activiti/activiti-cloud-modeling)
 [![Docker Build Status](https://img.shields.io/docker/build/activiti/activiti-cloud-modeling.svg)](https://hub.docker.com/r/activiti/activiti-cloud-modeling)
-[![Known Vulnerabilities](https://snyk.io/test/github/Activiti/activiti-cloud-modeling/badge.svg)](https://snyk.io/test/github/Activiti/activiti-cloud-modeling)
 [![security status](https://www.meterian.com/badge/gh/Activiti/activiti-cloud-modeling/security)](https://www.meterian.com/report/gh/Activiti/activiti-cloud-modeling)
 [![stability status](https://www.meterian.com/badge/gh/Activiti/activiti-cloud-modeling/stability)](https://www.meterian.com/report/gh/Activiti/activiti-cloud-modeling)
