@@ -283,8 +283,10 @@ pipeline {
 
     stage('Publish Helm Release') {
       when {
-        tag "$RELEASE_TAG_REGEX"
-        branch "$RELEASE_BRANCH"
+        anyof {
+          tag "$RELEASE_TAG_REGEX";
+          branch "$RELEASE_BRANCH";
+        }
       }
       steps {
         container('maven') {
