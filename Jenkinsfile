@@ -16,7 +16,7 @@ pipeline {
   environment {
     ORG = 'activiti'
     REALM = "activiti"
-    APP_NAME = 'activiti-cloud-example-app'
+    APP_NAME = 'activiti-cloud-application'
     JX_VERSION = jx_release_version()
     VERSION = "$JX_VERSION-TEST"
     CHARTMUSEUM_CREDS = credentials('jenkins-x-chartmuseum')
@@ -183,25 +183,6 @@ pipeline {
                 }
               }
             }
-
-            retry(5) {
-              sh '''
-                  updatebot push-version --dry --kind maven \
-                  org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $VERSIOM \
-                  org.activiti.cloud.audit:activiti-cloud-audit-dependencies $VERSIOM \
-                  org.activiti.cloud.api:activiti-cloud-api-dependencies $VERSIOM \
-                  org.activiti.cloud.build:activiti-cloud-parent $VERSIOM \
-                  org.activiti.cloud.build:activiti-cloud-dependencies-parent $VERSIOM\
-                  org.activiti.cloud.connector:activiti-cloud-connectors-dependencies $VERSIOM \
-                  org.activiti.cloud.messages:activiti-cloud-messages-dependencies $VERSIOM \
-                  org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $VERSIOM \
-                  org.activiti.cloud.notifications.graphql:activiti-cloud-notifications-graphql-dependencies $VERSIOM \
-                  org.activiti.cloud.query:activiti-cloud-query-dependencies $VERSIOM \
-                  org.activiti.cloud.rb:activiti-cloud-runtime-bundle-dependencies $VERSIOM \
-                  org.activiti.cloud.common:activiti-cloud-service-common-dependencies $VERSIOM
-                  '''
-//              sh 'make updatebot/push-version'
-            }
           }
         }
       }
@@ -300,22 +281,39 @@ pipeline {
       }
     }
 
-//    stage('Publish Helm Release') {
-//      when {
-//        tag "$RELEASE_TAG_REGEX"
-//      }
-//      steps {
-//        container('maven') {
-//          sh "make github"
-//          sh "make tag"
-//        }
-//      }
-//      post {
-//        success {
-//          slackSend(channel: "#activiti-community-builds", message: "Activiti Application :: New Helm Chart verison $TAG_NAME released.", sendAsText: true)
-//        }
-//      }
-//    }
+    stage('Publish Helm Release') {
+      when {
+        tag "$RELEASE_TAG_REGEX"
+        branch "$RELEASE_BRANCH"
+      }
+      steps {
+        container('maven') {
+          retry(5) {
+            sh '''
+                  updatebot push-version --dry --kind maven \
+                  org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $VERSION \
+                  org.activiti.cloud.audit:activiti-cloud-audit-dependencies $VERSION \
+                  org.activiti.cloud.api:activiti-cloud-api-dependencies $VERSION \
+                  org.activiti.cloud.build:activiti-cloud-parent $VERSION \
+                  org.activiti.cloud.build:activiti-cloud-dependencies-parent $VERSION\
+                  org.activiti.cloud.connector:activiti-cloud-connectors-dependencies $VERSION \
+                  org.activiti.cloud.messages:activiti-cloud-messages-dependencies $VERSION \
+                  org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $VERSION \
+                  org.activiti.cloud.notifications.graphql:activiti-cloud-notifications-graphql-dependencies $VERSION \
+                  org.activiti.cloud.query:activiti-cloud-query-dependencies $VERSION \
+                  org.activiti.cloud.rb:activiti-cloud-runtime-bundle-dependencies $VERSION \
+                  org.activiti.cloud.common:activiti-cloud-service-common-dependencies $VERSION
+                  '''
+//              sh 'make updatebot/push-version'
+          }
+        }
+      }
+      post {
+        success {
+          slackSend(channel: "#activiti-community-builds", message: "Activiti Application :: New Helm Chart verison $TAG_NAME released.", sendAsText: true)
+        }
+      }
+    }
   }
 
   post {
