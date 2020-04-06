@@ -16,7 +16,7 @@ pipeline {
   environment {
     ORG = 'activiti'
     REALM = "activiti"
-    APP_NAME = 'activiti-cloud-example-app'
+    APP_NAME = 'activiti-cloud-application'
     JX_VERSION = jx_release_version()
     VERSION = "$JX_VERSION-TEST"
     CHARTMUSEUM_CREDS = credentials('jenkins-x-chartmuseum')
