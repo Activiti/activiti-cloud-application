@@ -283,7 +283,7 @@ pipeline {
 
     stage('Publish Helm Release') {
       when {
-        anyof {
+        anyOf {
           tag "$RELEASE_TAG_REGEX";
           branch "$RELEASE_BRANCH";
         }
