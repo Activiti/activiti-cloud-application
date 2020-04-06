@@ -187,18 +187,18 @@ pipeline {
             retry(5) {
               sh '''
                   updatebot push-version --dry --kind maven \
-                  org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $VERSIOM \
-                  org.activiti.cloud.audit:activiti-cloud-audit-dependencies $VERSIOM \
-                  org.activiti.cloud.api:activiti-cloud-api-dependencies $VERSIOM \
-                  org.activiti.cloud.build:activiti-cloud-parent $VERSIOM \
-                  org.activiti.cloud.build:activiti-cloud-dependencies-parent $VERSIOM\
-                  org.activiti.cloud.connector:activiti-cloud-connectors-dependencies $VERSIOM \
-                  org.activiti.cloud.messages:activiti-cloud-messages-dependencies $VERSIOM \
-                  org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $VERSIOM \
-                  org.activiti.cloud.notifications.graphql:activiti-cloud-notifications-graphql-dependencies $VERSIOM \
-                  org.activiti.cloud.query:activiti-cloud-query-dependencies $VERSIOM \
-                  org.activiti.cloud.rb:activiti-cloud-runtime-bundle-dependencies $VERSIOM \
-                  org.activiti.cloud.common:activiti-cloud-service-common-dependencies $VERSIOM
+                  org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $VERSION \
+                  org.activiti.cloud.audit:activiti-cloud-audit-dependencies $VERSION \
+                  org.activiti.cloud.api:activiti-cloud-api-dependencies $VERSION \
+                  org.activiti.cloud.build:activiti-cloud-parent $VERSION \
+                  org.activiti.cloud.build:activiti-cloud-dependencies-parent $VERSION\
+                  org.activiti.cloud.connector:activiti-cloud-connectors-dependencies $VERSION \
+                  org.activiti.cloud.messages:activiti-cloud-messages-dependencies $VERSION \
+                  org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $VERSION \
+                  org.activiti.cloud.notifications.graphql:activiti-cloud-notifications-graphql-dependencies $VERSION \
+                  org.activiti.cloud.query:activiti-cloud-query-dependencies $VERSION \
+                  org.activiti.cloud.rb:activiti-cloud-runtime-bundle-dependencies $VERSION \
+                  org.activiti.cloud.common:activiti-cloud-service-common-dependencies $VERSION
                   '''
 //              sh 'make updatebot/push-version'
             }
