@@ -32,38 +32,76 @@ pipeline {
     ACTIVITI_CLOUD_FULL_CHART_VERSIONS = "$VERSION"
   }
   stages {
-    stage('CI Build and push snapshot') {
-      when {
-        branch 'PR-*'
-      }
-      environment {
-        PROJECT_VERSION = maven_project_version()
-        VERSION = "$PROJECT_VERSION".replaceAll("SNAPSHOT", "$BRANCH_NAME-$BUILD_NUMBER-SNAPSHOT")
-        PREVIEW_NAMESPACE = "$APP_NAME-$BRANCH_NAME".toLowerCase()
-        HELM_RELEASE = "$PREVIEW_NAMESPACE".toLowerCase()
-      }
+    stage('Configure Git') {
       steps {
         container('maven') {
-          sh "mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$VERSION"
-          sh "mvn install"
-          sh 'export VERSION=$VERSION && skaffold build -f skaffold.yaml'
-
+          sh "git config --global credential.helper store"
+          sh "jx step git credentials"
         }
       }
     }
-    stage('Build Releass for apps') {
-      when {
-        branch 'develop'
+    stage('Set Versions') {
+      parallel {
+        stage('Preview Version') {
+          when {
+            branch 'PR-*'
+          }
+          environment {
+            VERSION = "$PREVIEW_NAMESPACE"
+          }
+          steps {
+            container('maven') {
+              echo "VERSION=$VERSION"
+              // so we can retrieve the version in later steps
+              sh "echo $VERSION > VERSION"
+            }
+          }
+        }
+        stage('Release Version') {
+          when {
+            branch "$RELEASE_BRANCH"
+          }
+          environment {
+            VERSION = jx_release_version()
+          }
+          steps {
+            container('maven') {
+              echo "VERSION=$VERSION"
+              // so we can retrieve the version in later steps
+              sh "echo $VERSION > VERSION"
+
+              // ensure we're not on a detached head
+              sh "git checkout $RELEASE_BRANCH"
+              sh "git fetch --tags"
+
+            }
+          }
+        }
+        stage('Tag Version') {
+          when {
+            tag "$RELEASE_TAG_REGEX"
+          }
+          environment {
+            VERSION = "$TAG_NAME"
+          }
+          steps {
+            container('maven') {
+              echo "VERSION=$VERSION"
+              sh "git checkout $VERSION"
+              sh "git fetch --all --tags --prune"
+              sh "git checkout tags/$VERSION -b $VERSION"
+
+              sh "echo $VERSION > VERSION"
+            }
+          }
+        }
       }
+    }
+
+    stage('Build Releass for apps') {
       steps {
         container('maven') {
           // ensure we're not on a detached head
-          sh "git checkout develop"
-          sh "git config --global credential.helper store"
-
-          sh "jx step git credentials"
-          // so we can retrieve the version in later steps
-          sh "echo $VERSION > VERSION"
           sh "mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$VERSION"
 
           script {
@@ -105,9 +143,6 @@ pipeline {
     }
 
     stage('Promote to Environments') {
-      when {
-        branch 'develop'
-      }
       steps {
         container('maven') {
           script {
@@ -150,7 +185,22 @@ pipeline {
             }
 
             retry(5) {
-              sh 'make updatebot/push-version'
+              sh '''
+                  updatebot push-version --dry --kind maven \
+                  org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $VERSIOM \
+                  org.activiti.cloud.audit:activiti-cloud-audit-dependencies $VERSIOM \
+                  org.activiti.cloud.api:activiti-cloud-api-dependencies $VERSIOM \
+                  org.activiti.cloud.build:activiti-cloud-parent $VERSIOM \
+                  org.activiti.cloud.build:activiti-cloud-dependencies-parent $VERSIOM\
+                  org.activiti.cloud.connector:activiti-cloud-connectors-dependencies $VERSIOM \
+                  org.activiti.cloud.messages:activiti-cloud-messages-dependencies $VERSIOM \
+                  org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $VERSIOM \
+                  org.activiti.cloud.notifications.graphql:activiti-cloud-notifications-graphql-dependencies $VERSIOM \
+                  org.activiti.cloud.query:activiti-cloud-query-dependencies $VERSIOM \
+                  org.activiti.cloud.rb:activiti-cloud-runtime-bundle-dependencies $VERSIOM \
+                  org.activiti.cloud.common:activiti-cloud-service-common-dependencies $VERSIOM
+                  '''
+//              sh 'make updatebot/push-version'
             }
           }
         }
@@ -158,9 +208,6 @@ pipeline {
     }
 
     stage('Build Release for acceptance test') {
-      when {
-        branch 'develop'
-      }
       steps {
         container('maven') {
           dir("activiti-cloud-acceptance-scenarios") {
@@ -173,41 +220,32 @@ pipeline {
         }
       }
     }
+
     stage('Build And Deploy Helm Chart') {
       steps {
         container('maven') {
           sh "updatebot --dry push-version --kind helm activiti-cloud-dependencies $VERSION $ACTIVITI_CLOUD_FULL_CHART_VERSIONS"
-          sh """echo "-------------------------------------" """
-          sh """cd  .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example/ && \\
-                    rm -rf requirements.lock && \\
-                    rm -rf charts && \\
-                    rm -rf *.tgz && \\
-                    helm init --client-only && \\
-                    helm repo add activiti-cloud-helm-charts https://activiti.github.io/activiti-cloud-helm-charts/ && \\
-                    helm repo add alfresco https://kubernetes-charts.alfresco.com/stable\t&& \\
-                    helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator && \\
-                    helm dependency build && \\
-                    helm lint && \\
+          sh """cd  .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example/ && \
+                    rm -rf requirements.lock && \
+                    rm -rf charts && \
+                    rm -rf *.tgz && \
+                    helm init --client-only && \
+                    helm repo add activiti-cloud-helm-charts https://activiti.github.io/activiti-cloud-helm-charts/ && \
+                    helm repo add alfresco https://kubernetes-charts.alfresco.com/stable\t&& \
+                    helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator && \
+                    helm dependency build && \
+                    helm lint && \
                     helm package . """
           sh """echo "-------------------------------------" """
-          sh """cd  .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example/ && \\
-            helm upgrade $PREVIEW_NAMESPACE . \\
-            --install \\
-            --set global.gateway.domain=$GLOBAL_GATEWAY_DOMAIN \\
-            --namespace $PREVIEW_NAMESPACE \\
-            --debug \\
+          sh """cd  .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example/ && \
+            helm upgrade $PREVIEW_NAMESPACE . \
+            --install \
+            --set global.gateway.domain=$GLOBAL_GATEWAY_DOMAIN \
+            --namespace $PREVIEW_NAMESPACE \
+            --debug \
             --wait """
           sh """echo "-------------------------------------" """
           sh "sleep 30"
-        }
-      }
-    }
-    stage("Build Acceptance Scenarios") {
-      steps {
-        container('maven') {
-          dir("activiti-cloud-acceptance-scenarios") {
-            sh "mvn clean install -DskipTests"
-          }
         }
       }
     }
@@ -225,9 +263,9 @@ pipeline {
           post {
             failure {
               slackSend(
-//                channel: "#activiti-community-builds",
-//                color: "danger",
-//                message: "FAILED: Modeling Acceptance Tests: $BUILD_URL"
+                channel: "#activiti-community-builds",
+                color: "danger",
+                message: "FAILED: Activiti Application :: Modeling Acceptance Tests: $BUILD_URL"
               )
             }
           }
@@ -243,9 +281,9 @@ pipeline {
           post {
             failure {
               slackSend(
-//              channel: "#activiti-community-builds",
-//                color: "danger",
-//                message: "FAILED: Runtime Acceptance Tests: $BUILD_URL"
+                channel: "#activiti-community-builds",
+                color: "danger",
+                message: "FAILED: Activiti Application :: Runtime Acceptance Tests: $BUILD_URL"
               )
             }
           }
@@ -254,75 +292,40 @@ pipeline {
       post {
         success {
           slackSend(
-//            channel: "#activiti-community-builds",
-//            color: "good",
-//            message: "SUCCESSFUL: Activiti Cloud Dependendencies Acceptance Tests: $BUILD_URL"
+            channel: "#activiti-community-builds",
+            color: "good",
+            message: "SUCCESSFUL: Activiti Application Acceptance Tests: $BUILD_URL"
           )
         }
       }
     }
 
-
-    stage('Promote to Environments apps') {
-      when {
-        branch 'UNDEFINED'
-      }
-      steps {
-        container('maven') {
-          script {
-            def charts = ["activiti-cloud-query/charts/activiti-cloud-query",
-                          "example-runtime-bundle/charts/runtime-bundle",
-                          "example-cloud-connector/charts/activiti-cloud-connector"]
-
-            for (chart in charts) {
-              sh "echo working on::: $chart"
-              dir("$chart") {
-                // it is failing looks like a bug in JX
-                // sh 'jx step changelog --version v$VERSION'
-                def name = chart.substring(chart.lastIndexOf('/') + 1)
-
-                // release the helm chart
-                retry(5) {
-                  sh 'make github'
-                }
-                sh 'sleep 10'
-                retry(5) {
-                  sh '''
-                    updatebot push-version --kind maven org.activiti.cloud.dependencies:activiti-cloud-dependencies $VERSION \
-                      org.activiti.cloud.rb:activiti-cloud-runtime-bundle-dependencies  $VERSION \
-                      org.activiti.cloud.connector:activiti-cloud-connectors-dependencies $VERSION \
-                      org.activiti.cloud.query:activiti-cloud-query-dependencies $VERSION \
-                      org.activiti.cloud.notifications.graphql:activiti-cloud-notifications-graphql-dependencies $VERSION  \
-                      org.activiti.cloud.audit:activiti-cloud-audit-dependencies $VERSION \
-                      org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $VERSION \
-                      org.activiti.cloud.messages:activiti-cloud-messages-dependencies $VERSION \
-                      --merge false
-
-                    updatebot push-version --kind helm activiti-cloud-dependencies $VERSION \
-                        runtime-bundle $VERSION \
-                        activiti-cloud-connector $VERSION \
-                        activiti-cloud-query $VERSION  \
-                        activiti-cloud-modeling $VERSION
-
-                    '''
-//                    updatebot push-version --kind make ACTIVITI_CLOUD_ACCEPTANCE_SCENARIOUS_VERSION $(ACTIVITI_CLOUD_ACCEPTANCE_SCENARIOUS_VERSION)
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+//    stage('Publish Helm Release') {
+//      when {
+//        tag "$RELEASE_TAG_REGEX"
+//      }
+//      steps {
+//        container('maven') {
+//          sh "make github"
+//          sh "make tag"
+//        }
+//      }
+//      post {
+//        success {
+//          slackSend(channel: "#activiti-community-builds", message: "Activiti Application :: New Helm Chart verison $TAG_NAME released.", sendAsText: true)
+//        }
+//      }
+//    }
   }
 
   post {
-//    failure {
-//      slackSend(
-//             channel: "#activiti-community-builds",
-//             color: "danger",
-//             message: "$BUILD_URL"
-//      )
-//    }
+    failure {
+      slackSend(
+        channel: "#activiti-community-builds",
+        color: "danger",
+        message: "$BUILD_URL"
+      )
+    }
     always {
       delete_deployment()
       cleanWs()
@@ -346,5 +349,13 @@ def jx_release_version() {
 def maven_project_version() {
   container('maven') {
     return sh(script: "echo \$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout -f pom.xml)", returnStdout: true).trim()
+  }
+}
+
+def hel_version() {
+
+  container('maven') {
+    return sh(script: "echo cat VERSION |rev|sed 's/\\./-/'|rev", returnStdout: true).trim()
+
   }
 }
