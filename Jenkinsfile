@@ -99,6 +99,9 @@ pipeline {
     }
 
     stage('Build Releases for apps') {
+      environment {
+        VERSION = version()
+      }
       steps {
         container('maven') {
           // ensure we're not on a detached head
@@ -143,6 +146,9 @@ pipeline {
     }
 
     stage('Promote to Environments') {
+      environment {
+        VERSION = version()
+      }
       steps {
         container('maven') {
           script {
@@ -189,6 +195,9 @@ pipeline {
     }
 
     stage('Build Release for acceptance test') {
+      environment {
+        VERSION = version()
+      }
       steps {
         container('maven') {
           dir("activiti-cloud-acceptance-scenarios") {
@@ -203,6 +212,9 @@ pipeline {
     }
 
     stage('Build And Deploy Helm Chart') {
+      environment {
+        VERSION = version()
+      }
       steps {
         container('maven') {
           sh "updatebot --dry push-version --kind helm activiti-cloud-dependencies $VERSION $ACTIVITI_CLOUD_FULL_CHART_VERSIONS"
@@ -232,6 +244,9 @@ pipeline {
     }
 
     stage("Run Acceptance Scenarios") {
+      environment {
+        VERSION = version()
+      }
       parallel {
         stage("Modeling Acceptance Tests") {
           steps {
@@ -282,6 +297,9 @@ pipeline {
     }
 
     stage('Publish Helm Release') {
+      environment {
+        VERSION = version()
+      }
       when {
         anyOf {
           tag "$RELEASE_TAG_REGEX";
@@ -356,5 +374,13 @@ def hel_version() {
   container('maven') {
     return sh(script: "echo cat VERSION |rev|sed 's/\\./-/'|rev", returnStdout: true).trim()
 
+  }
+
+
+}
+
+def version() {
+  container('maven') {
+    return sh( script: "echo \$(cat VERSION)", returnStdout: true).trim()
   }
 }
