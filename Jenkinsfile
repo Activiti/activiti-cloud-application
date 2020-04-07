@@ -99,6 +99,13 @@ pipeline {
     }
 
     stage('Build Releases for apps') {
+      when {
+        anyOf {
+          tag "$RELEASE_TAG_REGEX";
+          branch "$RELEASE_BRANCH";
+        }
+      }
+
       environment {
         VERSION = version()
       }
@@ -146,6 +153,13 @@ pipeline {
     }
 
     stage('Promote to Environments') {
+      when {
+        anyOf {
+          tag "$RELEASE_TAG_REGEX";
+          branch "$RELEASE_BRANCH";
+        }
+      }
+
       environment {
         VERSION = version()
       }
@@ -212,6 +226,13 @@ pipeline {
     }
 
     stage('Build And Deploy Helm Chart') {
+      when {
+        anyOf {
+          tag "$RELEASE_TAG_REGEX";
+          branch "$RELEASE_BRANCH";
+        }
+      }
+
       environment {
         VERSION = version()
       }
@@ -244,6 +265,13 @@ pipeline {
     }
 
     stage("Run Acceptance Scenarios") {
+      when {
+        anyOf {
+          tag "$RELEASE_TAG_REGEX";
+          branch "$RELEASE_BRANCH";
+        }
+      }
+
       environment {
         VERSION = version()
       }
@@ -297,14 +325,14 @@ pipeline {
     }
 
     stage('Publish Helm Release') {
-      environment {
-        VERSION = version()
-      }
       when {
         anyOf {
           tag "$RELEASE_TAG_REGEX";
           branch "$RELEASE_BRANCH";
         }
+      }
+      environment {
+        VERSION = version()
       }
       steps {
         container('maven') {
@@ -381,6 +409,6 @@ def hel_version() {
 
 def version() {
   container('maven') {
-    return sh( script: "echo \$(cat VERSION)", returnStdout: true).trim()
+    return sh(script: "echo \$(cat VERSION)", returnStdout: true).trim()
   }
 }
