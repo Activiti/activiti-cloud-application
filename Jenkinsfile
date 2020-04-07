@@ -18,7 +18,7 @@ pipeline {
     REALM = "activiti"
     APP_NAME = 'activiti-cloud-application'
     JX_VERSION = jx_release_version()
-    VERSION = "$JX_VERSION-TEST"
+    VERSION = "$JX_VERSION"
     CHARTMUSEUM_CREDS = credentials('jenkins-x-chartmuseum')
     GITHUB_CHARTS_REPO = "https://github.com/Activiti/activiti-cloud-helm-charts.git"
     GITHUB_HELM_REPO_URL = "https://activiti.github.io/activiti-cloud-helm-charts/"
@@ -98,7 +98,7 @@ pipeline {
       }
     }
 
-    stage('Build Releass for apps') {
+    stage('Build Releases for apps') {
       steps {
         container('maven') {
           // ensure we're not on a detached head
@@ -292,7 +292,7 @@ pipeline {
         container('maven') {
           retry(5) {
             sh '''
-                  updatebot push-version --dry --kind maven \
+                  updatebot push-version --kind maven \
                   org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $VERSION \
                   org.activiti.cloud.audit:activiti-cloud-audit-dependencies $VERSION \
                   org.activiti.cloud.api:activiti-cloud-api-dependencies $VERSION \
@@ -306,7 +306,6 @@ pipeline {
                   org.activiti.cloud.rb:activiti-cloud-runtime-bundle-dependencies $VERSION \
                   org.activiti.cloud.common:activiti-cloud-service-common-dependencies $VERSION
                   '''
-//              sh 'make updatebot/push-version'
           }
         }
       }
