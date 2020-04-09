@@ -1,38 +1,41 @@
 import: Activiti/activiti-scripts:.travis.java.yml@master
 
-stages:
-  - name: example-runtime-bundle
-  - name: activiti-cloud-query
-  - name: example-cloud-connector
-  - name: activiti-cloud-acceptance-scenarios
-  - name: activiti-cloud-dependencies
-
+#stages:
+#   - name: example-runtime-bundle
+#   - name: activiti-cloud-query
+#   - name: example-cloud-connector
+#   - name: activiti-cloud-acceptance-scenarios
+#   - name: activiti-cloud-dependencies 
+# - name: build
+# - name: tag
 
 jobs:
   include:
-    - name: example-runtime-bundle
-      stage: example-runtime-bundle
-      script:
-        - travis_wait 120 ${MAVEN_CMD} -f example-runtime-bundle/pom.xml
+    - name: build jars
+      stage: build
+      script: travis_wait 120 ${MAVEN_CMD} -f example-runtime-bundle/pom.xml
+      script: travis_wait 120 ${MAVEN_CMD} -f activiti-cloud-query/pom.xml
+      script: travis_wait 120 ${MAVEN_CMD} -f example-cloud-connector/pom.xml
+      script: travis_wait 120 ${MAVEN_CMD} -f activiti-cloud-acceptance-scenarios/pom.xml 
+      script: travis_wait 120 ${MAVEN_CMD} -f activiti-cloud-dependencies/pom.xml
+      
+      script: |
+        echo docker build --label "GIT_COMMIT=$TRAVIS_COMMIT" --label "GIT_BRANCH=$BRANCH" --tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_REPOSITORY:$(cat VERSION)" .   
+        echo  docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_REPOSITORY/$TRAVIS_BUILD_STAGE_NAME:$(cat ../VERSION)"
+        
+ 
 
-    - name: activiti-cloud-query
-      stage: activiti-cloud-query
-      script:
-        - travis_wait 120 ${MAVEN_CMD} -f activiti-cloud-query/pom.xml
-
-    - name: example-cloud-connector
-      stage: example-cloud-connector
-      script:
-        - travis_wait 120 ${MAVEN_CMD} -f example-cloud-connector/pom.xml
-
-    - name: activiti-cloud-acceptance-scenarios
-      stage: activiti-cloud-acceptance-scenarios
-      script:
-        - travis_wait 120 ${MAVEN_CMD} -DskipTests -f activiti-cloud-acceptance-scenarios/pom.xml
-
-    - name: activiti-cloud-dependencies
-      stage: activiti-cloud-dependencies
-      script:
-        - travis_wait 120 ${MAVEN_CMD} -f activiti-cloud-dependencies/pom.xml
-
-
+    - name: Create a tag
+      stage: tag
+      script: |
+        mvn versions:set -DnewVersion=$(cat VERSION)
+        git add --all
+        git commit -m "Release $(cat VERSION)" --allow-empty
+        git tag -fa v$(cat VERSION) -m "Release version $(cat VERSION)"|| travis_terminate 1;
+        git push -f -q https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git v$(cat VERSION)|| travis_terminate 1;
+    
+before_install:
+  - echo -e "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
+  - source ./build.properties
+  - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin "$DOCKER_REGISTRY"
+  - curl -sSL https://download.sourceclear.com/ci.sh | CACHE_DIR=${HOME}/sourceclear 
