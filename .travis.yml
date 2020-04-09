@@ -1,5 +1,33 @@
 import: Activiti/activiti-scripts:.travis.java.yml@master
-
+env:
+  global:
+    - ORG='activiti'
+    - APP_NAME='activiti-cloud-dependencies'
+    - PREVIEW_NAMESPACE="example-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER";  
+    - GLOBAL_GATEWAY_DOMAIN="35.228.195.195.nip.io"
+    - REALM="activiti"
+    - GATEWAY_HOST="gateway.$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN"
+    - SSO_HOST="identity.$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN"
+    - GITHUB_CHARTS_REPO="https://github.com/Activiti/activiti-cloud-helm-charts.git"
+    - RELEASE_BRANCH="develop"
+    - RELEASE_TAG_REGEX="*M*"
+    - HELM_VERSION=2.12.3
+    - HELM_REPO_BASE_URL=https://kubernetes-charts.alfresco.com
+    - HELM_REPO=stable
+    - KUBERNETES_VERSION=1.14.8
+    - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-120}
+    
+before_script: |
+  echo -e "https://almerico:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
+   
+  curl -s https://kubernetes-helm.storage.googleapis.com/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
+  sudo mv linux-amd64/helm /usr/local/bin/
+  curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBERNETES_VERSION}/bin/linux/amd64/kubectl &&
+  chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+  kubectl config set-cluster default-cluster --server=${K8S_API_URL} &&
+  kubectl config set-credentials default-admin --token=${K8S_API_TOKEN} &&
+  kubectl config set-context default-system --cluster=default-cluster --user=default-admin &&
+  kubectl config use-context default-system
 
 
 jobs:
@@ -13,15 +41,33 @@ jobs:
       script: travis_wait 120 ${MAVEN_CMD} -f activiti-cloud-dependencies/pom.xml
       
       script: |
-        echo docker build --label "GIT_COMMIT=$TRAVIS_COMMIT" --label "GIT_BRANCH=$BRANCH" --tag "$DOCKER_REGISTRY/$DOCKER_IMAGE_REPOSITORY:$(cat VERSION)" .   
-        echo  docker push "$DOCKER_REGISTRY/$DOCKER_IMAGE_REPOSITORY/$TRAVIS_BUILD_STAGE_NAME:$(cat ../VERSION)"
+        docker build -f activiti-cloud-query/Dockerfile -t docker.io/activiti/activiti-cloud-query:$(cat ../VERSION) activiti-cloud-query
+        docker build -f example-cloud-connector/Dockerfile -t docker.io/activiti/example-cloud-connector:$(cat ../VERSION) example-cloud-connector
+        docker build -f example-runtime-bundle/Dockerfile -t docker.io/activiti/example-runtime-bundle:$(cat ../VERSION) example-runtime-bundle
         
- 
+        docker push docker.io/activiti/activiti-cloud-query:$(cat ../VERSION)
+        docker push docker.io/activiti/example-runtime-bundle:$(cat ../VERSION)
+        docker push docker.io/activiti/activiti-cloud-query:$(cat ../VERSION)
+        
+        cd acrtiviti-cloud-dependencies
+        cat VERSION
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off -DnewVersion=$(cat VERSION) 
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q -Droot.log.level=off clean install
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} make updatebot/push-version-dry
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} make prepare-helm-chart
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} make run-helm-chart
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} make activiti-cloud-acceptance-scenarios
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} make modeling-acceptance-tests
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} make runtime-acceptance-tests
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} make github
+        make delete|| travis_terminate 1;
 
+        
+        
     - name: Create a tag
       stage: tag
       script: |
-        mvn versions:set -DnewVersion=$(cat VERSION)
+        mvn versions:set -q -DnewVersion=$(cat VERSION)
         git add --all
         git commit -m "Release $(cat VERSION)" --allow-empty
         git tag -fa v$(cat VERSION) -m "Release version $(cat VERSION)"|| travis_terminate 1;
