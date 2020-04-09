@@ -1,13 +1,6 @@
 import: Activiti/activiti-scripts:.travis.java.yml@master
 
-#stages:
-#   - name: example-runtime-bundle
-#   - name: activiti-cloud-query
-#   - name: example-cloud-connector
-#   - name: activiti-cloud-acceptance-scenarios
-#   - name: activiti-cloud-dependencies 
-# - name: build
-# - name: tag
+
 
 jobs:
   include:
