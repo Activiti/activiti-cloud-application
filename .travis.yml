@@ -29,7 +29,6 @@ before_script: |
   kubectl config set-context default-system --cluster=default-cluster --user=default-admin &&
   kubectl config use-context default-system
 
-
 jobs:
   include:
     - name: build jars
@@ -50,10 +49,9 @@ jobs:
         docker push docker.io/activiti/activiti-cloud-query:$(cat ../VERSION)
         
         cd acrtiviti-cloud-dependencies
-        cat VERSION
         travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off -DnewVersion=$(cat VERSION) 
         travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q -Droot.log.level=off clean install
-        travis_wait ${TRAVIS_WAIT_TIMEOUT} make updatebot/push-version-dry
+        export ACTIVITI_CLOUD_FULL_CHART_VERSIONS=$(cat ../VERSION) && make updatebot/push-version-dry
         travis_wait ${TRAVIS_WAIT_TIMEOUT} make prepare-helm-chart
         travis_wait ${TRAVIS_WAIT_TIMEOUT} make run-helm-chart
         travis_wait ${TRAVIS_WAIT_TIMEOUT} make activiti-cloud-acceptance-scenarios
@@ -61,9 +59,7 @@ jobs:
         travis_wait ${TRAVIS_WAIT_TIMEOUT} make runtime-acceptance-tests
         travis_wait ${TRAVIS_WAIT_TIMEOUT} make github
         make delete|| travis_terminate 1;
-
-        
-        
+  
     - name: Create a tag
       stage: tag
       script: |
