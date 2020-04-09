@@ -36,6 +36,6 @@ jobs:
     
 before_install:
   - echo -e "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
-  - source ./build.properties
+#  - source ./build.properties
   - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin "$DOCKER_REGISTRY"
   - curl -sSL https://download.sourceclear.com/ci.sh | CACHE_DIR=${HOME}/sourceclear 
