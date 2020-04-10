@@ -33,7 +33,7 @@ jobs:
   include:
     - name: build jars
       stage: build
-      script: echo VERSION=${VERSION}
+      script: echo almer VERSION=${VERSION}
       script: travis_wait 120 ${MAVEN_CMD} -q -f example-runtime-bundle/pom.xml
       script: travis_wait 120 ${MAVEN_CMD} -q -f activiti-cloud-query/pom.xml
       script: travis_wait 120 ${MAVEN_CMD} -q -f example-cloud-connector/pom.xml
@@ -41,9 +41,9 @@ jobs:
       script: travis_wait 120 ${MAVEN_CMD} -q -f activiti-cloud-dependencies/pom.xml
       
       script: |
-        docker build -f activiti-cloud-query/Dockerfile -t docker.io/activiti/activiti-cloud-query:$(cat VERSION) activiti-cloud-query
-        docker build -f example-cloud-connector/Dockerfile -t docker.io/activiti/example-cloud-connector:$(cat VERSION) example-cloud-connector
-        docker build -f example-runtime-bundle/Dockerfile -t docker.io/activiti/example-runtime-bundle:$(cat VERSION) example-runtime-bundle
+        docker build -f activiti-cloud-query/Dockerfile -q -t docker.io/activiti/activiti-cloud-query:$(cat VERSION) activiti-cloud-query
+        docker build -f example-cloud-connector/Dockerfile -q -t docker.io/activiti/example-cloud-connector:$(cat VERSION) example-cloud-connector
+        docker build -f example-runtime-bundle/Dockerfile -q -t docker.io/activiti/example-runtime-bundle:$(cat VERSION) example-runtime-bundle
         
         docker push docker.io/activiti/activiti-cloud-query:$(cat VERSION)
         docker push docker.io/activiti/example-runtime-bundle:$(cat VERSION)
