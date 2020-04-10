@@ -29,6 +29,8 @@ before_script: |
   kubectl config set-context default-system --cluster=default-cluster --user=default-admin &&
   kubectl config use-context default-system
 
+install: true
+
 jobs: 
   include:
     - name: build jars
