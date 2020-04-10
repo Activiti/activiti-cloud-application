@@ -8,6 +8,7 @@ ARTIFACT_ID := $(shell mvn help:evaluate -Dexpression=project.artifactId -q -Dfo
 RELEASE_ARTIFACT := $(GROUP_ID):$(ARTIFACT_ID)
 
 ACTIVITI_CLOUD_FULL_CHART_VERSIONS := $(shell cat VERSION)
+charts := "activiti-cloud-query/charts/activiti-cloud-query" "example-runtime-bundle/charts/runtime-bundle" "example-cloud-connector/charts/activiti-cloud-connector" "activiti-cloud-modeling/charts/activiti-cloud-modeling/"
 
 updatebot/push:
 	@echo doing updatebot push $(RELEASE_VERSION)
@@ -68,5 +69,18 @@ run-helm-chart:
             		--namespace ${PREVIEW_NAMESPACE} \
             		--debug \
             		--wait
-
-
+update-version-in-example-charts:
+	@for chart in $(charts) ; do \
+		cd $$chart ; \
+		sed -i -e "s/version:.*/version: $$VERSION/" Chart.yaml; \
+		sed -i -e "s/tag: .*/tag: $$VERSION/" values.yaml ;\
+		cd - ; \
+	done 
+create-helm-charts-release-and-upload:
+	@for chart in $(charts) ; do \
+		cd $$chart ; \
+		make build; \
+		make release; \
+		make github; \
+		cd - ; \
+	done 
