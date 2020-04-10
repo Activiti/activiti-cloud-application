@@ -40,9 +40,14 @@ jobs:
       script: travis_wait 120 ${MAVEN_CMD} -q -f activiti-cloud-query/pom.xml
       script: travis_wait 120 ${MAVEN_CMD} -q -f example-cloud-connector/pom.xml
       script: travis_wait 120 ${MAVEN_CMD} -q -f activiti-cloud-acceptance-scenarios/pom.xml 
-      script: travis_wait 120 ${MAVEN_CMD} -q -f activiti-cloud-dependencies/pom.xml
       
       script: |
+        echo almer VERSION=${VERSION}
+        travis_wait 120 ${MAVEN_CMD} -q -f example-runtime-bundle/pom.xml
+        travis_wait 120 ${MAVEN_CMD} -q -f activiti-cloud-query/pom.xml
+        travis_wait 120 ${MAVEN_CMD} -q -f example-cloud-connector/pom.xml
+        travis_wait 120 ${MAVEN_CMD} -q -f activiti-cloud-acceptance-scenarios/pom.xml 
+        travis_wait 120 ${MAVEN_CMD} -q -f activiti-cloud-dependencies/pom.xml
         docker build -f activiti-cloud-query/Dockerfile -q -t docker.io/activiti/activiti-cloud-query:$(cat VERSION) activiti-cloud-query
         docker build -f example-cloud-connector/Dockerfile -q -t docker.io/activiti/example-cloud-connector:$(cat VERSION) example-cloud-connector
         docker build -f example-runtime-bundle/Dockerfile -q -t docker.io/activiti/example-runtime-bundle:$(cat VERSION) example-runtime-bundle
