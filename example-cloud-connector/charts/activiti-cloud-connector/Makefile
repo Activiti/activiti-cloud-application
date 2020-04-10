@@ -60,3 +60,7 @@ tag:
 	git push origin v$(VERSION)
 
 
+
+	updatebot -d ../../ push-version --kind maven $(MAVEN_VERSIONS); 
+
+	
