@@ -48,9 +48,12 @@ jobs:
         docker push docker.io/activiti/example-runtime-bundle:$(cat ../VERSION)
         docker push docker.io/activiti/activiti-cloud-query:$(cat ../VERSION)
         
-        cd acrtiviti-cloud-dependencies
+        make update-version-in-example-charts
+        make create-helm-charts-release-and-upload
+        
+        cd activiti-cloud-dependencies
         travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off -DnewVersion=$(cat VERSION) 
-        travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q -Droot.log.level=off clean install
+        
         export ACTIVITI_CLOUD_FULL_CHART_VERSIONS=$(cat ../VERSION) && make updatebot/push-version-dry
         travis_wait ${TRAVIS_WAIT_TIMEOUT} make prepare-helm-chart
         travis_wait ${TRAVIS_WAIT_TIMEOUT} make run-helm-chart
