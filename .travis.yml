@@ -34,11 +34,11 @@ jobs:
     - name: build jars
       stage: build
       script: echo VERSION=${VERSION}
-      script: travis_wait 120 ${MAVEN_CMD} -f example-runtime-bundle/pom.xml
-      script: travis_wait 120 ${MAVEN_CMD} -f activiti-cloud-query/pom.xml
-      script: travis_wait 120 ${MAVEN_CMD} -f example-cloud-connector/pom.xml
-      script: travis_wait 120 ${MAVEN_CMD} -f activiti-cloud-acceptance-scenarios/pom.xml 
-      script: travis_wait 120 ${MAVEN_CMD} -f activiti-cloud-dependencies/pom.xml
+      script: travis_wait 120 ${MAVEN_CMD} -q -f example-runtime-bundle/pom.xml
+      script: travis_wait 120 ${MAVEN_CMD} -q -f activiti-cloud-query/pom.xml
+      script: travis_wait 120 ${MAVEN_CMD} -q -f example-cloud-connector/pom.xml
+      script: travis_wait 120 ${MAVEN_CMD} -q -f activiti-cloud-acceptance-scenarios/pom.xml 
+      script: travis_wait 120 ${MAVEN_CMD} -q -f activiti-cloud-dependencies/pom.xml
       
       script: |
         docker build -f activiti-cloud-query/Dockerfile -t docker.io/activiti/activiti-cloud-query:$(cat VERSION) activiti-cloud-query
