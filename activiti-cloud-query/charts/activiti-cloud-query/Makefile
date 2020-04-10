@@ -71,10 +71,4 @@ updatebot/push-version:
 	@echo Resolving push versions for artifacts........
 	$(eval ACTIVITI_CLOUD_QUERY_VERSION=$(shell mvn help:evaluate -Dexpression=activiti-cloud.version -q -DforceStdout -f ../../pom.xml))
 	$(eval MAVEN_VERSIONS=org.activiti.cloud.examples:activiti-cloud-query $(RELEASE_VERSION) org.activiti.cloud.query:activiti-cloud-query-dependencies $(ACTIVITI_CLOUD_QUERY_VERSION))
-	
-	@echo Doing updatebot push-version.....
-	for number in 1 2; do \
-		updatebot -d ../../ push-version --kind maven $(MAVEN_VERSIONS); \
-		rm -rf ../../.updatebot-repos/; \
-		sleep $$[ ( $$RANDOM % 10 )  + 1 ]s; \
-	done
+	updatebot -d ../../ push-version --kind maven $(MAVEN_VERSIONS);
