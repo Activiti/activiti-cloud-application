@@ -16,7 +16,7 @@ build: clean
 	helm repo add activiti-cloud-helm-charts https://activiti.github.io/activiti-cloud-helm-charts/
 	helm dependency build
 	helm lint
-	helm install . --name ${NAME} --debug --dry-run
+	helm install . --name ${NAME}  --dry-run
 
 install:  build
 	helm install . --name ${NAME}
@@ -63,9 +63,5 @@ updatebot/push-version:
 	$(eval MODELING_DEPENDENCIES_VERSION=$(shell mvn help:evaluate -Dexpression=activiti-cloud-modeling-dependencies.version -q -DforceStdout -f ../../pom.xml))
 	$(eval MAVEN_VERSIONS=org.activiti.cloud.examples:activiti-cloud-modeling $(RELEASE_VERSION) org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $(MODELING_DEPENDENCIES_VERSION))
 	
-	@echo Doing updatebot push-version.....
-	for number in 1 2; do \
-		updatebot -d ../../ push-version --kind maven $(MAVEN_VERSIONS); \
-		rm -rf ../../.updatebot-repos/; \
-		sleep $$[ ( $$RANDOM % 10 )  + 1 ]s; \
-	done	
+	updatebot -d ../../ push-version --kind maven $(MAVEN_VERSIONS);
+
