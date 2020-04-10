@@ -16,7 +16,6 @@ env:
     - HELM_REPO=stable
     - KUBERNETES_VERSION=1.14.8
     - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-120}
-    - VERSION=$(cat VERSION)
     
 before_script: |
   echo -e "https://almerico:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
