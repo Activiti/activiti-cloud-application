@@ -8,7 +8,7 @@ env:
     - REALM="activiti"
     - GATEWAY_HOST="gateway.$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN"
     - SSO_HOST="identity.$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN"
-    - GITHUB_CHARTS_REPO="https://github.com/Activiti/activiti-cloud-helm-charts.git"
+    - GITHUB_CHARTS_REPO="https://${GITHUB_TOKEN}github.com/Activiti/activiti-cloud-helm-charts.git"
     - RELEASE_BRANCH="develop"
     - RELEASE_TAG_REGEX="*M*"
     - HELM_VERSION=2.12.3
