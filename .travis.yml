@@ -38,13 +38,13 @@ jobs:
       script: echo almer VERSION=${VERSION}
       script: |
         echo almer VERSION=${VERSION}
-        travis_wait 120 ${MAVEN_CMD}  -f example-runtime-bundle/pom.xml
-        travis_wait 120 ${MAVEN_CMD}  -f activiti-cloud-query/pom.xml
-        travis_wait 120 ${MAVEN_CMD}  -f example-cloud-connector/pom.xml
-        travis_wait 120 ${MAVEN_CMD}  -f activiti-cloud-modeling/pom.xml
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD}  -f example-runtime-bundle/pom.xml
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD}  -f activiti-cloud-query/pom.xml
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD}  -f example-cloud-connector/pom.xml
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD}  -f activiti-cloud-modeling/pom.xml
         
-        travis_wait 120 ${MAVEN_CMD} -DskipITs -DskipTests -f  activiti-cloud-acceptance-scenarios/pom.xml 
-        travis_wait 120 ${MAVEN_CMD}  -f activiti-cloud-dependencies/pom.xml
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -DskipITs -DskipTests -f  activiti-cloud-acceptance-scenarios/pom.xml 
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD}  -f activiti-cloud-dependencies/pom.xml
         docker build -f activiti-cloud-query/Dockerfile -q -t docker.io/activiti/activiti-cloud-query:$(cat VERSION) activiti-cloud-query
         docker build -f example-cloud-connector/Dockerfile -q -t docker.io/activiti/example-cloud-connector:$(cat VERSION) example-cloud-connector
         docker build -f example-runtime-bundle/Dockerfile -q -t docker.io/activiti/example-runtime-bundle:$(cat VERSION) example-runtime-bundle
