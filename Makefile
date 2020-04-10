@@ -8,6 +8,7 @@ ARTIFACT_ID := $(shell mvn help:evaluate -Dexpression=project.artifactId -q -Dfo
 RELEASE_ARTIFACT := $(GROUP_ID):$(ARTIFACT_ID)
 
 ACTIVITI_CLOUD_FULL_CHART_VERSIONS := $(shell cat VERSION)
+charts := "activiti-cloud-query/charts/activiti-cloud-query" "example-runtime-bundle/charts/runtime-bundle" "example-cloud-connector/charts/activiti-cloud-connector"
 
 updatebot/push:
 	@echo doing updatebot push $(RELEASE_VERSION)
@@ -68,5 +69,12 @@ run-helm-chart:
             		--namespace ${PREVIEW_NAMESPACE} \
             		--debug \
             		--wait
-
+update-version-in-example-charts:
+	echo "traversing chart directories"
+	@for chart in $(charts) ; do \
+		cd $$chart ; \
+		sed -i -e "s/version:.*/version: $$VERSION/" Chart.yaml; \
+		sed -i -e "s/tag: .*/tag: $$VERSION/" values.yaml ;\
+		cd - ; \
+	done 
 
