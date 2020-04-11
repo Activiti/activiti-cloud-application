@@ -7,7 +7,9 @@ GROUP_ID := $(shell mvn help:evaluate -Dexpression=project.groupId -q -DforceStd
 ARTIFACT_ID := $(shell mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
 RELEASE_ARTIFACT := $(GROUP_ID):$(ARTIFACT_ID)
 
-ACTIVITI_CLOUD_FULL_CHART_VERSIONS := $(shell cat VERSION)
+ACTIVITI_CLOUD_FULL_CHART_VERSIONS := runtime-bundle $(VERSION) activiti-cloud-connector $(VERSION) \
+    activiti-cloud-query $(VERSION)  \
+    activiti-cloud-modeling $(VERSION)
 charts := "activiti-cloud-query/charts/activiti-cloud-query" "example-runtime-bundle/charts/runtime-bundle" "example-cloud-connector/charts/activiti-cloud-connector" "activiti-cloud-modeling/charts/activiti-cloud-modeling/"
 
 updatebot/push:
