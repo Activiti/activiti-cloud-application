@@ -35,7 +35,6 @@ jobs:
   include:
     - name: build jars
       stage: build
-      script: echo almer VERSION=${VERSION}
       script: |
         echo almer VERSION=${VERSION}
         travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD}  -f example-runtime-bundle/pom.xml
@@ -57,9 +56,9 @@ jobs:
         make create-helm-charts-release-and-upload
         
         cd activiti-cloud-dependencies
-        travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off -DnewVersion=$(cat ../VERSION) 
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off -DnewVersion=${VERSION} 
         
-        export ACTIVITI_CLOUD_FULL_CHART_VERSIONS=$(cat ../VERSION) && make updatebot/push-version-dry
+        export ACTIVITI_CLOUD_FULL_CHART_VERSIONS=${VERSION} && make updatebot/push-version-dry
         travis_wait ${TRAVIS_WAIT_TIMEOUT} make prepare-helm-chart
         travis_wait ${TRAVIS_WAIT_TIMEOUT} make run-helm-chart
         travis_wait ${TRAVIS_WAIT_TIMEOUT} make activiti-cloud-acceptance-scenarios
