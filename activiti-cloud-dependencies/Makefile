@@ -18,9 +18,9 @@ ACTIVITI_CLOUD_SERVICES_VERSIONS := org.activiti.cloud.rb:activiti-cloud-runtime
     org.activiti.cloud.audit:activiti-cloud-audit-dependencies $(ACTIVITI_CLOUD_VERSION_NUMBER) org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $(ACTIVITI_CLOUD_VERSION_NUMBER) \
     org.activiti.cloud.messages:activiti-cloud-messages-dependencies $(ACTIVITI_CLOUD_VERSION_NUMBER)
 
-ACTIVITI_CLOUD_FULL_CHART_VERSIONS := runtime-bundle $(ACTIVITI_CLOUD_RB_VERSION) activiti-cloud-connector $(ACTIVITI_CLOUD_CONNECTORS_VERSION) \
-    activiti-cloud-query $(ACTIVITI_CLOUD_QUERY_VERSION)  \
-    activiti-cloud-modeling $(ACTIVITI_CLOUD_MODELING_VERSION)
+ACTIVITI_CLOUD_FULL_CHART_VERSIONS := runtime-bundle $(VERSION) activiti-cloud-connector $(VERSION) \
+    activiti-cloud-query $(VERSION)  \
+    activiti-cloud-modeling $(VERSION)
 
 $(eval HELM_ACTIVITI_VERSION = $(shell cat VERSION |rev|sed 's/\./-/'|rev))
 
@@ -148,7 +148,6 @@ run-helm-chart:
             		--install \
             		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
             		--namespace ${PREVIEW_NAMESPACE} \
-            		--debug \
             		--wait
 
 delete:
