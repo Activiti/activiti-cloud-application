@@ -21,7 +21,6 @@ before_script: |
   echo -e "https://almerico:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
   export PREVIEW_NAMESPACE=echo "example-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER"|  tr '[:upper:]' '[:lower:]';
   
-  
   curl -s https://kubernetes-helm.storage.googleapis.com/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
   sudo mv linux-amd64/helm /usr/local/bin/
   curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBERNETES_VERSION}/bin/linux/amd64/kubectl &&
@@ -39,6 +38,7 @@ jobs:
       stage: build
       script: |
         echo almer VERSION=${VERSION}
+        echo almer  PREVIEW_NAMESPACE=${PREVIEW_NAMESPACE}
         travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD}  -f example-runtime-bundle/pom.xml
         travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD}  -f activiti-cloud-query/pom.xml
         travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD}  -f example-cloud-connector/pom.xml
