@@ -17,6 +17,7 @@ updatebot/push:
 	updatebot push --ref $(RELEASE_VERSION)
 
 updatebot/push-version-dry:
+	echo $(VESION)
 	#updatebot --dry push-version --kind maven org.activiti.cloud.dependencies:activiti-cloud-dependencies $(ACTIVITI_CLOUD_VERSION) $(ACTIVITI_CLOUD_SERVICES_VERSIONS)   --merge false
 	updatebot --dry push-version --kind helm activiti-cloud-dependencies $(RELEASE_VERSION) $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)
 	#updatebot --dry push-version --kind make ACTIVITI_CLOUD_ACCEPTANCE_SCENARIOUS_VERSION $(ACTIVITI_CLOUD_ACCEPTANCE_SCENARIOUS_VERSION)
