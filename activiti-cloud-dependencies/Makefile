@@ -5,7 +5,7 @@ ACTIVITI_CLOUD_MODELING_VERSION := $(shell grep -oPm1 "(?<=<activiti-cloud-model
 
 ACTIVITI_CLOUD_VERSION_NUMBER := $(shell grep -oPm1 "(?<=<activiti-cloud-build.version>)[^<]+" "pom.xml")
 
-PREVIEW_NAMESPACE := $(shell echo $(PREVIEW_NAMESPACE)|  tr '[:upper:]' '[:lower:]')
+#PREVIEW_NAMESPACE := $(shell echo $(PREVIEW_NAMESPACE)|  tr '[:upper:]' '[:lower:]')
 
 
 ACTIVITI_CLOUD_ACCEPTANCE_SCENARIOUS_VERSION := 7.1.273
