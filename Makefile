@@ -18,7 +18,6 @@ updatebot/push:
 	updatebot push --ref $(RELEASE_VERSION)
 
 updatebot/push-version-dry:
-	echo $(VESION)
 	updatebot --dry push-version --kind helm activiti-cloud-dependencies $(RELEASE_VERSION) $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)
 
 
