@@ -4,7 +4,7 @@ NAME := activiti-cloud-modeling
 ORG := $(or $(ORG),activiti)
 APP_NAME := $(or $(APP_NAME),$(NAME))
 OS := $(shell uname)
-RELEASE_VERSION := $(shell cat ../../VERSION)
+RELEASE_VERSION := $(or $(VERSION),$(shell cat ../../VERSION))
 RELEASE_ARTIFACT := $(or $(RELEASE_ARTIFACT),$(APP_NAME))
 
 GITHUB_CHARTS_REPO := $(or $(GITHUB_CHARTS_REPO),$(shell git config --get remote.origin.url))
