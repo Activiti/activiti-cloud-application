@@ -18,9 +18,9 @@ ACTIVITI_CLOUD_SERVICES_VERSIONS := org.activiti.cloud.rb:activiti-cloud-runtime
     org.activiti.cloud.audit:activiti-cloud-audit-dependencies $(ACTIVITI_CLOUD_VERSION_NUMBER) org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $(ACTIVITI_CLOUD_VERSION_NUMBER) \
     org.activiti.cloud.messages:activiti-cloud-messages-dependencies $(ACTIVITI_CLOUD_VERSION_NUMBER)
 
-ACTIVITI_CLOUD_FULL_CHART_VERSIONS := runtime-bundle $(HELM_ACTIVITI_VERSION) activiti-cloud-connector $(HELM_ACTIVITI_VERSION) \
-    activiti-cloud-query $(HELM_ACTIVITI_VERSION)  \
-    activiti-cloud-modeling $(HELM_ACTIVITI_VERSION)
+ACTIVITI_CLOUD_FULL_CHART_VERSIONS := runtime-bundle $(VERSION) activiti-cloud-connector $(VERSION) \
+    activiti-cloud-query $(VERSION)  \
+    activiti-cloud-modeling $(VERSION)
 
 
 
@@ -147,8 +147,7 @@ run-helm-chart:
             	helm upgrade ${PREVIEW_NAMESPACE} . \
             		--install \
             		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
-            		--namespace ${PREVIEW_NAMESPACE} \
-
+            		--namespace ${PREVIEW_NAMESPACE} 
 delete:
 	helm delete --purge ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
 
