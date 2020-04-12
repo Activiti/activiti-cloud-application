@@ -57,6 +57,7 @@ jobs:
         
         make create-helm-charts-release-and-upload
         
+        cp VERSION  activiti-cloud-dependencies/
         cd activiti-cloud-dependencies
         travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off -DnewVersion=${VERSION} 
         
