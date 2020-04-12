@@ -35,7 +35,7 @@ stages:
   - name: activiti-cloud-acceptance-scenarios
   - name: activiti-cloud-dependencies
 
-
+	
 jobs:
   include:
     - name: example-runtime-bundle
@@ -47,7 +47,7 @@ jobs:
       stage: activiti-cloud-query
       script:
         - travis_wait 120 ${MAVEN_CMD} -f activiti-cloud-query/pom.xml
-
+	- echo HUY
     - name: activiti-cloud-modeling
       stage: activiti-cloud-modeling
       script:
