@@ -3,11 +3,6 @@ env:
   global:
     - ORG='activiti'
     - APP_NAME='activiti-cloud-dependencies'
-   # - PREVIEW_NAMESPACE="example-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER";  
-    - GLOBAL_GATEWAY_DOMAIN="35.228.195.195.nip.io"
-    - REALM="activiti"
-    - GATEWAY_HOST="gateway.$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN"
-    - SSO_HOST="identity.$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN"
     - GITHUB_CHARTS_REPO="https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-helm-charts.git"
     - RELEASE_BRANCH="develop"
     - RELEASE_TAG_REGEX="*M*"
@@ -19,8 +14,6 @@ env:
     
 before_script: |
   echo -e "https://almerico:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
-  #export PREVIEW_NAMESPACE=echo "example-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER"|  tr '[:upper:]' '[:lower:]';
-  
   curl -s https://kubernetes-helm.storage.googleapis.com/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
   sudo mv linux-amd64/helm /usr/local/bin/
   curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBERNETES_VERSION}/bin/linux/amd64/kubectl &&
@@ -72,7 +65,7 @@ jobs:
         travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -pl 'modeling-acceptance-tests' serenity:aggregate -Droot.log.level=off -q clean verify
         travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -pl 'runtime-acceptance-tests' serenity:aggregate  -Droot.log.level=off -q clean verify
         cd -
-        
+      
         cd activiti-cloud-dependencies
         make delete|| travis_terminate 1;
         cd -
