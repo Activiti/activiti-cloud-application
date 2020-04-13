@@ -46,10 +46,10 @@ jobs:
         docker build -f example-runtime-bundle/Dockerfile -q -t docker.io/activiti/example-runtime-bundle:$(cat VERSION) example-runtime-bundle
         docker build -f activiti-cloud-modeling/Dockerfile -q -t docker.io/activiti/activiti-cloud-modeling:$(cat VERSION) activiti-cloud-modeling
         
-        docker push -q docker.io/activiti/activiti-cloud-query:$(cat VERSION)
-        docker push -q docker.io/activiti/example-runtime-bundle:$(cat VERSION)
-        docker push -q docker.io/activiti/activiti-cloud-connector:$(cat VERSION)
-        docker push -q docker.io/activiti/activiti-cloud-modeling:$(cat VERSION)
+        docker push docker.io/activiti/activiti-cloud-query:$(cat VERSION)
+        docker push docker.io/activiti/example-runtime-bundle:$(cat VERSION)
+        docker push docker.io/activiti/activiti-cloud-connector:$(cat VERSION)
+        docker push docker.io/activiti/activiti-cloud-modeling:$(cat VERSION)
         
         make create-helm-charts-release-and-upload
         
