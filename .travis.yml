@@ -69,8 +69,8 @@ jobs:
         cd -
         
         cd activiti-cloud-acceptance-scenarios
-	      travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -pl 'modeling-acceptance-tests' serenity:aggregate -Droot.log.level=off -q clean verify
-	      travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -pl 'runtime-acceptance-tests' serenity:aggregate  -Droot.log.level=off -q clean verify
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -pl 'modeling-acceptance-tests' serenity:aggregate -Droot.log.level=off -q clean verify
+        travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -pl 'runtime-acceptance-tests' serenity:aggregate  -Droot.log.level=off -q clean verify
         cd -
         
         cd activiti-cloud-dependencies
