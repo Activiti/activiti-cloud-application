@@ -15,7 +15,7 @@ env:
     - HELM_REPO_BASE_URL=https://kubernetes-charts.alfresco.com
     - HELM_REPO=stable
     - KUBERNETES_VERSION=1.14.8
-    - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-120}
+    - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-180}
     
 before_script: |
   echo -e "https://almerico:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
@@ -60,17 +60,22 @@ jobs:
         make create-helm-charts-release-and-upload
         
         cp VERSION  activiti-cloud-dependencies/
-        cd activiti-cloud-dependencies
+        cd activiti-cloud-dependencies        
         travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off -DnewVersion=${VERSION} 
-        
         make updatebot/push-version-dry
         make prepare-helm-chart
         travis_wait ${TRAVIS_WAIT_TIMEOUT} make run-helm-chart
-        travis_wait ${TRAVIS_WAIT_TIMEOUT} make activiti-cloud-acceptance-scenarios
-        travis_wait ${TRAVIS_WAIT_TIMEOUT} make modeling-acceptance-tests
-        travis_wait ${TRAVIS_WAIT_TIMEOUT} make runtime-acceptance-tests
+        cd -
+        
+        cd activiti-cloud-acceptance-scenarios
+	      travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -pl 'modeling-acceptance-tests' serenity:aggregate -Droot.log.level=off -q clean verify
+	      travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -pl 'runtime-acceptance-tests' serenity:aggregate  -Droot.log.level=off -q clean verify
+        cd -
+        
+        cd activiti-cloud-dependencies
         make delete|| travis_terminate 1;
-  
+        cd -
+      
     - name: Create a tag
       stage: tag
       script: |
