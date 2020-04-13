@@ -19,7 +19,7 @@ env:
     
 before_script: |
   echo -e "https://almerico:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
-  export PREVIEW_NAMESPACE=echo "example-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER"|  tr '[:upper:]' '[:lower:]';
+  #export PREVIEW_NAMESPACE=echo "example-$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER"|  tr '[:upper:]' '[:lower:]';
   
   curl -s https://kubernetes-helm.storage.googleapis.com/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
   sudo mv linux-amd64/helm /usr/local/bin/
