@@ -73,13 +73,12 @@ jobs:
       stage: tag
       script: |
         mvn versions:set -q -DnewVersion=$(cat VERSION)
-        git add --all
+        git add -u
         git commit -m "Release $(cat VERSION)" --allow-empty
         git tag -fa v$(cat VERSION) -m "Release version $(cat VERSION)"|| travis_terminate 1;
         git push -f -q https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git v$(cat VERSION)|| travis_terminate 1;
     
 before_install:
   - echo -e "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
-#  - source ./build.properties
   - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin "$DOCKER_REGISTRY"
   - curl -sSL https://download.sourceclear.com/ci.sh | CACHE_DIR=${HOME}/sourceclear 
