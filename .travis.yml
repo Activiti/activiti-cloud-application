@@ -32,6 +32,7 @@ jobs:
       stage: build
       script:
         - set -e
+        - exit -1
         - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -DskipITs -DskipTests -f  activiti-cloud-acceptance-scenarios/pom.xml || travis_terminate 1
         - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD}  -f example-runtime-bundle/pom.xml || travis_terminate 1
         - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD}  -f activiti-cloud-query/pom.xml || travis_terminate 1
