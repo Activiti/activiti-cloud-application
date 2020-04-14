@@ -59,8 +59,8 @@ jobs:
         - cd -
         
         - cd activiti-cloud-acceptance-scenarios
-        - mvn -pl 'modeling-acceptance-tests' serenity:aggregate -Droot.log.level=off -q clean verify || travis_terminate 1
-        - mvn -pl 'runtime-acceptance-tests' serenity:aggregate  -Droot.log.level=off -q clean verify || travis_terminate 1
+        - mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q clean verify || travis_terminate 1
+        - mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q clean verify || travis_terminate 1
         - cd -
       
         - cd activiti-cloud-dependencies
