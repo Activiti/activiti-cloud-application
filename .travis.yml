@@ -63,14 +63,9 @@ jobs:
         - mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q clean verify 
         - mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q clean verify 
         - cd -
-      
-        - cd activiti-cloud-dependencies
-        - make delete|| travis_terminate 1;
-        - cd -
-        - set +e
-      after_failure:
-        - cd activiti-cloud-dependencies && make delete|| travis_terminate 1 &&  cd -
         
+        - set +e
+     
     - name: Create a tag
       stage: tag
       script: |
@@ -79,7 +74,15 @@ jobs:
         git commit -m "Release $(cat VERSION)" --allow-empty
         git tag -fa v$(cat VERSION) -m "Release version $(cat VERSION)"|| travis_terminate 1;
         git push -f -q https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git v$(cat VERSION)|| travis_terminate 1;
-    
+        
+after_failure:
+  - cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd - 
+  - kubectl delete ns ${PREVIEW_NAMESPACE}
+after_success:
+  - cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd - 
+  - kubectl delete ns ${PREVIEW_NAMESPACE}
+  
+
 before_install:
   - echo -e "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
   - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin "$DOCKER_REGISTRY"
