@@ -31,7 +31,7 @@ jobs:
     - name: build jars
       stage: build
       script:
-        - set -e
+
         - exit -1
         - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -DskipITs -DskipTests -f  activiti-cloud-acceptance-scenarios/pom.xml || travis_terminate 1
         - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD}  -f example-runtime-bundle/pom.xml || travis_terminate 1
@@ -64,8 +64,6 @@ jobs:
         - mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q clean verify 
         - mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q clean verify 
         - cd -
-        
-        - set +e
      
     - name: Create a tag
       stage: tag
