@@ -24,6 +24,11 @@ before_script:
   - kubectl config use-context default-system || travis_terminate 1
   - kubectl get ns || travis_terminate 1
 
+stages:
+- name: build
+- name: tag
+  if: type != pull_request
+
 install: true
 
 jobs: 
