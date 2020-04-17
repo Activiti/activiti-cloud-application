@@ -186,7 +186,7 @@ public class ProcessInstanceConnectors {
                                            processInstance.getProcessDefinitionId(),
                                            processInstance.getId(),
                                            "CLOUD_BPMN_ERROR",
-                                           "Error_0y8atbe"
+                                           "CLOUD_BPMN_ERROR"
                                      ));
 
             assertThat(events).filteredOn(CloudIntegrationErrorReceivedEvent.class::isInstance)
