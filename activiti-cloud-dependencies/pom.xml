@@ -19,7 +19,7 @@
     <maven.compiler.release>${java.release}</maven.compiler.release>
     <project.scm.repository>activiti-cloud-dependencies</project.scm.repository>
     <activiti-cloud-build.version>7.1.450</activiti-cloud-build.version>
-    <activiti-cloud-api.version>7.1.450</activiti-cloud-api.version>
+    <activiti-cloud-api.version>7.1.453</activiti-cloud-api.version>
     <activiti-cloud-service-common.version>7.1.450</activiti-cloud-service-common.version>
     <activiti-cloud-acceptance-tests.version>7.1.450</activiti-cloud-acceptance-tests.version>
     <activiti-cloud-modeling-service.version>7.1.450</activiti-cloud-modeling-service.version>
