@@ -141,11 +141,6 @@ pipeline {
               }
             }
 
-//            sh "git add --all"
-//            sh """git commit -m "release $VERSION" --allow-empty """
-//            sh """git tag -fa v$VERSION -m "Release version $VERSION" """
-//            sh "git push origin v$VERSION "
-
             def modules = ["activiti-cloud-query",
                            "example-runtime-bundle",
                            "activiti-cloud-modeling",
@@ -164,12 +159,6 @@ pipeline {
     }
 
     stage('Publish charts') {
-//      when {
-//        anyOf {
-//          tag "$RELEASE_TAG_REGEX";
-//          branch "$RELEASE_BRANCH";
-//        }
-//      }
 
       environment {
         VERSION = version()
@@ -238,12 +227,6 @@ pipeline {
     }
 
     stage('Build And Deploy Helm Chart') {
-//      when {
-//        anyOf {
-//          tag "$RELEASE_TAG_REGEX";
-//          branch "$RELEASE_BRANCH";
-//        }
-//      }
 
       environment {
         VERSION = version()
@@ -282,12 +265,6 @@ pipeline {
     }
 
     stage("Run Acceptance Scenarios") {
-//      when {
-//        anyOf {
-//          tag "$RELEASE_TAG_REGEX";
-//          branch "$RELEASE_BRANCH";
-//        }
-//      }
 
       environment {
         VERSION = version()
