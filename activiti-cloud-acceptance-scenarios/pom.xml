@@ -46,7 +46,7 @@
     <awaitility.version>3.1.1</awaitility.version>
     <batik.version>1.10</batik.version>
     <guava.version>23.6-jre</guava.version>
-    <serenity.version>1.9.45</serenity.version>
+    <serenity.version>2.2.1</serenity.version>
     <serenity-jbehave.version>1.44.0</serenity-jbehave.version>
   </properties>
   <dependencyManagement>
