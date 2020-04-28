@@ -44,7 +44,6 @@
     <asm.version>7.0</asm.version>
     <assertj.version>3.13.2</assertj.version>
     <serenity.version>1.9.45</serenity.version>
-    <serenity-jbehave.version>1.44.0</serenity-jbehave.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -54,24 +53,9 @@
         <version>${assertj.version}</version>
       </dependency>
       <dependency>
-        <groupId>net.serenity-bdd</groupId>
-        <artifactId>serenity-core</artifactId>
-        <version>${serenity.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
         <version>${asm.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.serenity-bdd</groupId>
-        <artifactId>serenity-jbehave</artifactId>
-        <version>${serenity-jbehave.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.serenity-bdd</groupId>
-        <artifactId>serenity-spring</artifactId>
-        <version>${serenity.version}</version>
       </dependency>
       <dependency>
         <groupId>org.activiti.cloud</groupId>
