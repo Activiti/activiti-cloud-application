@@ -41,7 +41,6 @@
     <java.version>1.${java.release}</java.version>
     <maven.compiler.release>${java.release}</maven.compiler.release>
     <activiti-cloud.version>7.1.468</activiti-cloud.version>
-    <asm.version>7.0</asm.version>
     <assertj.version>3.13.2</assertj.version>
     <serenity.version>1.9.45</serenity.version>
   </properties>
@@ -51,11 +50,6 @@
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>${assertj.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm</artifactId>
-        <version>${asm.version}</version>
       </dependency>
       <dependency>
         <groupId>org.activiti.cloud</groupId>
