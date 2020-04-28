@@ -44,7 +44,6 @@
     <asm.version>7.0</asm.version>
     <assertj.version>3.13.2</assertj.version>
     <batik.version>1.10</batik.version>
-    <guava.version>23.6-jre</guava.version>
     <serenity.version>1.9.45</serenity.version>
     <serenity-jbehave.version>1.44.0</serenity-jbehave.version>
   </properties>
@@ -54,11 +53,6 @@
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>${assertj.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>${guava.version}</version>
       </dependency>
       <dependency>
         <groupId>net.serenity-bdd</groupId>
