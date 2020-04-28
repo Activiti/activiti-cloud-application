@@ -58,7 +58,7 @@
     <dependency>
       <groupId>org.activiti.cloud</groupId>
       <artifactId>activiti-cloud-acceptance-tests-dependencies</artifactId>
-      <version>${activiti-cloud-acceptance-tests.version}</version>
+      <version>${activiti-cloud.version}</version>
       <type>pom</type>
     </dependency>
     <dependency>
