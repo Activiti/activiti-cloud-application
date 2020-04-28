@@ -47,7 +47,7 @@
     <batik.version>1.10</batik.version>
     <guava.version>23.6-jre</guava.version>
     <serenity.version>1.9.45</serenity.version>
-    <serenity-jbehave.version>1.44.0</serenity-jbehave.version>
+    <serenity-jbehave.version>1.46.0</serenity-jbehave.version>
   </properties>
   <dependencyManagement>
     <dependencies>
