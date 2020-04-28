@@ -43,7 +43,6 @@
     <activiti-cloud.version>7.1.468</activiti-cloud.version>
     <asm.version>7.0</asm.version>
     <assertj.version>3.13.2</assertj.version>
-    <batik.version>1.10</batik.version>
     <serenity.version>1.9.45</serenity.version>
     <serenity-jbehave.version>1.44.0</serenity-jbehave.version>
   </properties>
@@ -73,16 +72,6 @@
         <groupId>net.serenity-bdd</groupId>
         <artifactId>serenity-spring</artifactId>
         <version>${serenity.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.xmlgraphics</groupId>
-        <artifactId>batik-transcoder</artifactId>
-        <version>${batik.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.xmlgraphics</groupId>
-        <artifactId>batik-codec</artifactId>
-        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.activiti.cloud</groupId>
