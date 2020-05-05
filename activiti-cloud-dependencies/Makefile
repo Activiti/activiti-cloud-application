@@ -129,7 +129,7 @@ tag:
 	git add Chart.yaml values.yaml requirements.yaml && \
 	git commit -m "release $(HELM_ACTIVITI_VERSION)" --allow-empty && \
 	git tag -fa v$(HELM_ACTIVITI_VERSION) -m "Release version $(HELM_ACTIVITI_VERSION)" && \
-	git push origin v$(HELM_ACTIVITI_VERSION)
+	git push --force origin v$(HELM_ACTIVITI_VERSION)
 
 
 prepare-helm-chart:
