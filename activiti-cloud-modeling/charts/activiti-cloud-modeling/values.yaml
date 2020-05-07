@@ -31,8 +31,8 @@ db:
 
 init:
   image:
-    repository: alpine
-    tag: 3.8
+    repository: docker.io/activiti/activiti-cloud-modeling
+    tag: 7.1.871
     pullPolicy: IfNotPresent
 postgres:
   enabled: true
@@ -67,8 +67,8 @@ frontend:
   #       name: {{ .Release.Name }}-keycloak-http
   #       key: expose-keycloak-service-key
   image:
-    repository: activiti/activiti-modeling-app
-    tag: 0.0.326
+    repository: docker.io/activiti/activiti-cloud-modeling
+    tag: 7.1.871
     pullPolicy: Always
   resources:
     limits:
@@ -113,8 +113,8 @@ backend:
   #       name: {{ .Release.Name }}-keycloak-http
   #       key: expose-keycloak-service-key
   image:
-    repository: activiti/activiti-cloud-modeling
-    tag: 7.1.0.M1
+    repository: docker.io/activiti/activiti-cloud-modeling
+    tag: 7.1.871
     pullPolicy: Always
   resources:
     limits:

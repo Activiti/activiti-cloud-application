@@ -62,8 +62,8 @@ javaOpts:
 # only set this variable if a private registry secret is needed to pull the image
 #registryPullSecrets: private-registry-secret
 image:
-  repository: activiti/example-runtime-bundle
-  tag: 7.0.0.SR1
+  repository: docker.io/activiti/runtime-bundle
+  tag: 7.1.871
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP

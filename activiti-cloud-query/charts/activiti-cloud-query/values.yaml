@@ -65,8 +65,8 @@ extraEnv: |
 # only set this variable if a private registry secret is needed to pull the image
 #registryPullSecrets: private-registry-secret
 image:
-  repository: activiti/activiti-cloud-query
-  tag: 7.0.0.SR1
+  repository: docker.io/activiti/activiti-cloud-query
+  tag: 7.1.871
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
