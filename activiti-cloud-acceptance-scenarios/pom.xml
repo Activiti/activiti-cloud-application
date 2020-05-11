@@ -10,7 +10,7 @@
   </parent>
   <groupId>org.activiti.cloud</groupId>
   <artifactId>activiti-cloud-acceptance-scenarios-parent</artifactId>
-  <version>7.1.871</version>
+  <version>7.1.0-M7</version>
   <packaging>pom</packaging>
   <modules>
     <module>modeling-acceptance-tests</module>
@@ -40,7 +40,7 @@
     <java.release>11</java.release>
     <java.version>1.${java.release}</java.version>
     <maven.compiler.release>${java.release}</maven.compiler.release>
-    <activiti-cloud.version>7.1.478</activiti-cloud.version>
+    <activiti-cloud.version>7.1.0-M7</activiti-cloud.version>
     <assertj.version>3.13.2</assertj.version>
     <serenity-maven-plugin.version>2.1.13</serenity-maven-plugin.version>
   </properties>
