@@ -7,5 +7,6 @@
 [![CLA](https://cla-assistant.io/readme/badge/Activiti/activiti-cloud-application)](https://cla-assistant.io/Activiti/activiti-cloud-application)
 [![security status](https://www.meterian.com/badge/gh/Activiti/activiti-cloud-application/security)](https://www.meterian.com/report/gh/Activiti/activiti-cloud-application)
 [![stability status](https://www.meterian.com/badge/gh/Activiti/activiti-cloud-application/stability)](https://www.meterian.com/report/gh/Activiti/activiti-cloud-application)
+[![licensing status](https://www.meterian.io/badge/gh/Activiti/activiti-cloud-application/licensing)](https://www.meterian.io/report/gh/Activiti/activiti-cloud-application)
 
 Activiti Cloud Application example and acceptance test suite.
