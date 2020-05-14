@@ -35,11 +35,29 @@
     <module>activiti-cloud-dependencies</module>
   </modules>
   <scm>
-    <url>http://github.com/${project.scm.organisation}/${project.scm.repository}</url>
-    <connection>scm:git:git://github.com/${project.scm.organisation}/${project.scm.repository}.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/${project.scm.organisation}/${project.scm.repository}.git</developerConnection>
+    <url>http://github.com/${project.scm.organization}/${project.scm.repository}</url>
+    <connection>
+      scm:git:git://github.com/${project.scm.organization}/${project.scm.repository}.git
+    </connection>
+    <developerConnection>
+      scm:git:ssh://git@github.com/${project.scm.organization}/${project.scm.repository}.git
+    </developerConnection>
     <tag>HEAD</tag>
   </scm>
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/${project.scm.organization}/Activiti/issues</url>
+  </issueManagement>
+  <ciManagement>
+    <system>Travis</system>
+    <url>https://travis-ci.com/${project.scm.organization}/${project.scm.repository}</url>
+  </ciManagement>
+  <distributionManagement>
+    <site>
+      <id>${project.scm.repository}-site</id>
+      <url>https://${project.scm.organization}.github.io/${project.scm.repository}</url>
+    </site>
+  </distributionManagement>
   <properties>
     <java.release>11</java.release>
     <java.version>1.${java.release}</java.version>
@@ -48,7 +66,7 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.deploy.skip>true</maven.deploy.skip>
-    <project.scm.organisation>Activiti</project.scm.organisation>
+    <project.scm.organization>Activiti</project.scm.organization>
     <project.scm.repository>activiti-cloud-application</project.scm.repository>
     <project.year>2020</project.year>
   </properties>
