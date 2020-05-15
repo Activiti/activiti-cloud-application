@@ -3,10 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.6.RELEASE</version>
-    <relativePath/> <!-- lookup parent from repository -->
+    <groupId>org.activiti.cloud</groupId>
+    <artifactId>activiti-cloud-application</artifactId>
+    <version>7.1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.activiti.cloud</groupId>
   <artifactId>activiti-cloud-modeling</artifactId>
@@ -18,7 +17,7 @@
     <java.release>11</java.release>
     <java.version>1.${java.release}</java.version>
     <maven.compiler.release>${java.release}</maven.compiler.release>
-    <activiti-cloud.version>7.1.469</activiti-cloud.version>
+    <activiti-cloud.version>7.1.483</activiti-cloud.version>
   </properties>
   <dependencyManagement>
     <dependencies>

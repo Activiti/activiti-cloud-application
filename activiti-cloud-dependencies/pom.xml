@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.activiti.cloud</groupId>
     <artifactId>activiti-cloud-build-parent</artifactId>
-    <version>7.1.467</version>
+    <version>7.1.483</version>
     <relativePath/>
   </parent>
   <groupId>org.activiti.cloud</groupId>
@@ -16,8 +16,9 @@
   <properties>
     <java.release>11</java.release>
     <java.version>1.${java.release}</java.version>
+    <license-maven-plugin.version>3.0</license-maven-plugin.version>
     <maven.compiler.release>${java.release}</maven.compiler.release>
-    <activiti-cloud.version>7.1.469</activiti-cloud.version>
+    <activiti-cloud.version>7.1.483</activiti-cloud.version>
   </properties>
   <repositories>
     <repository>
@@ -109,6 +110,15 @@
     <module>dependencies</module>
   </modules>
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>${license-maven-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

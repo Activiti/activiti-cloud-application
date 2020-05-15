@@ -3,7 +3,9 @@ ACTIVITI_CLOUD_QUERY_VERSION := $(shell grep -oPm1 "(?<=<activiti-cloud-query.ve
 ACTIVITI_CLOUD_RB_VERSION := $(shell grep -oPm1 "(?<=<example-runtime-bundle.version>)[^<]+" "dependencies-tests/pom.xml")
 ACTIVITI_CLOUD_MODELING_VERSION := $(shell grep -oPm1 "(?<=<activiti-cloud-modeling.version>)[^<]+" "dependencies-tests/pom.xml")
 
-ACTIVITI_CLOUD_VERSION_NUMBER := $(shell grep -oPm1 "(?<=<activiti-cloud.version>)[^<]+" "pom.xml")
+ACTIVITI_CLOUD_VERSION_NUMBER := $(shell grep -oPm1 "(?<=<activiti-cloud-build.version>)[^<]+" "pom.xml")
+
+#PREVIEW_NAMESPACE := $(shell echo $(PREVIEW_NAMESPACE)|  tr '[:upper:]' '[:lower:]')
 
 
 ACTIVITI_CLOUD_ACCEPTANCE_SCENARIOUS_VERSION := 7.1.273
@@ -11,16 +13,19 @@ ACTIVITI_CLOUD_COMMON_HELM_CHART := 1.1.21
 
 GITHUB_CHARTS_BRANCH := $(or $(GITHUB_CHARTS_BRANCH),gh-pages)
 
+$(eval HELM_ACTIVITI_VERSION = $(or $(HELM_ACTIVITI_VERSION),$(shell cat VERSION |rev|sed 's/\./-/'|rev)))
+
+
 ACTIVITI_CLOUD_SERVICES_VERSIONS := org.activiti.cloud.rb:activiti-cloud-runtime-bundle-dependencies  $(ACTIVITI_CLOUD_VERSION_NUMBER) org.activiti.cloud.connector:activiti-cloud-connectors-dependencies $(ACTIVITI_CLOUD_VERSION_NUMBER) \
     org.activiti.cloud.query:activiti-cloud-query-dependencies $(ACTIVITI_CLOUD_VERSION_NUMBER) org.activiti.cloud.notifications.graphql:activiti-cloud-notifications-graphql-dependencies $(ACTIVITI_CLOUD_VERSION_NUMBER)  \
     org.activiti.cloud.audit:activiti-cloud-audit-dependencies $(ACTIVITI_CLOUD_VERSION_NUMBER) org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $(ACTIVITI_CLOUD_VERSION_NUMBER) \
     org.activiti.cloud.messages:activiti-cloud-messages-dependencies $(ACTIVITI_CLOUD_VERSION_NUMBER)
 
-ACTIVITI_CLOUD_FULL_CHART_VERSIONS := runtime-bundle $(ACTIVITI_CLOUD_RB_VERSION) activiti-cloud-connector $(ACTIVITI_CLOUD_CONNECTORS_VERSION) \
-    activiti-cloud-query $(ACTIVITI_CLOUD_QUERY_VERSION)  \
-    activiti-cloud-modeling $(ACTIVITI_CLOUD_MODELING_VERSION)
+ACTIVITI_CLOUD_FULL_CHART_VERSIONS := runtime-bundle $(HELM_ACTIVITI_VERSION) activiti-cloud-connector $(HELM_ACTIVITI_VERSION) \
+    activiti-cloud-query $(HELM_ACTIVITI_VERSION)  \
+    activiti-cloud-modeling $(HELM_ACTIVITI_VERSION)
 
-$(eval HELM_ACTIVITI_VERSION = $(shell cat VERSION |rev|sed 's/\./-/'|rev))
+
 
 GITHUB_CHARTS_BRANCH := "gh-pages"
 
@@ -71,9 +76,7 @@ updatebot/push-version:
 	updatebot push-version --kind make ACTIVITI_CLOUD_ACCEPTANCE_SCENARIOUS_VERSION $(ACTIVITI_CLOUD_ACCEPTANCE_SCENARIOUS_VERSION)
 
 updatebot/push-version-dry:
-	#updatebot --dry push-version --kind maven org.activiti.cloud.dependencies:activiti-cloud-dependencies $(ACTIVITI_CLOUD_VERSION) $(ACTIVITI_CLOUD_SERVICES_VERSIONS)   --merge false
 	updatebot --dry push-version --kind helm activiti-cloud-dependencies $(ACTIVITI_CLOUD_VERSION) $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)
-	#updatebot --dry push-version --kind make ACTIVITI_CLOUD_ACCEPTANCE_SCENARIOUS_VERSION $(ACTIVITI_CLOUD_ACCEPTANCE_SCENARIOUS_VERSION)
 
 replace-release-full-chart-names:
 	echo HELM_ACTIVITI_VERSION = $(HELM_ACTIVITI_VERSION)
@@ -146,8 +149,6 @@ run-helm-chart:
             		--install \
             		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
             		--namespace ${PREVIEW_NAMESPACE} \
-            		--debug \
-            		--wait
 
 delete:
 	helm delete --purge ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
