@@ -1,11 +1,21 @@
 /*
- * Copyright 2005-2019 Alfresco Software, Ltd. All rights reserved.
- * License rights for this program may be obtained from Alfresco Software, Ltd.
- * pursuant to a written agreement and any use of this program without such an
- * agreement is prohibited.
+ * Copyright 2017-2020 Alfresco Software, Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.activiti.cloud.query.configuration;
 
+import com.google.common.base.Predicates;
 import org.activiti.api.process.model.payloads.GetProcessDefinitionsPayload;
 import org.activiti.api.process.model.payloads.GetProcessInstancesPayload;
 import org.activiti.api.runtime.shared.security.SecurityManager;
@@ -29,8 +39,9 @@ public class QueryConfiguration {
 
     @Bean
     public Predicate<RequestHandler> apiSelector() {
-        return RequestHandlerSelectors.basePackage("org.activiti.cloud.services.query.rest")
-                       .or(RequestHandlerSelectors.basePackage("org.activiti.cloud.services.audit"));
+        return Predicates.or(
+            RequestHandlerSelectors.basePackage("org.activiti.cloud.services.query.rest"),
+            RequestHandlerSelectors.basePackage("org.activiti.cloud.services.audit"))::apply;
     }
 
     @Bean
