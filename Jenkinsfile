@@ -132,7 +132,6 @@ pipeline {
                   def name = chart.substring(chart.lastIndexOf('/') + 1)
 
                   sh """sed -i -e "s/version:.*/version: $VERSION/" Chart.yaml"""
-                  sh """sed -i -e "s|repository: .*|repository: $DOCKER_REGISTRY/$ORG/$name|" values.yaml"""
                   sh """sed -i -e "s/tag: .*/tag: $VERSION/" values.yaml"""
                 }
               }
