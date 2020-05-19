@@ -48,7 +48,7 @@ github:
 	rm -rf $(GITHUB_CHARTS_DIR)
 
 version:
-  echo "VERSION $(VERSION)"
+	echo "VERSION $(VERSION)"
 	sed -i -e "s/version:.*/version: $(VERSION)/" Chart.yaml
 	sed -i -e "s/tag: .*/tag: $(VERSION)/" values.yaml
 
