@@ -30,6 +30,7 @@ pipeline {
     RELEASE_BRANCH = "develop"
     RELEASE_TAG_REGEX = "*M*"
     ACTIVITI_CLOUD_FULL_CHART_VERSIONS = "$VERSION"
+    HELM_ACTIVITI_VERSION = "$VERSION"
   }
   stages {
     stage('Configure Git') {
@@ -127,9 +128,7 @@ pipeline {
 
             for (chart in charts) {
               dir("$chart") {
-                retry(5) {
                  sh "make version"
-                }
               }
             }
 
