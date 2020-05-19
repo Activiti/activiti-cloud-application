@@ -51,7 +51,7 @@ github:
 
 version:
 	sed -i -e "s/version:.*/version: $(RELEASE_VERSION)/" Chart.yaml
-	sed -i -e "s/tag: .*/tag: $(VERSION)/" values.yaml
+	export RELEASE_VERSION=$(RELEASE_VERSION) && perl -0777 -pi -e '$$version = $$ENV{'RELEASE_VERSION'};s/repository: activiti\/activiti-cloud-modeling\n\s*tag: ([0-9]|[a-zA-Z]|\.)*/repository: activiti\/activiti-cloud-modeling\n    tag: $$version/' values.yaml
 
 tag:
 	git add --all
