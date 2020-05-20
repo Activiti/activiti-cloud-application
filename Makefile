@@ -69,6 +69,23 @@ run-helm-chart:
             		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
             		--namespace ${PREVIEW_NAMESPACE} \
             		--wait
+								
+update-version-in-example-charts:
+	@for chart in $(charts) ; do \
+		cd $$chart ; \
+		sed -i -e "s/version:.*/version: $$VERSION/" Chart.yaml; \
+		sed -i -e "s/tag: .*/tag: $$VERSION/" values.yaml ;\
+		cd - ; \
+	done 
+create-helm-charts-release-and-upload:
+	@for chart in $(charts) ; do \
+		cd $$chart ; \
+		make version; \
+		make build; \
+		make release; \
+		make github; \
+		cd - ; \
+	done 
 
 update-version-in-example-charts:
 	@for chart in $(charts) ; do \
