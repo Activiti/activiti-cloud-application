@@ -14,7 +14,6 @@ build: clean
 	helm repo add activiti-cloud-helm-charts https://activiti.github.io/activiti-cloud-helm-charts/
 	helm dependency build
 	helm lint
-	helm install . --name ${NAME} --debug --dry-run
 
 install:
 	helm install . --name ${NAME}

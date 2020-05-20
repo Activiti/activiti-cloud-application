@@ -70,13 +70,6 @@ run-helm-chart:
             		--namespace ${PREVIEW_NAMESPACE} \
             		--wait
 								
-update-version-in-example-charts:
-	@for chart in $(charts) ; do \
-		cd $$chart ; \
-		sed -i -e "s/version:.*/version: $$VERSION/" Chart.yaml; \
-		sed -i -e "s/tag: .*/tag: $$VERSION/" values.yaml ;\
-		cd - ; \
-	done 
 create-helm-charts-release-and-upload:
 	@for chart in $(charts) ; do \
 		cd $$chart ; \
@@ -87,14 +80,6 @@ create-helm-charts-release-and-upload:
 		cd - ; \
 	done 
 
-update-version-in-example-charts:
-	@for chart in $(charts) ; do \
-		pwd; \
-		cd $$chart ; \
-		sed -i -e "s/version:.*/version: $$HELM_ACTIVITI_VERSION/" Chart.yaml; \
-		sed -i -e "s/tag: .*/tag: $$VERSION/" values.yaml ; \
-		cd - ; \
-	done
 create-helm-charts-release-and-upload:
 	@for chart in $(charts) ; do \
 		cd $$chart && \
