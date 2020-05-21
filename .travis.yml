@@ -28,6 +28,8 @@ stages:
 - name: build
 - name: tag
   if: type != pull_request
+- name: updatebot
+  if: type != pull_request  
 
 install: true
 
@@ -76,6 +78,29 @@ jobs:
         git commit -m "Release $(cat VERSION)" --allow-empty
         git tag -fa v$(cat VERSION) -m "Release version $(cat VERSION)"|| travis_terminate 1;
         git push -f -q https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git v$(cat VERSION)|| travis_terminate 1;
+    - name: Updatebot
+      stage: updatebot
+      script: |
+        updatebot push-version --kind maven \
+                  org.activiti.cloud:activiti-cloud-dependencies ${VERSION} \
+                  org.activiti.cloud:activiti-cloud-modeling-dependencies ${activiti_cloud_version} \
+                  org.activiti.cloud:activiti-cloud-audit-dependencies ${activiti_cloud_version} \
+                  org.activiti.cloud:activiti-cloud-api-dependencies ${activiti_cloud_version} \
+                  org.activiti.cloud:activiti-cloud-parent ${activiti_cloud_version} \
+                  org.activiti.cloud:activiti-cloud-connectors-dependencies ${activiti_cloud_version} \
+                  org.activiti.cloud:activiti-cloud-messages-dependencies ${activiti_cloud_version} \
+                  org.activiti.cloud:activiti-cloud-modeling-dependencies ${activiti_cloud_version} \
+                  org.activiti.cloud:activiti-cloud-notifications-graphql-dependencies ${activiti_cloud_version} \
+                  org.activiti.cloud:activiti-cloud-query-dependencies ${activiti_cloud_version} \
+                  org.activiti.cloud:activiti-cloud-runtime-bundle-dependencies ${activiti_cloud_version} \
+                  org.activiti.cloud:activiti-cloud-service-common-dependencies ${activiti_cloud_version} \
+                  --merge false;
+        updatebot push-version --kind helm activiti-cloud-dependencies ${VERSION} \
+                        runtime-bundle ${VERSION} \
+                        activiti-cloud-connector ${VERSION} \
+                        activiti-cloud-query ${VERSION} \
+                        activiti-cloud-modeling ${VERSION}
+         updatebot push-version --kind make ACTIVITI_CLOUD_ACCEPTANCE_SCENARIOUS_VERSION ${VERSION}    
         
 after_failure:
   - cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd - 
@@ -84,8 +109,11 @@ after_success:
   - cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd - 
   - kubectl delete ns ${PREVIEW_NAMESPACE}
   
+  
 
 before_install:
   - echo -e "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
   - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin "$DOCKER_REGISTRY"
   - curl -sSL https://download.sourceclear.com/ci.sh | CACHE_DIR=${HOME}/sourceclear 
+  - export activiti_cloud_version=$(grep -oPm1 "(?<=<activiti-cloud-build.version>)[^<]+" "activiti-cloud-dependencies/pom.xml")
+ 
