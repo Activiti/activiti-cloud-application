@@ -99,8 +99,7 @@ jobs:
                         runtime-bundle ${VERSION} \
                         activiti-cloud-connector ${VERSION} \
                         activiti-cloud-query ${VERSION} \
-                        activiti-cloud-modeling ${VERSION}
-         updatebot push-version --kind make ACTIVITI_CLOUD_ACCEPTANCE_SCENARIOUS_VERSION ${VERSION}    
+                        activiti-cloud-modeling ${VERSION}  
         
 after_failure:
   - cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd - 
