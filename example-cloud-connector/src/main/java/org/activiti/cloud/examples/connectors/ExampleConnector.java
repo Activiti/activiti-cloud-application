@@ -18,7 +18,6 @@ package org.activiti.cloud.examples.connectors;
 import static net.logstash.logback.marker.Markers.append;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -120,7 +119,7 @@ public class ExampleConnector {
 
         Object dateVar = event.getIntegrationContext().getInBoundVariable("test_date_variable_name");
         logger.info("dateVar value as string "+ dateVar);
-        if( dateVar != null && dateVar instanceof Date && Date.from(Instant.EPOCH).equals(dateVar)) {
+        if( dateVar != null && dateVar instanceof Date) {
             results.put("test_date_variable_name", dateVar);
         }
 
