@@ -120,7 +120,7 @@ public class ExampleConnector {
         Object dateVar = event.getIntegrationContext().getInBoundVariable("test_date_variable_name");
         logger.info("dateVar value as string "+ dateVar);
         if( dateVar != null && dateVar instanceof Date) {
-            results.put("test_date_variable_name", dateVar);
+            results.put("test_date_variable_result", dateVar);
         }
 
         results.put("var1",
