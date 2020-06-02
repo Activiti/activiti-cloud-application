@@ -75,6 +75,7 @@ And a variable was created with name test_bool_variable_result
 And a variable was created with name test_long_variable_result
 And a variable was created with name test_bigdecimal_variable_result
 And a variable was created with name test_date_variable_result
+And query process instance variable test_bigdecimal_variable_result has value 12345678.90
 
 Scenario: check all process definitions are present as admin
 Given the user is authenticated as hradmin
