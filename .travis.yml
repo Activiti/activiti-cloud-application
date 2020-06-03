@@ -93,7 +93,6 @@ jobs:
                         activiti-cloud-connector ${VERSION} \
                         activiti-cloud-query ${VERSION} \
                         activiti-cloud-modeling ${VERSION}
-
 after_failure:
   - cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd -
 after_success:
