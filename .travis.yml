@@ -5,13 +5,11 @@ env:
     - APP_NAME='activiti-cloud-dependencies'
     - GITHUB_CHARTS_REPO="https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-helm-charts.git"
     - RELEASE_BRANCH="develop"
-    - RELEASE_TAG_REGEX="*M*"
     - HELM_VERSION=2.12.3
     - HELM_REPO_BASE_URL=https://kubernetes-charts.alfresco.com
     - HELM_REPO=stable
     - KUBERNETES_VERSION=1.14.8
     - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-180}
-
 before_script:
   - echo -e "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com" >>  ~/.git-credentials
   - curl -s https://kubernetes-helm.storage.googleapis.com/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
@@ -23,12 +21,9 @@ before_script:
   - kubectl config set-context default-system --cluster=default-cluster --user=default-admin || travis_terminate 1
   - kubectl config use-context default-system || travis_terminate 1
   - kubectl get ns || travis_terminate 1
-
 stages:
 - name: build
-- name: tag
-  if: type != pull_request
-- name: updatebot
+- name: tag_updatebot
   if: type != pull_request
 
 install: true
@@ -62,7 +57,7 @@ jobs:
         - make updatebot/push-version-dry || travis_terminate 1
         - sleep 20
         - make prepare-helm-chart || travis_terminate 1
-        - make run-helm-chart
+        - make run-helm-chart || travis_terminate 1
         - cd -
         - sleep 360
         - cd activiti-cloud-acceptance-scenarios
@@ -70,17 +65,15 @@ jobs:
         - mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q clean verify
         - cd -
 
-    - name: Create a tag
-      stage: tag
+    - name: tag_updatebot
+      stage: tag_updatebot
       script: |
-        mvn versions:set -q -DnewVersion=$(cat VERSION)
+        mvn versions:set -q -DprocessAllModules=true -DgenerateBackupPoms=false  -DnewVersion=$(cat VERSION)
+        mvn clean deploy -DskipTests
         git add -u
         git commit -m "Release $(cat VERSION)" --allow-empty
         git tag -fa v$(cat VERSION) -m "Release version $(cat VERSION)"|| travis_terminate 1;
         git push -f -q https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git v$(cat VERSION)|| travis_terminate 1;
-    - name: Updatebot
-      stage: updatebot
-      script: |
         updatebot push-version --kind maven \
                   org.activiti.cloud:activiti-cloud-dependencies ${VERSION} \
                   org.activiti.cloud:activiti-cloud-modeling-dependencies ${activiti_cloud_version} \
@@ -100,19 +93,13 @@ jobs:
                         activiti-cloud-connector ${VERSION} \
                         activiti-cloud-query ${VERSION} \
                         activiti-cloud-modeling ${VERSION}
-
 after_failure:
   - cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd -
-  - kubectl delete ns ${PREVIEW_NAMESPACE}
 after_success:
   - cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd -
-  - kubectl delete ns ${PREVIEW_NAMESPACE}
-
-
 
 before_install:
   - echo -e "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
   - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin "$DOCKER_REGISTRY"
   - curl -sSL https://download.sourceclear.com/ci.sh | CACHE_DIR=${HOME}/sourceclear
   - export activiti_cloud_version=$(grep -oPm1 "(?<=<activiti-cloud-build.version>)[^<]+" "activiti-cloud-dependencies/pom.xml")
-
