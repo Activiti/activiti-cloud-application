@@ -17,9 +17,6 @@ updatebot/push:
 	@echo doing updatebot push $(RELEASE_VERSION)
 	updatebot push --ref $(RELEASE_VERSION)
 
-updatebot/push-version-dry:
-	updatebot --dry push-version --kind helm activiti-cloud-dependencies $(RELEASE_VERSION) $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)
-
 
 updatebot/push-version:
 	@echo Resolving push versions for artifacts........
@@ -48,27 +45,30 @@ updatebot/update-loop:
 	@echo doing updatebot update-loop $(RELEASE_VERSION)
 	updatebot update-loop --poll-time-ms 60000
 
-
 prepare-helm-chart:
-	cd  .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example/ && \
-		rm -rf requirements.lock && \
-		rm -rf charts && \
-		rm -rf *.tgz && \
-        	helm init --client-only && \
-        	helm repo add activiti-cloud-helm-charts https://activiti.github.io/activiti-cloud-helm-charts/ && \
-        	helm repo add alfresco https://kubernetes-charts.alfresco.com/stable	&& \
-        	helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator && \
-        	helm dependency build && \
-        	helm lint && \
-		helm package .
+	cd activiti-cloud-full-chart/charts/activiti-cloud-full-example/ && \
+	rm -rf requirements.lock && \
+  rm -rf charts && \
+  rm -rf *.tgz && \
+	helm init --client-only && \
+  helm repo add activiti-cloud-helm-charts https://activiti.github.io/activiti-cloud-helm-charts/ && \
+  helm repo add alfresco https://kubernetes-charts.alfresco.com/stable	&& \
+  helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator && \
+	helm dep up && \
+	rm charts/activiti-cloud-connector*  charts/activiti-cloud-modeling* charts/runtime-bundle*  charts/activiti-cloud-query* && \
+	cp -R ../../../activiti-cloud-modeling/charts/activiti-cloud-modeling  charts && \
+	cp -R ../../../activiti-cloud-query/charts/activiti-cloud-query charts && \
+	cp -R ../../../example-cloud-connector/charts/activiti-cloud-connector charts &&  \
+	cp -R ../../../example-runtime-bundle/charts/runtime-bundle charts
 
 run-helm-chart:
-	cd  .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example/ && \
+	cd activiti-cloud-full-chart/charts/activiti-cloud-full-example && \
             	helm upgrade ${PREVIEW_NAMESPACE} . \
             		--install \
             		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
             		--namespace ${PREVIEW_NAMESPACE} \
             		--wait
+
 								
 create-helm-charts-release-and-upload:
 	@for chart in $(charts) ; do \
