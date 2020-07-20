@@ -39,10 +39,10 @@ jobs:
         - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f example-cloud-connector/pom.xml || travis_terminate 1
         - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f activiti-cloud-modeling/pom.xml || travis_terminate 1
         - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f activiti-cloud-dependencies/pom.xml || travis_terminate 1
-        - docker build -f activiti-cloud-query/Dockerfile -q -t docker.io/activiti/activiti-cloud-query:$(cat VERSION) activiti-cloud-query
-        - docker build -f example-cloud-connector/Dockerfile -q -t docker.io/activiti/example-cloud-connector:$(cat VERSION) example-cloud-connector
-        - docker build -f example-runtime-bundle/Dockerfile -q -t docker.io/activiti/example-runtime-bundle:$(cat VERSION) example-runtime-bundle
-        - docker build -f activiti-cloud-modeling/Dockerfile -q -t docker.io/activiti/activiti-cloud-modeling:$(cat VERSION) activiti-cloud-modeling
+        - docker build -f activiti-cloud-query/Dockerfile -q -t docker.io/activiti/activiti-cloud-query:$(cat VERSION) activiti-cloud-query || travis_terminate 1
+        - docker build -f example-cloud-connector/Dockerfile -q -t docker.io/activiti/example-cloud-connector:$(cat VERSION) example-cloud-connector || travis_terminate 1
+        - docker build -f example-runtime-bundle/Dockerfile -q -t docker.io/activiti/example-runtime-bundle:$(cat VERSION) example-runtime-bundle|| travis_terminate 1
+        - docker build -f activiti-cloud-modeling/Dockerfile -q -t docker.io/activiti/activiti-cloud-modeling:$(cat VERSION) activiti-cloud-modeling|| travis_terminate 1
 
         - docker push docker.io/activiti/activiti-cloud-query:$(cat VERSION) || travis_terminate 1
         - docker push docker.io/activiti/example-runtime-bundle:$(cat VERSION) || travis_terminate 1
