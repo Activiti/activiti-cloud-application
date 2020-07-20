@@ -2,7 +2,7 @@ github:
   organisations:
     - name: activiti
       repositories:
-        - name: activiti-cloud-full-chart
+        - name: activiti-cloud-application
           branch: master
           useSinglePullRequest: true
     - name: alfresco
