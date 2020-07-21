@@ -49,7 +49,7 @@ jobs:
         - docker push docker.io/activiti/example-cloud-connector:$(cat VERSION) || travis_terminate 1
         - docker push docker.io/activiti/activiti-cloud-modeling:$(cat VERSION) || travis_terminate 1
 
-        - make create-helm-charts-release-and-upload
+ #       - make create-helm-charts-release-and-upload
         - make prepare-helm-chart || travis_terminate 1
         - make run-helm-chart || travis_terminate 1
         - sleep 360
