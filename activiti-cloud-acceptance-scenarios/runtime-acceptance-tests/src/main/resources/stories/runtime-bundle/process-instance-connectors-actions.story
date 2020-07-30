@@ -16,7 +16,6 @@ Given the user is authenticated as testuser
 And the user provides an integer variable named instanceCount with value 3
 When the user starts an instance of process called miParallelCloudConnector with the provided variables
 Then the query process instance has an integer variable named instanceCount with value 3
-And the query process instance has an integer variable named executionCount with value 3
 And the query process instance has an integer variable named nrOfInstances with value 3
 And the query process instance has an integer variable named nrOfCompletedInstances with value 3
 And the query process instance has an integer variable named nrOfActiveInstances with value 0
