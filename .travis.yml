@@ -69,7 +69,7 @@ jobs:
       stage: create-components-helm-charts
       script:
         - make create-helm-charts-release-and-upload || travis_terminate 1
-        - sleep 60
+        - sleep 120
     - name: create-run-helm-full-chart
       stage: create-run-helm-full-chart
       script:
