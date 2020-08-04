@@ -58,14 +58,3 @@ version:
 
 common-helm-chart-version:
 	sed -i -e "s/version:.*/version: $(VERSION)/" requirements.yaml
-
-tag:
-	git add --all
-	git commit -m "release $(VERSION)" --allow-empty # if first release then no verion update is performed
-	git tag -fa v$(VERSION) -m "Release version $(VERSION)"
-	git push origin v$(VERSION)
-
-
-	updatebot -d ../../ push-version --kind maven $(MAVEN_VERSIONS);
-
-

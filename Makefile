@@ -74,16 +74,15 @@ create-helm-charts-release-and-upload:
 	@for chart in $(charts) ; do \
 		cd $$chart ; \
 		pwd ; \
-		make version ||exit -1; \
-		make build ||exit -1; \
-		make release||exit -1; \
-		make github  || exit -1; \
-		sleep 60 ; \
+		make version ||exit 1; \
+		make build ||exit 1; \
+		make release||exit 1; \
+		make github  || exit 1; \
 		cd - ; \
 	done
 update-common-helm-chart-version:
 	@for chart in $(charts) ; do \
 		cd $$chart ; \
-		make common-helm-chart-version|| exit -1; \
+		make common-helm-chart-version|| exit 1; \
 		cd -; \
 	done
