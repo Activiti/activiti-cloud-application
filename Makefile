@@ -77,3 +77,9 @@ create-helm-charts-release-and-upload:
 		make github; \
 		cd - ; \
 	done 
+update-common-helm-chart-version:
+	@for chart in $(charts) ; do \
+		cd $$chart ; \
+		make common-helm-chart-version; \
+		cd -; \
+	done 
