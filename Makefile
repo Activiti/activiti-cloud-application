@@ -77,7 +77,7 @@ create-helm-charts-release-and-upload:
 		make version ||exit -1; \
 		make build ||exit -1; \
 		make release||exit -1; \
-		make github  \
+		make github  || exit -1; \
 		sleep 60 ; \
 		cd - ; \
 	done
