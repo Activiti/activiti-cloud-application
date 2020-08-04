@@ -40,14 +40,6 @@ updatebot/push-version:
 		org.activiti.cloud.rb:activiti-cloud-runtime-bundle-dependencies $(RELEASE_VERSION) \
 		org.activiti.cloud.common:activiti-cloud-service-common-dependencies $(RELEASE_VERSION)
 
-updatebot/update:
-	@echo doing updatebot update $(RELEASE_VERSION)
-	updatebot update
-
-updatebot/update-loop:
-	@echo doing updatebot update-loop $(RELEASE_VERSION)
-	updatebot update-loop --poll-time-ms 60000
-
 
 prepare-helm-chart:
 	cd  .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example/ && \
