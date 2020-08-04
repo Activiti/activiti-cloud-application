@@ -6,6 +6,7 @@ OS := $(shell uname)
 RELEASE_ARTIFACT := $(or $(RELEASE_ARTIFACT),$(APP_NAME))
 
 GITHUB_CHARTS_REPO := $(or $(GITHUB_CHARTS_REPO),$(shell git config --get remote.origin.url))
+GITHUB_CHARTS_DIR := ../../../activiti-cloud-helm-charts
 GITHUB_CHARTS_BRANCH := $(or $(GITHUB_CHARTS_BRANCH),gh-pages)
 
 build: clean
@@ -14,18 +15,12 @@ build: clean
 	helm repo add activiti-cloud-helm-charts https://activiti.github.io/activiti-cloud-helm-charts/
 	helm dependency build
 	helm lint
-	#helm install . --name ${NAME} --debug --dry-run
 
 install:
 	helm install . --name ${NAME}
 
 upgrade: clean build
 	helm upgrade ${NAME} .
-
-dry-run: 
-	helm install . --name ${NAME} --dry-run
-
-preview: version package dry-run release
 
 delete:
 	helm delete --purge ${NAME}
@@ -38,20 +33,23 @@ clean:
 release:
 	helm package .
 
-
 github:
-	$(eval GITHUB_CHARTS_DIR := $(shell basename $(GITHUB_CHARTS_REPO) .git))
-	rm -rf $$GITHUB_CHARTS_DIR || echo "try to remove $$GITHUB_CHARTS_DIR"
-	git clone -b "$(GITHUB_CHARTS_BRANCH)" https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-helm-charts.git $(GITHUB_CHARTS_DIR)
+	echo "$(GITHUB_CHARTS_DIR) - GITHUB_CHARTS_DIR"
+	pwd
+	ls
+	if test -d $(GITHUB_CHARTS_DIR); \
+		then echo exists; \
+	else git clone -b "$(GITHUB_CHARTS_BRANCH)" https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-helm-charts.git $(GITHUB_CHARTS_DIR); \
+  fi
 	cp "$(NAME)-$(VERSION).tgz" $(GITHUB_CHARTS_DIR)
-	cd $(GITHUB_CHARTS_DIR) && \
-	   helm repo index . && \
-	   git add . && \
-	   git status && \
-	   git commit -m "fix:(version) release $(NAME)-$(VERSION).tgz" && \
-	   git pull && \
-	   git push origin "$(GITHUB_CHARTS_BRANCH)"
-	rm -rf $(GITHUB_CHARTS_DIR)
+		cd $(GITHUB_CHARTS_DIR) && \
+		git pull && \
+	  helm repo index . && \
+	  git add  $(NAME)-$(VERSION).tgz index.yaml && \
+	  git status && \
+	  git commit -m "fix:(version) release $(NAME)-$(VERSION).tgz" && \
+	  git pull && \
+	  git push origin "$(GITHUB_CHARTS_BRANCH)"
 
 version:
 	sed -i -e "s/version:.*/version: $(VERSION)/" Chart.yaml
@@ -66,11 +64,7 @@ tag:
 	git tag -fa v$(VERSION) -m "Release version $(VERSION)"
 	git push origin v$(VERSION)
 
-updatebot/push-version: 
-	@echo Resolving push versions for artifacts........
-	$(eval ACTIVITI_CLOUD_RB_VERSION=$(shell mvn help:evaluate -Dexpression=activiti-cloud-runtime-bundle-service.version -q -DforceStdout -f ../../pom.xml))
-	$(eval MAVEN_VERSIONS=org.activiti.cloud.examples:example-runtime-bundle $(RELEASE_VERSION) org.activiti.cloud.rb:activiti-cloud-runtime-bundle-dependencies $(ACTIVITI_CLOUD_RB_VERSION))
 
 	updatebot -d ../../ push-version --kind maven $(MAVEN_VERSIONS);
 
-	
+

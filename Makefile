@@ -69,20 +69,21 @@ run-helm-chart:
             		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
             		--namespace ${PREVIEW_NAMESPACE} \
             		--wait
-								
+
 create-helm-charts-release-and-upload:
 	@for chart in $(charts) ; do \
 		cd $$chart ; \
-		make version; \
-		make build; \
-		make release; \
-		make github; \
+		pwd ; \
+		make version ||exit -1; \
+		make build ||exit -1; \
+		make release||exit -1; \
+		make github  \
 		sleep 60 ; \
 		cd - ; \
-	done 
+	done
 update-common-helm-chart-version:
 	@for chart in $(charts) ; do \
 		cd $$chart ; \
-		make common-helm-chart-version; \
+		make common-helm-chart-version|| exit -1; \
 		cd -; \
-	done 
+	done
