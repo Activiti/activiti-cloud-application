@@ -30,9 +30,7 @@ stages:
 - name: delete_helm_env
 - name: tag_updatebot
   if: type != pull_request
-
 install: true
-
 jobs:
   include:
     - name: build jars
