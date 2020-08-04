@@ -23,7 +23,6 @@ updatebot/push-version-dry:
 updatebot/push-version:
 	@echo Resolving push versions for artifacts........
 	$(eval ACTIVITI_CLOUD_VERSION=$(shell mvn help:evaluate -Dexpression=activiti-cloud-mono-aggregator.version -q -DforceStdout))
-
 	@echo Doing updatebot push-version.....
 	@echo updatebot push-version --dry --kind maven \
 		org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $(RELEASE_VERSION) \
