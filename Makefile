@@ -14,10 +14,6 @@ ACTIVITI_CLOUD_FULL_CHART_VERSIONS := runtime-bundle $(VERSION) activiti-cloud-c
     activiti-cloud-modeling $(VERSION)
 charts := "activiti-cloud-query/charts/activiti-cloud-query" "example-runtime-bundle/charts/runtime-bundle" "example-cloud-connector/charts/activiti-cloud-connector" "activiti-cloud-modeling/charts/activiti-cloud-modeling/"
 
-updatebot/push:
-	@echo doing updatebot push $(RELEASE_VERSION)
-	updatebot push --ref $(RELEASE_VERSION)
-
 updatebot/push-version-dry:
 	updatebot --dry push-version --kind helm activiti-cloud-dependencies $(RELEASE_VERSION) $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)
 
