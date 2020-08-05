@@ -106,7 +106,6 @@ jobs:
       stage: delete_helm_env
       script:
         - cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd -
-
 after_failure:
   - cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd -
 
