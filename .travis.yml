@@ -65,8 +65,7 @@ jobs:
           - sleep 20
           - make prepare-helm-chart || return 1
           - make run-helm-chart || return 1
-    - name: run_acceptance-tests
-      stage: run_acceptance-tests
+    - stage: run_acceptance-tests
       script:
         - cd activiti-cloud-acceptance-scenarios
         - mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q clean verify
