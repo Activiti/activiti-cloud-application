@@ -47,9 +47,7 @@ github:
 	  helm repo index . && \
 	  git add  $(NAME)-$(VERSION).tgz index.yaml && \
 	  git status && \
-	  git commit -m "fix:(version) release $(NAME)-$(VERSION).tgz" && \
-#	  git pull && \
-#	  git push origin "$(GITHUB_CHARTS_BRANCH)"
+	  git commit -m "fix:(version) release $(NAME)-$(VERSION).tgz"
 
 version:
 	sed -i -e "s/version:.*/version: $(VERSION)/" Chart.yaml
