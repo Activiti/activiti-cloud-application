@@ -17,11 +17,9 @@ charts := "activiti-cloud-query/charts/activiti-cloud-query" "example-runtime-bu
 updatebot/push-version-dry:
 	updatebot --dry push-version --kind helm activiti-cloud-dependencies $(RELEASE_VERSION) $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)
 
-
 updatebot/push-version:
 	@echo Resolving push versions for artifacts........
 	$(eval ACTIVITI_CLOUD_VERSION=$(shell mvn help:evaluate -Dexpression=activiti-cloud-mono-aggregator.version -q -DforceStdout))
-
 	@echo Doing updatebot push-version.....
 	@echo updatebot push-version --dry --kind maven \
 		org.activiti.cloud.modeling:activiti-cloud-modeling-dependencies $(RELEASE_VERSION) \
