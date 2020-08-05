@@ -48,8 +48,8 @@ github:
 	  git add  $(NAME)-$(VERSION).tgz index.yaml && \
 	  git status && \
 	  git commit -m "fix:(version) release $(NAME)-$(VERSION).tgz" && \
-	  git pull && \
-	  git push origin "$(GITHUB_CHARTS_BRANCH)"
+#	  git pull && \
+#	  git push origin "$(GITHUB_CHARTS_BRANCH)"
 
 version:
 	echo "VERSION $(VERSION)"
