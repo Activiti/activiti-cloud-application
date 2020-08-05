@@ -16,11 +16,11 @@ before_script:
   - sudo mv linux-amd64/helm /usr/local/bin/
   - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBERNETES_VERSION}/bin/linux/amd64/kubectl
   - chmod +x kubectl && sudo mv kubectl /usr/local/bin/
-  - kubectl config set-cluster default-cluster --server=${K8S_API_URL} || travis_terminate 1
-  - kubectl config set-credentials default-admin --token=${K8S_API_TOKEN} || travis_terminate 1
-  - kubectl config set-context default-system --cluster=default-cluster --user=default-admin || travis_terminate 1
-  - kubectl config use-context default-system || travis_terminate 1
-  - kubectl get ns || travis_terminate 1
+  - kubectl config set-cluster default-cluster --server=${K8S_API_URL} || return 1
+  - kubectl config set-credentials default-admin --token=${K8S_API_TOKEN} || return 1
+  - kubectl config set-context default-system --cluster=default-cluster --user=default-admin || return 1
+  - kubectl config use-context default-system || return 1
+  - kubectl get ns || return 1
 stages:
 - name: build
 - name: create-components-helm-charts
@@ -35,29 +35,29 @@ jobs:
     - name: build jars
       stage: build
       script:
-        - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -DskipITs -DskipTests -f activiti-cloud-acceptance-scenarios/pom.xml || travis_terminate 1
-        - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f example-runtime-bundle/pom.xml || travis_terminate 1
-        - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f activiti-cloud-query/pom.xml || travis_terminate 1
-        - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f example-cloud-connector/pom.xml || travis_terminate 1
-        - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f activiti-cloud-modeling/pom.xml || travis_terminate 1
-        - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f activiti-cloud-dependencies/pom.xml || travis_terminate 1
+        - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -DskipITs -DskipTests -f activiti-cloud-acceptance-scenarios/pom.xml || return 1
+        - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f example-runtime-bundle/pom.xml || return 1
+        - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f activiti-cloud-query/pom.xml || return 1
+        - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f example-cloud-connector/pom.xml || return 1
+        - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f activiti-cloud-modeling/pom.xml || return 1
+        - travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f activiti-cloud-dependencies/pom.xml || return 1
         - docker build -f activiti-cloud-query/Dockerfile -q -t docker.io/activiti/activiti-cloud-query:$(cat VERSION) activiti-cloud-query
         - docker build -f example-cloud-connector/Dockerfile -q -t docker.io/activiti/example-cloud-connector:$(cat VERSION) example-cloud-connector
         - docker build -f example-runtime-bundle/Dockerfile -q -t docker.io/activiti/example-runtime-bundle:$(cat VERSION) example-runtime-bundle
         - docker build -f activiti-cloud-modeling/Dockerfile -q -t docker.io/activiti/activiti-cloud-modeling:$(cat VERSION) activiti-cloud-modeling
 
-        - docker push docker.io/activiti/activiti-cloud-query:$(cat VERSION) || travis_terminate 1
-        - docker push docker.io/activiti/example-runtime-bundle:$(cat VERSION) || travis_terminate 1
-        - docker push docker.io/activiti/example-cloud-connector:$(cat VERSION) || travis_terminate 1
-        - docker push docker.io/activiti/activiti-cloud-modeling:$(cat VERSION) || travis_terminate 1
+        - docker push docker.io/activiti/activiti-cloud-query:$(cat VERSION) || return 1
+        - docker push docker.io/activiti/example-runtime-bundle:$(cat VERSION) || return 1
+        - docker push docker.io/activiti/example-cloud-connector:$(cat VERSION) || return 1
+        - docker push docker.io/activiti/activiti-cloud-modeling:$(cat VERSION) || return 1
 
 #        - cp VERSION  activiti-cloud-dependencies/
 #        - cd activiti-cloud-dependencies
-#        - travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off -DnewVersion=${VERSION}  || travis_terminate 1
-#        - make updatebot/push-version-dry || travis_terminate 1
+#        - travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off -DnewVersion=${VERSION}  || return 1
+#        - make updatebot/push-version-dry || return 1
 #        - sleep 20
-#        - make prepare-helm-chart || travis_terminate 1
-#        - make run-helm-chart || travis_terminate 1
+#        - make prepare-helm-chart || return 1
+#        - make run-helm-chart || return 1
 #        - cd -
 #        - sleep 360
 #        - cd activiti-cloud-acceptance-scenarios
@@ -67,18 +67,18 @@ jobs:
     - name: create-components-helm-charts
       stage: create-components-helm-charts
       script:
-        - make create-helm-charts-release-and-upload || travis_terminate 1
+        - make create-helm-charts-release-and-upload || return 1
         - sleep 120
     - name: create-run-helm-full-chart
       stage: create-run-helm-full-chart
       script:
           - cp VERSION  activiti-cloud-dependencies/
           - cd activiti-cloud-dependencies
- #         - travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off -DnewVersion=${VERSION}  || travis_terminate 1
-          - make updatebot/push-version-dry || travis_terminate 1
+ #         - travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off -DnewVersion=${VERSION}  || return 1
+          - make updatebot/push-version-dry || return 1
           - sleep 20
-          - make prepare-helm-chart || travis_terminate 1
-          - make run-helm-chart || travis_terminate 1
+          - make prepare-helm-chart || return 1
+          - make run-helm-chart || return 1
     - name: run_acceptance-tests
       stage: run_acceptance-tests
       script:
@@ -95,8 +95,8 @@ jobs:
         mvn clean deploy -DskipTests
         git add -u
         git commit -m "Release $(cat VERSION)" --allow-empty
-        git tag -fa v$(cat VERSION) -m "Release version $(cat VERSION)"|| travis_terminate 1;
-        git push -f -q https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git v$(cat VERSION)|| travis_terminate 1;
+        git tag -fa v$(cat VERSION) -m "Release version $(cat VERSION)"|| return 1;
+        git push -f -q https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git v$(cat VERSION)|| return 1;
         updatebot push-version --kind maven \
                   org.activiti.cloud:activiti-cloud-dependencies ${VERSION} \
                   org.activiti.cloud:activiti-cloud-modeling-dependencies ${activiti_cloud_version} \

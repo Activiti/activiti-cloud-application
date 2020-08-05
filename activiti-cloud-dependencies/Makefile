@@ -33,7 +33,7 @@ updatebot/push-version:
 updatebot/push-version-dry:
 	rm -rf  .updatebot-repos
 	updatebot --dry push-version --kind helm activiti-cloud-dependencies $(ACTIVITI_CLOUD_VERSION) $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)
-	
+
 prepare-helm-chart:
 	cd  .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example/ && \
 	  cat requirements.yaml && \
@@ -52,9 +52,9 @@ run-helm-chart: delete
             	helm upgrade ${PREVIEW_NAMESPACE} . \
             		--install \
             		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
-            		--namespace ${PREVIEW_NAMESPACE} 
+            		--namespace ${PREVIEW_NAMESPACE}
 delete:
-	helm delete --purge ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
+	helm delete --purge --no-hooks ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
 	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
 
 
