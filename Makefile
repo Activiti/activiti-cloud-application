@@ -45,9 +45,7 @@ prepare-helm-chart:
         	helm repo add activiti-cloud-helm-charts https://activiti.github.io/activiti-cloud-helm-charts/ && \
         	helm repo add alfresco https://kubernetes-charts.alfresco.com/stable	&& \
         	helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator && \
-        	until $$(helm dependency build) ; do && \
-                  sleep 5 ; && \
-              done && \
+        	while true; do    helm dependency build; (($$? == 0)) && break; echo "sleep";sleep 5 ; done && \
         	helm lint && \
 		helm package .
 
