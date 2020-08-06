@@ -65,12 +65,12 @@ create-helm-charts-release-and-upload:
 		make build ||exit 1; \
 		make release||exit 1; \
 		make github  || exit 1; \
+	done
 		cd activiti-cloud-helm-charts ; \
 		git add index.yaml && \
 		helm repo index . && \
 		git push ; \
 		cd - ; \
-	done
 
 update-common-helm-chart-version:
 	@for chart in $(charts) ; do \
