@@ -68,12 +68,12 @@ jobs:
     - stage: run_acceptance-tests
       script:
         - cd activiti-cloud-acceptance-scenarios
-        - mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q clean verify
+        - mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q clean verify
+
     - stage: run_acceptance-tests
       script:
         - cd activiti-cloud-acceptance-scenarios
-        - mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q clean verify
-
+        - mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q clean verify
     - name: tag_updatebot
       stage: tag_updatebot
       script: |
