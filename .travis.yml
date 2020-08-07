@@ -115,4 +115,3 @@ before_install:
   - curl -sSL https://download.sourceclear.com/ci.sh | CACHE_DIR=${HOME}/sourceclear
   - export activiti_cloud_version=$(grep -oPm1 "(?<=<activiti-cloud.version>)[^<]+" "activiti-cloud-dependencies/pom.xml")
   - echo activiti_cloud_version=${activiti_cloud_version}
-#  - git config --global pull.rebase true
