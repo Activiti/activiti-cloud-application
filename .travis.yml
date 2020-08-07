@@ -21,7 +21,6 @@ before_script:
   - kubectl config set-context default-system --cluster=default-cluster --user=default-admin || return 1
   - kubectl config use-context default-system || return 1
   - kubectl get ns || return 1
-  -
 stages:
   - name: build
   - name: create-components-helm-charts
