@@ -65,7 +65,7 @@ jobs:
         - make prepare-helm-chart || return 1
         - sleep 60
         - make run-helm-chart || return 1
-        - sleep 360
+        - sleep 400
     - stage: run_acceptance-tests
       script:
         - cd activiti-cloud-acceptance-scenarios
