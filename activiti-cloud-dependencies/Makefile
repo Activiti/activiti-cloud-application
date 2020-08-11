@@ -52,7 +52,8 @@ run-helm-chart: delete
             	helm upgrade ${PREVIEW_NAMESPACE} . \
             		--install \
             		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
-            		--namespace ${PREVIEW_NAMESPACE} 
+            		--namespace ${PREVIEW_NAMESPACE} \
+								--wait
 delete:
 	helm delete --purge ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
 	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
