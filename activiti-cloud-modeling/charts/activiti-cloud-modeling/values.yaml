@@ -21,12 +21,12 @@ global:
   gateway:
     host: ""
 db:
-  uri:
-  username:
+  uri: jdbc:mysql://boulder-mysql:3306/activiti?autoReconnect=true
+  username: root
   password:
-  driver:
+  driver: com.mysql.cj.jdbc.Driver
   platform:
-  generateDdl:
+  generateDdl: true
   ddlAuto:
 
 init:
@@ -34,7 +34,7 @@ init:
     repository: alpine:3.8
     pullPolicy: IfNotPresent
 postgres:
-  enabled: true
+  enabled: false 
   name: postgres
   port: 5432
   username: postgres
@@ -112,8 +112,8 @@ backend:
   #       name: {{ .Release.Name }}-keycloak-http
   #       key: expose-keycloak-service-key
   image:
-    repository: activiti/activiti-cloud-modeling
-    tag: 7.1.0.M1
+    repository: harbor.great-it.local/certology/activiti/activiti-cloud-modeling
+    tag: 7.1.908
     pullPolicy: Always
   resources:
     limits:

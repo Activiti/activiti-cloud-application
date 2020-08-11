@@ -23,13 +23,14 @@ global:
     host: ""  
 
 db:
-  uri:
-  username:
+  uri: jdbc:mysql://boulder-mysql:3306/activiti?autoReconnect=true
+  username: root
   password:
-  driver:
+  driver: com.mysql.cj.jdbc.Driver
   platform:
-  generateDdl: "false"
+  generateDdl: "true"
   ddlAuto: "none"
+
 init:
   container:
     image: alpine:3.8
@@ -65,8 +66,8 @@ extraEnv: |
 # only set this variable if a private registry secret is needed to pull the image
 #registryPullSecrets: private-registry-secret
 image:
-  repository: activiti/activiti-cloud-query
-  tag: 7.0.0.SR1
+  repository: harbor.great-it.local/certology/activiti/activiti-cloud-query
+  tag: 7.1.908 
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
