@@ -17,7 +17,7 @@
       </multiInstanceLoopCharacteristics>
     </userTask>
 
-    <userTask id="wait" name="Wait" activiti:assignee="user">
+    <userTask id="wait" name="Wait" activiti:assignee="testuser">
     </userTask>
 
     <sequenceFlow id="flow3" sourceRef="miTasks" targetRef="wait" />

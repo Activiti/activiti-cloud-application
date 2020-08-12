@@ -234,10 +234,12 @@ public class ProcessInstanceTasks {
     public void completeTask(ExamplesTable variableTable) {
         Map<String, Object> variables = new HashMap<>();
         variableTable.getRows().forEach( map -> variables.put(map.get("name"), map.get("value")));
-        taskRuntimeBundleSteps.completeTask(currentTask.getId(),
+        Collection<CloudTask> tasks = processRuntimeBundleSteps
+            .getTaskByProcessInstanceId(processInstance.getId());
+        assertThat(tasks).isNotEmpty();
+        taskRuntimeBundleSteps.completeTask(tasks.iterator().next().getId(),
                 TaskPayloadBuilder
                         .complete()
-                        .withTaskId(currentTask.getId())
                         .withVariables(variables)
                         .build());
     }
