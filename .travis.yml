@@ -112,7 +112,6 @@ after_failure:
   - ls
   - echo TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR
   - cd $TRAVIS_BUILD_DIR/activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd -
- 
 
 before_install:
   - echo -e "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
