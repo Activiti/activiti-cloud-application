@@ -55,7 +55,7 @@ jobs:
       stage: create-components-helm-charts
       script:
         - make create-helm-charts-release-and-upload || return 1
-        - sleep 240
+        - sleep 300
     - name: create-run-helm-full-chart
       stage: create-run-helm-full-chart
       script:
@@ -65,7 +65,7 @@ jobs:
         - make prepare-helm-chart || return 1
         - sleep 60
         - make run-helm-chart || return 1
-        - sleep 400
+        - sleep 360
     - stage: run_acceptance-tests
       script:
         - cd activiti-cloud-acceptance-scenarios
