@@ -9,7 +9,8 @@ env:
     - HELM_REPO_BASE_URL=https://kubernetes-charts.alfresco.com
     - HELM_REPO=stable
     - KUBERNETES_VERSION=1.14.8
-    - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-240}
+    - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-320}
+    
 before_script:
   - echo -e "https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com" >>  ~/.git-credentials
   - curl -s https://kubernetes-helm.storage.googleapis.com/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
