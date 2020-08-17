@@ -53,6 +53,7 @@ version:
 	echo "VERSION $(VERSION)"
 	sed -i -e "s/version:.*/version: $(VERSION)/" Chart.yaml
 	sed -i -e "s/tag: .*/tag: $(VERSION)/" values.yaml
+	sed -i -e "s/apiVersion:.*/apiVersion: $(VERSION)/" Chart.yaml
 
 common-helm-chart-version:
 	sed -i -e "s/version:.*/version: $(VERSION)/" requirements.yaml
