@@ -23,8 +23,10 @@ import org.activiti.api.process.model.payloads.StartProcessPayload;
 import org.activiti.cloud.acc.core.rest.RuntimeDirtyContextHandler;
 import org.activiti.cloud.acc.core.rest.feign.EnableRuntimeFeignContext;
 import org.activiti.cloud.acc.core.services.runtime.ProcessRuntimeService;
+import org.activiti.cloud.acc.shared.service.BaseService;
 import org.activiti.cloud.api.process.model.CloudProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,14 +49,13 @@ public class MultipleRuntimeBundleSteps {
     @Autowired
     private ProcessRuntimeService anotherProcessRuntimeService;
 
-    @Step
-    public void checkServicesHealth() {
-        assertThat(processRuntimeService.isServiceUp()).isTrue();
-    }
+    @Autowired
+    @Qualifier("runtimeBundleBaseService")
+    private BaseService baseService;
 
     @Step
-    public Map<String, Object> health() {
-        return anotherProcessRuntimeService.health();
+    public void checkServicesHealth() {
+        assertThat(baseService.isServiceUp()).isTrue();
     }
 
     @Step

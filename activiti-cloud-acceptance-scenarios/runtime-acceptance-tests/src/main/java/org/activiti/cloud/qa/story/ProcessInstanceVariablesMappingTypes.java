@@ -19,6 +19,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
 
+import java.util.stream.Collectors;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
 import org.activiti.api.model.shared.event.VariableEvent;
@@ -43,12 +45,14 @@ import org.activiti.cloud.acc.core.steps.query.TaskQuerySteps;
 import org.activiti.cloud.acc.core.steps.runtime.ProcessRuntimeBundleSteps;
 import org.activiti.cloud.acc.core.steps.runtime.ProcessVariablesRuntimeBundleSteps;
 import org.activiti.cloud.acc.core.steps.runtime.TaskRuntimeBundleSteps;
+import org.activiti.cloud.acc.core.steps.runtime.TaskVariableRuntimeBundleSteps;
 import org.activiti.cloud.acc.core.steps.runtime.admin.TaskRuntimeAdminSteps;
 import org.activiti.cloud.api.model.shared.CloudVariableInstance;
 import org.activiti.cloud.api.task.model.CloudTask;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 
 public class ProcessInstanceVariablesMappingTypes {
 
@@ -66,6 +70,8 @@ public class ProcessInstanceVariablesMappingTypes {
     private TaskRuntimeAdminSteps taskRuntimeAdminSteps;
     @Steps
     private TaskQuerySteps taskQuerySteps;
+    @Steps
+    private TaskVariableRuntimeBundleSteps taskVariableRuntimeBundleSteps;
 
     String dateStr = "2019-09-09";
 
@@ -342,7 +348,8 @@ public class ProcessInstanceVariablesMappingTypes {
         Task task = processRuntimeBundleSteps.getTaskByProcessInstanceId(processId).stream().filter(t -> t.getName().equals(taskName)).findFirst().orElse(null);
         assertThat(task).isNotNull();
         assertThat(task.getStatus()).isEqualTo(Task.TaskStatus.CREATED);
-        CollectionModel<CloudVariableInstance> rbVariables = taskRuntimeBundleSteps.getVariables(task.getId());
+
+        Collection<CloudVariableInstance> rbVariables = taskVariableRuntimeBundleSteps.getVariables(task.getId());
         Serenity.setSessionVariable("taskId").to(task.getId());
         assertThat(rbVariables)
                 .extracting(CloudVariableInstance::getName,
@@ -367,7 +374,8 @@ public class ProcessInstanceVariablesMappingTypes {
     public void verifyVariableTypeInTask() throws Exception {
         String taskId = Serenity.sessionVariableCalled("taskId");
 
-        CollectionModel<CloudVariableInstance> rbVariables = taskRuntimeBundleSteps.getVariables(taskId);
+        Collection<CloudVariableInstance> rbVariables = taskVariableRuntimeBundleSteps.getVariables(taskId);
+
         assertThat(rbVariables)
                 .extracting(CloudVariableInstance::getName,
                             CloudVariableInstance::getType)
@@ -388,13 +396,13 @@ public class ProcessInstanceVariablesMappingTypes {
     @When("update task variables")
     public void updateTaskVariables() throws Exception {
         String taskId = Serenity.sessionVariableCalled("taskId");
-        taskRuntimeBundleSteps.updateVariable(taskId,
+        taskVariableRuntimeBundleSteps.updateVariable(taskId,
                                               taskVariableString,
                                               "string321");
-        taskRuntimeBundleSteps.updateVariable(taskId,
+        taskVariableRuntimeBundleSteps.updateVariable(taskId,
                                               taskTaskVariableInteger,
                                               321);
-        taskRuntimeBundleSteps.updateVariable(taskId,
+        taskVariableRuntimeBundleSteps.updateVariable(taskId,
                                               taskVariableBoolean,
                                               false);
     }

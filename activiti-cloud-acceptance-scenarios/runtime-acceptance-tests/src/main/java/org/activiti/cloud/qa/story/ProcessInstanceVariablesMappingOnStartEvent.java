@@ -22,16 +22,19 @@ import static org.awaitility.Awaitility.await;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.stream.Collectors;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.task.model.Task;
 import org.activiti.api.task.model.builders.TaskPayloadBuilder;
 import org.activiti.cloud.acc.core.steps.runtime.ProcessRuntimeBundleSteps;
 import org.activiti.cloud.acc.core.steps.runtime.ProcessVariablesRuntimeBundleSteps;
 import org.activiti.cloud.acc.core.steps.runtime.TaskRuntimeBundleSteps;
+import org.activiti.cloud.acc.core.steps.runtime.TaskVariableRuntimeBundleSteps;
 import org.activiti.cloud.api.model.shared.CloudVariableInstance;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
@@ -39,6 +42,7 @@ import org.springframework.hateoas.CollectionModel;
 
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
+import org.springframework.hateoas.EntityModel;
 
 public class ProcessInstanceVariablesMappingOnStartEvent {
 
@@ -48,6 +52,8 @@ public class ProcessInstanceVariablesMappingOnStartEvent {
     private ProcessVariablesRuntimeBundleSteps processVariablesRuntimeBundleSteps;
     @Steps
     private TaskRuntimeBundleSteps taskRuntimeBundleSteps;
+    @Steps
+    private TaskVariableRuntimeBundleSteps taskVariableRuntimeBundleSteps;
 
     public ProcessInstanceVariablesMappingOnStartEvent() throws ParseException {
     }
@@ -107,8 +113,8 @@ public class ProcessInstanceVariablesMappingOnStartEvent {
         Serenity.setSessionVariable("taskId").to(tasks.get(0).getId());
 
         await().untilAsserted(() -> {
-            final CollectionModel<CloudVariableInstance> variables = taskRuntimeBundleSteps
-                                                               .getVariables(tasks.get(0).getId());
+            final Collection<CloudVariableInstance> variables = taskVariableRuntimeBundleSteps
+                .getVariables(tasks.get(0).getId());
 
             assertThat(variables)
                 .isNotNull()
