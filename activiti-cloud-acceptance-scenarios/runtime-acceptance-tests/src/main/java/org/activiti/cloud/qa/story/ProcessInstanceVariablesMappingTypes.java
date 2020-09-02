@@ -31,7 +31,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
 
-import java.util.stream.Collectors;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
 import org.activiti.api.model.shared.event.VariableEvent;
@@ -52,7 +51,6 @@ import org.activiti.cloud.api.task.model.CloudTask;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
 
 public class ProcessInstanceVariablesMappingTypes {
 

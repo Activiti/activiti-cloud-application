@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import java.util.stream.Collectors;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.task.model.Task;
 import org.activiti.api.task.model.builders.TaskPayloadBuilder;
@@ -42,7 +41,6 @@ import org.springframework.hateoas.CollectionModel;
 
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
-import org.springframework.hateoas.EntityModel;
 
 public class ProcessInstanceVariablesMappingOnStartEvent {
 
