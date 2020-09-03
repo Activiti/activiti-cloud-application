@@ -15,20 +15,18 @@
  */
 package org.activiti.cloud.qa.steps;
 
-import java.util.Map;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import net.thucydides.core.annotations.Step;
 import org.activiti.api.process.model.builders.ProcessPayloadBuilder;
 import org.activiti.api.process.model.payloads.StartProcessPayload;
 import org.activiti.cloud.acc.core.rest.RuntimeDirtyContextHandler;
 import org.activiti.cloud.acc.core.rest.feign.EnableRuntimeFeignContext;
-import org.activiti.cloud.acc.core.services.runtime.ProcessRuntimeService;
 import org.activiti.cloud.acc.shared.service.BaseService;
 import org.activiti.cloud.api.process.model.CloudProcessInstance;
+import org.activiti.cloud.services.rest.api.ProcessInstanceApiClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Runtime bundle steps
@@ -44,10 +42,10 @@ public class MultipleRuntimeBundleSteps {
     private RuntimeDirtyContextHandler dirtyContextHandler;
 
     @Autowired
-    private ProcessRuntimeService processRuntimeService;
+    private ProcessInstanceApiClient processInstanceApiClient;
 
     @Autowired
-    private ProcessRuntimeService anotherProcessRuntimeService;
+    private ProcessInstanceApiClient anotherProcessInstanceApiClient;
 
     @Autowired
     @Qualifier("runtimeBundleBaseService")
@@ -62,14 +60,14 @@ public class MultipleRuntimeBundleSteps {
     public CloudProcessInstance startProcess(String process, boolean isPrimaryService) {
 
         StartProcessPayload startProcessCmd = ProcessPayloadBuilder
-                .start()
-                .withProcessDefinitionKey(process)
-                .build();
+            .start()
+            .withProcessDefinitionKey(process)
+            .build();
 
         if (isPrimaryService) {
-            return dirtyContextHandler.dirty(processRuntimeService.startProcess(startProcessCmd));
+            return dirtyContextHandler.dirty(processInstanceApiClient.startProcess(startProcessCmd).getContent());
         } else {
-        	return dirtyContextHandler.dirty(anotherProcessRuntimeService.startProcess(startProcessCmd));
+            return dirtyContextHandler.dirty(anotherProcessInstanceApiClient.startProcess(startProcessCmd).getContent());
         }
     }
 
