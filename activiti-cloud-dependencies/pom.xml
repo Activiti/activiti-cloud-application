@@ -10,7 +10,7 @@
   </parent>
   <groupId>org.activiti.cloud</groupId>
   <artifactId>activiti-cloud-dependencies-parent</artifactId>
-  <version>7.1.0-SNAPSHOT</version>
+  <version>7.1.941</version>
   <packaging>pom</packaging>
   <name>Activiti Cloud :: BOM (Bill of Materials) Parent</name>
   <properties>
