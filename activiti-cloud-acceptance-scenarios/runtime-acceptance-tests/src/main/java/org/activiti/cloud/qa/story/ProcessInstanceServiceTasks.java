@@ -15,7 +15,6 @@
  */
 package org.activiti.cloud.qa.story;
 
-import static org.activiti.api.process.model.events.BPMNErrorReceivedEvent.ErrorEvents.ERROR_RECEIVED;
 import static org.activiti.cloud.qa.helpers.ProcessDefinitionRegistry.processDefinitionKeyMatcher;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -26,6 +25,7 @@ import java.util.Collection;
 
 import org.activiti.api.process.model.IntegrationContext;
 import org.activiti.api.process.model.ProcessInstance;
+import org.activiti.api.process.model.events.IntegrationEvent;
 import org.activiti.api.task.model.Task;
 import org.activiti.cloud.acc.core.steps.audit.AuditSteps;
 import org.activiti.cloud.acc.core.steps.query.ProcessQuerySteps;
@@ -118,7 +118,15 @@ public class ProcessInstanceServiceTasks {
                                 event -> integrationContext(event).getProcessInstanceId()
                     )
                     .containsExactly(
-                                     tuple(ERROR_RECEIVED,
+                                     tuple(IntegrationEvent.IntegrationEvents.INTEGRATION_RESULT_RECEIVED,
+                                           processInstance.getProcessDefinitionId(),
+                                           processInstance.getId(),
+                                           processInstance.getProcessDefinitionKey(),
+                                           processInstance.getBusinessKey(),
+                                           processInstance.getProcessDefinitionId(),
+                                           processInstance.getId()
+                                     ),
+                                     tuple(IntegrationEvent.IntegrationEvents.INTEGRATION_REQUESTED,
                                            processInstance.getProcessDefinitionId(),
                                            processInstance.getId(),
                                            processInstance.getProcessDefinitionKey(),
