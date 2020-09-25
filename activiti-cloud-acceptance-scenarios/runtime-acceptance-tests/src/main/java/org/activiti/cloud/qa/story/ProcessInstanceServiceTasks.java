@@ -29,12 +29,16 @@ import org.activiti.api.process.model.events.IntegrationEvent;
 import org.activiti.api.task.model.Task;
 import org.activiti.cloud.acc.core.steps.audit.AuditSteps;
 import org.activiti.cloud.acc.core.steps.query.ProcessQuerySteps;
+import org.activiti.cloud.acc.core.steps.query.admin.ProcessQueryAdminSteps;
 import org.activiti.cloud.acc.core.steps.runtime.ProcessRuntimeBundleSteps;
 import org.activiti.cloud.api.model.shared.events.CloudRuntimeEvent;
+import org.activiti.cloud.api.process.model.CloudBPMNActivity;
+import org.activiti.cloud.api.process.model.CloudIntegrationContext;
 import org.activiti.cloud.api.process.model.events.CloudIntegrationEvent;
 import org.activiti.cloud.api.task.model.CloudTask;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
+import org.springframework.hateoas.PagedModel;
 
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
@@ -46,6 +50,9 @@ public class ProcessInstanceServiceTasks {
 
     @Steps
     private ProcessQuerySteps processQuerySteps;
+
+    @Steps
+    private ProcessQueryAdminSteps processQueryAdminSteps;
 
     @Steps
     private AuditSteps auditSteps;
@@ -90,6 +97,81 @@ public class ProcessInstanceServiceTasks {
         String processId = Serenity.sessionVariableCalled("processInstanceId");
         processRuntimeBundleSteps.deleteProcessInstance(processId);
     }
+
+    @Then("the user can get list of of all service tasks for process instance")
+    public void verifyServiceTaskListFromProcessInstance() {
+
+        String processId = Serenity.sessionVariableCalled("processInstanceId");
+
+        await().untilAsserted(() -> {
+            PagedModel<CloudBPMNActivity> tasks = processQueryAdminSteps.getServiceTasks(processId);
+
+            assertThat(tasks.getContent())
+                            .isNotEmpty()
+                            .extracting("activityType")
+                            .containsExactly("serviceTask");
+        });
+    }
+
+    @Then("the user can get service task by id")
+    public void verifyGetServiceTaskById() {
+
+        String processId = Serenity.sessionVariableCalled("processInstanceId");
+
+        await().untilAsserted(() -> {
+            PagedModel<CloudBPMNActivity> tasks = processQueryAdminSteps.getServiceTasks(processId);
+
+            assertThat(tasks.getContent()).hasSize(1);
+
+            String serviceTaskId = tasks.getContent()
+                                        .iterator()
+                                        .next()
+                                        .getId();
+
+            CloudBPMNActivity serviceTask = processQueryAdminSteps.getServiceTaskById(serviceTaskId);
+
+            assertThat(serviceTask).isNotNull()
+                                   .extracting(CloudBPMNActivity::getActivityType)
+                                   .isEqualTo("serviceTask");
+        });
+    }
+
+    @Then("the user can get service task integration context by service task id")
+    public void verifyServiceTaskIntegrationContextById() {
+
+        String processId = Serenity.sessionVariableCalled("processInstanceId");
+
+        await().untilAsserted(() -> {
+            PagedModel<CloudBPMNActivity> tasks = processQueryAdminSteps.getServiceTasks(processId);
+
+            assertThat(tasks.getContent()).hasSize(1);
+
+            String serviceTaskId = tasks.getContent()
+                                        .iterator()
+                                        .next()
+                                        .getId();
+
+            CloudIntegrationContext serviceTask = processQueryAdminSteps.getCloudIntegrationContext(serviceTaskId);
+
+            assertThat(serviceTask).isNotNull()
+                                   .extracting(CloudIntegrationContext::getClientType)
+                                   .isEqualTo("serviceTask");
+        });
+    }
+
+    @Then("the user can get list of of all service tasks with status of $status")
+    public void verifyGetServiceTaskByStatus(String status) {
+        String processId = Serenity.sessionVariableCalled("processInstanceId");
+
+        await().untilAsserted(() -> {
+            PagedModel<CloudBPMNActivity> tasks = processQueryAdminSteps.getServiceTasksByStatus(processId,
+                                                                                                 status);
+            assertThat(tasks.getContent()).isNotEmpty()
+                                          .extracting(CloudBPMNActivity::getActivityType, CloudBPMNActivity::getStatus)
+                                          .isEqualTo(tuple("serviceTask", CloudBPMNActivity.BPMNActivityStatus.valueOf(status)));
+        });
+    }
+
 
     @Then("the process with service tasks is completed")
     public void verifyProcessCompleted() throws Exception {
