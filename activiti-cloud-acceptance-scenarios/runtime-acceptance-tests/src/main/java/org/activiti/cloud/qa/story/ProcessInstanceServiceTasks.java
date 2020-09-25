@@ -132,8 +132,8 @@ public class ProcessInstanceServiceTasks {
             CloudIntegrationContext serviceTask = processQueryAdminSteps.getCloudIntegrationContext(serviceTaskId);
 
             assertThat(serviceTask).isNotNull()
-                                   .extracting(CloudIntegrationContext::getClientType)
-                                   .isEqualTo("serviceTask");
+                                   .extracting(CloudIntegrationContext::getClientType, CloudIntegrationContext::getStatus)
+                                   .contains("ServiceTask", CloudIntegrationContext.IntegrationContextStatus.INTEGRATION_RESULT_RECEIVED);
         });
     }
 
@@ -146,7 +146,7 @@ public class ProcessInstanceServiceTasks {
                                                                                                  status);
             assertThat(tasks.getContent()).isNotEmpty()
                                           .extracting(CloudBPMNActivity::getActivityType, CloudBPMNActivity::getStatus)
-                                          .isEqualTo(tuple("serviceTask", CloudBPMNActivity.BPMNActivityStatus.valueOf(status)));
+                                          .contains(tuple("serviceTask", CloudBPMNActivity.BPMNActivityStatus.valueOf(status)));
         });
     }
 
