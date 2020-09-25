@@ -26,7 +26,6 @@ import java.util.Collection;
 import org.activiti.api.process.model.IntegrationContext;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.process.model.events.IntegrationEvent;
-import org.activiti.api.task.model.Task;
 import org.activiti.cloud.acc.core.steps.audit.AuditSteps;
 import org.activiti.cloud.acc.core.steps.query.ProcessQuerySteps;
 import org.activiti.cloud.acc.core.steps.query.admin.ProcessQueryAdminSteps;
@@ -35,7 +34,6 @@ import org.activiti.cloud.api.model.shared.events.CloudRuntimeEvent;
 import org.activiti.cloud.api.process.model.CloudBPMNActivity;
 import org.activiti.cloud.api.process.model.CloudIntegrationContext;
 import org.activiti.cloud.api.process.model.events.CloudIntegrationEvent;
-import org.activiti.cloud.api.task.model.CloudTask;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.hateoas.PagedModel;
@@ -70,26 +68,6 @@ public class ProcessInstanceServiceTasks {
     public void startProcess(String processName) throws IOException, InterruptedException {
         processInstance = processRuntimeBundleSteps.startProcess(processDefinitionKeyMatcher(processName),false);
         Serenity.setSessionVariable("processInstanceId").to(processInstance.getId());
-    }
-
-    @Then("the user can see a service tasks with a status $status")
-    public void verifyServiceTaskWithStatusFromProcessInstance(String taskName,
-                                              Task.TaskStatus status) {
-
-        String processId = Serenity.sessionVariableCalled("processInstanceId");
-
-        await().untilAsserted(() -> {
-            Collection<CloudTask> tasks = processRuntimeBundleSteps.getTaskByProcessInstanceId(processId);
-
-            assertThat(tasks)
-            .isNotEmpty()
-            .extracting("status",
-                        "name")
-            .containsExactly(
-                              tuple(status,
-                                    taskName
-                              ));
-        });
     }
 
     @Then("the user deletes the process with service tasks")
