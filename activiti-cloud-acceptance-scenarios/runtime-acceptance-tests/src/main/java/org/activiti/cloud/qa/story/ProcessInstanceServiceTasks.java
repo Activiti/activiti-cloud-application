@@ -76,7 +76,7 @@ public class ProcessInstanceServiceTasks {
         processRuntimeBundleSteps.deleteProcessInstance(processId);
     }
 
-    @Then("the user can get list of of all service tasks for process instance")
+    @Then("the user can get list of service tasks for process instance")
     public void verifyServiceTaskListFromProcessInstance() {
 
         String processId = Serenity.sessionVariableCalled("processInstanceId");
@@ -133,11 +133,11 @@ public class ProcessInstanceServiceTasks {
 
             assertThat(serviceTask).isNotNull()
                                    .extracting(CloudIntegrationContext::getClientType, CloudIntegrationContext::getStatus)
-                                   .contains("ServiceTask", CloudIntegrationContext.IntegrationContextStatus.INTEGRATION_RESULT_RECEIVED);
+                                   .containsOnly("ServiceTask", CloudIntegrationContext.IntegrationContextStatus.INTEGRATION_RESULT_RECEIVED);
         });
     }
 
-    @Then("the user can get list of of all service tasks with status of $status")
+    @Then("the user can get list of service tasks with status of $status")
     public void verifyGetServiceTaskByStatus(String status) {
         String processId = Serenity.sessionVariableCalled("processInstanceId");
 
@@ -146,10 +146,19 @@ public class ProcessInstanceServiceTasks {
                                                                                                  status);
             assertThat(tasks.getContent()).isNotEmpty()
                                           .extracting(CloudBPMNActivity::getActivityType, CloudBPMNActivity::getStatus)
-                                          .contains(tuple("serviceTask", CloudBPMNActivity.BPMNActivityStatus.valueOf(status)));
+                                          .containsOnly(tuple("serviceTask", CloudBPMNActivity.BPMNActivityStatus.valueOf(status)));
         });
     }
 
+    @Then("the user can get list of service tasks by query of $query")
+    public void verifyGetServiceTaskByQuery(String query) {
+        await().untilAsserted(() -> {
+            PagedModel<CloudBPMNActivity> tasks = processQueryAdminSteps.getServiceTasksByQuery(query);
+            assertThat(tasks.getContent()).isNotEmpty()
+                                          .extracting(CloudBPMNActivity::getActivityType)
+                                          .containsOnly("serviceTask");
+        });
+    }
 
     @Then("the process with service tasks is completed")
     public void verifyProcessCompleted() throws Exception {
@@ -196,6 +205,46 @@ public class ProcessInstanceServiceTasks {
                                      ));
         });
     }
+
+    @Then("integration context error events are emitted for the process")
+    public void verifyIntegrationContextErrorEventsForProcess() throws Exception {
+
+        String processId = Serenity.sessionVariableCalled("processInstanceId");
+
+        await().untilAsserted(() -> {
+            Collection<CloudRuntimeEvent> events = auditSteps.getEventsByProcessInstanceId(processId);
+
+            assertThat(events)
+                    .filteredOn(CloudIntegrationEvent.class::isInstance)
+                    .isNotEmpty()
+                    .extracting(CloudRuntimeEvent::getEventType,
+                                CloudRuntimeEvent::getProcessDefinitionId,
+                                CloudRuntimeEvent::getProcessInstanceId,
+                                CloudRuntimeEvent::getProcessDefinitionKey,
+                                CloudRuntimeEvent::getBusinessKey,
+                                event -> integrationContext(event).getProcessDefinitionId(),
+                                event -> integrationContext(event).getProcessInstanceId()
+                    )
+                    .containsExactly(
+                                     tuple(IntegrationEvent.IntegrationEvents.INTEGRATION_ERROR_RECEIVED,
+                                           processInstance.getProcessDefinitionId(),
+                                           processInstance.getId(),
+                                           processInstance.getProcessDefinitionKey(),
+                                           processInstance.getBusinessKey(),
+                                           processInstance.getProcessDefinitionId(),
+                                           processInstance.getId()
+                                     ),
+                                     tuple(IntegrationEvent.IntegrationEvents.INTEGRATION_REQUESTED,
+                                           processInstance.getProcessDefinitionId(),
+                                           processInstance.getId(),
+                                           processInstance.getProcessDefinitionKey(),
+                                           processInstance.getBusinessKey(),
+                                           processInstance.getProcessDefinitionId(),
+                                           processInstance.getId()
+                                     ));
+        });
+    }
+
 
     private IntegrationContext integrationContext(CloudRuntimeEvent<?,?> event) {
         return CloudIntegrationEvent.class.cast(event).getEntity();
