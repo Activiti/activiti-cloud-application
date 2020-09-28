@@ -42,7 +42,12 @@ Then integration context error events are emitted for the process
 And the user can get list of service tasks with status of ERROR
 And the status of the process is changed to cancelled
 
-#Scenario: get all service tasks by query 
-#Given the user is authenticated as testadmin
-#Then the user can get list of service tasks by query of processDefinitionKey=ConnectorProcess&status=COMPLETED
-#Then the user can get list of service tasks by query of processDefinitionKey=testBpmnErrorConnectorProcess&status=ERROR
+Scenario: get all completed service tasks by query 
+Given the user is authenticated as testadmin
+When the user starts a process with service tasks called CONNECTOR_PROCESS_INSTANCE
+Then the user can get list of service tasks for process key ConnectorProcess and status COMPLETED
+
+Scenario: get all error service tasks by query 
+Given the user is authenticated as testadmin
+When the user starts a process with service tasks called BPMN_ERROR_CONNECTOR_PROCESS
+Then the user can get list of service tasks for process key testBpmnErrorConnectorProcess and status ERROR

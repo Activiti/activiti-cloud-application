@@ -17,11 +17,13 @@ package org.activiti.cloud.qa.story;
 
 import static org.activiti.cloud.qa.helpers.ProcessDefinitionRegistry.processDefinitionKeyMatcher;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 import org.activiti.api.process.model.IntegrationContext;
 import org.activiti.api.process.model.ProcessInstance;
@@ -150,13 +152,17 @@ public class ProcessInstanceServiceTasks {
         });
     }
 
-    @Then("the user can get list of service tasks by query of $query")
-    public void verifyGetServiceTaskByQuery(String query) {
+    @Then("the user can get list of service tasks for process key $processDefinitionKey and status $status")
+    public void verifyGetServiceTaskByQuery(String processDefinitionKey,
+                                            String status) {
+        Map<String, String> queryMap = Map.ofEntries(entry("processDefinitionKey", processDefinitionKey),
+                                                     entry("status", status));
+
         await().untilAsserted(() -> {
-            PagedModel<CloudBPMNActivity> tasks = processQueryAdminSteps.getServiceTasksByQuery(query);
+            PagedModel<CloudBPMNActivity> tasks = processQueryAdminSteps.getServiceTasksByQuery(queryMap);
             assertThat(tasks.getContent()).isNotEmpty()
-                                          .extracting(CloudBPMNActivity::getActivityType)
-                                          .containsOnly("serviceTask");
+                                          .extracting(CloudBPMNActivity::getActivityType, CloudBPMNActivity::getStatus)
+                                          .containsOnly(tuple("serviceTask", CloudBPMNActivity.BPMNActivityStatus.valueOf(status)));
         });
     }
 
