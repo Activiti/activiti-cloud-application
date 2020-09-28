@@ -161,8 +161,12 @@ public class ProcessInstanceServiceTasks {
         await().untilAsserted(() -> {
             PagedModel<CloudBPMNActivity> tasks = processQueryAdminSteps.getServiceTasksByQuery(queryMap);
             assertThat(tasks.getContent()).isNotEmpty()
-                                          .extracting(CloudBPMNActivity::getActivityType, CloudBPMNActivity::getStatus)
-                                          .containsOnly(tuple("serviceTask", CloudBPMNActivity.BPMNActivityStatus.valueOf(status)));
+                                          .extracting(this::getProcessDefinitionKey,
+                                                      CloudBPMNActivity::getActivityType,
+                                                      CloudBPMNActivity::getStatus)
+                                          .containsOnly(tuple(processDefinitionKey,
+                                                              "serviceTask",
+                                                              CloudBPMNActivity.BPMNActivityStatus.valueOf(status)));
         });
     }
 
@@ -255,4 +259,9 @@ public class ProcessInstanceServiceTasks {
     private IntegrationContext integrationContext(CloudRuntimeEvent<?,?> event) {
         return CloudIntegrationEvent.class.cast(event).getEntity();
     }
+
+    private String getProcessDefinitionKey(CloudBPMNActivity bpmnActivity) {
+        return bpmnActivity.getProcessDefinitionId().split(":")[0];
+    }
+
 }
