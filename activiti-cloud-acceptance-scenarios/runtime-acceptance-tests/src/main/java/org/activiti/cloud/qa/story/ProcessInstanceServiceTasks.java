@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.activiti.api.process.model.IntegrationContext;
+import org.activiti.api.process.model.ProcessDefinition;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.process.model.events.IntegrationEvent;
 import org.activiti.cloud.acc.core.steps.audit.AuditSteps;
@@ -89,7 +90,7 @@ public class ProcessInstanceServiceTasks {
             assertThat(tasks.getContent())
                             .isNotEmpty()
                             .extracting("activityType")
-                            .containsExactly("serviceTask");
+                            .containsOnly("serviceTask");
         });
     }
 
@@ -158,13 +159,19 @@ public class ProcessInstanceServiceTasks {
         Map<String, String> queryMap = Map.ofEntries(entry("processDefinitionKey", processDefinitionKey),
                                                      entry("status", status));
 
+        ProcessDefinition processDefinition = processQuerySteps.getProcessDefinitions()
+                                                               .getContent()
+                                                               .stream()
+                                                               .filter(i -> i.getKey().equals(processDefinitionKey))
+                                                               .findFirst()
+                                                               .orElseThrow();
         await().untilAsserted(() -> {
             PagedModel<CloudBPMNActivity> tasks = processQueryAdminSteps.getServiceTasksByQuery(queryMap);
             assertThat(tasks.getContent()).isNotEmpty()
-                                          .extracting(this::getProcessDefinitionKey,
+                                          .extracting(CloudBPMNActivity::getProcessDefinitionId,
                                                       CloudBPMNActivity::getActivityType,
                                                       CloudBPMNActivity::getStatus)
-                                          .containsOnly(tuple(processDefinitionKey,
+                                          .containsOnly(tuple(processDefinition.getId(),
                                                               "serviceTask",
                                                               CloudBPMNActivity.BPMNActivityStatus.valueOf(status)));
         });
@@ -196,7 +203,7 @@ public class ProcessInstanceServiceTasks {
                                 event -> integrationContext(event).getProcessDefinitionId(),
                                 event -> integrationContext(event).getProcessInstanceId()
                     )
-                    .containsExactly(
+                    .containsOnly(
                                      tuple(IntegrationEvent.IntegrationEvents.INTEGRATION_RESULT_RECEIVED,
                                            processInstance.getProcessDefinitionId(),
                                            processInstance.getId(),
@@ -235,7 +242,7 @@ public class ProcessInstanceServiceTasks {
                                 event -> integrationContext(event).getProcessDefinitionId(),
                                 event -> integrationContext(event).getProcessInstanceId()
                     )
-                    .containsExactly(
+                    .containsOnly(
                                      tuple(IntegrationEvent.IntegrationEvents.INTEGRATION_ERROR_RECEIVED,
                                            processInstance.getProcessDefinitionId(),
                                            processInstance.getId(),
@@ -258,10 +265,6 @@ public class ProcessInstanceServiceTasks {
 
     private IntegrationContext integrationContext(CloudRuntimeEvent<?,?> event) {
         return CloudIntegrationEvent.class.cast(event).getEntity();
-    }
-
-    private String getProcessDefinitionKey(CloudBPMNActivity bpmnActivity) {
-        return bpmnActivity.getProcessDefinitionId().split(":")[0];
     }
 
 }
