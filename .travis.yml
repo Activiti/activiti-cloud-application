@@ -30,6 +30,7 @@ before_script:
 - kubectl get ns || travis_terminate 1
 stages:
 - name: build
+- name: run acceptance tests
 - name: tag_updatebot
   if: type != pull_request
 install: true
@@ -58,6 +59,7 @@ jobs:
       VERSION) example-runtime-bundle
     - docker build -f activiti-cloud-modeling/Dockerfile -q -t docker.io/activiti/activiti-cloud-modeling:$(cat
       VERSION) activiti-cloud-modeling
+    - make create-helm-charts-release-and-upload
     - docker push docker.io/activiti/activiti-cloud-query:$(cat VERSION) || travis_terminate
       1
     - docker push docker.io/activiti/example-runtime-bundle:$(cat VERSION) || travis_terminate
@@ -66,7 +68,6 @@ jobs:
       1
     - docker push docker.io/activiti/activiti-cloud-modeling:$(cat VERSION) || travis_terminate
       1
-    - make create-helm-charts-release-and-upload
     - cp VERSION  activiti-cloud-dependencies/
     - cd activiti-cloud-dependencies
     - travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off
@@ -75,12 +76,48 @@ jobs:
     - sleep 20
     - make prepare-helm-chart || travis_terminate 1
     - make run-helm-chart || travis_terminate 1
-    - cd -
-    - sleep 240
-    - cd activiti-cloud-acceptance-scenarios
-    - mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q clean verify
-    - mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q clean verify
-    - cd -
+
+  - stage: run acceptance tests
+    name: run modeling acceptance tests
+    script: |
+      attempt_counter=0
+      max_attempts=50
+      echo "Waiting for services to be up..."
+      until $(curl --output /dev/null --silent --head --fail \
+                ${GATEWAY_HOST}/modeling-service/v2/api-docs); do
+          if [ ${attempt_counter} -eq ${max_attempts} ];then
+            echo "Max attempts reached"
+            break
+          fi
+
+          printf '.'
+          attempt_counter=$((attempt_counter+1))
+          sleep 5
+      done
+      cd activiti-cloud-acceptance-scenarios
+      mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q clean verify
+
+  - name: run runtime acceptance tests
+    script: |
+      attempt_counter=0
+      max_attempts=50
+      echo "Waiting for services to be up..."
+      until $(curl --output /dev/null --silent --head --fail \
+                ${GATEWAY_HOST}/rb/v2/api-docs) &&
+            $(curl --output /dev/null --silent --head --fail \
+            ${GATEWAY_HOST}/query/v2/api-docs); do
+          if [ ${attempt_counter} -eq ${max_attempts} ];then
+            echo "Max attempts reached"
+            break
+          fi
+
+          printf '.'
+          attempt_counter=$((attempt_counter+1))
+          sleep 5
+      done
+      cd activiti-cloud-acceptance-scenarios
+      mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q clean verify
+
   - name: tag_updatebot
     stage: tag_updatebot
     script: |
