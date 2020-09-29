@@ -45,17 +45,13 @@ jobs:
       travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f activiti-cloud-modeling/pom.xml
       travis_wait ${TRAVIS_WAIT_TIMEOUT} ${MAVEN_CMD} -f activiti-cloud-dependencies/pom.xml
       echo "Building docker image for activiti-cloud-query..."
-      docker build -f activiti-cloud-query/Dockerfile -q -t docker.io/activiti/activiti-cloud-query:$(cat
-      VERSION) activiti-cloud-query
+      docker build -f activiti-cloud-query/Dockerfile -t docker.io/activiti/activiti-cloud-query:$(cat VERSION) activiti-cloud-query
       echo "Building docker image for activiti-cloud-connector..."
-      docker build -f example-cloud-connector/Dockerfile -q -t docker.io/activiti/example-cloud-connector:$(cat
-      VERSION) example-cloud-connector
+      docker build -f example-cloud-connector/Dockerfile -t docker.io/activiti/example-cloud-connector:$(cat VERSION) example-cloud-connector
       echo "Building docker image for example-runtime-bundle..."
-      docker build -f example-runtime-bundle/Dockerfile -q -t docker.io/activiti/example-runtime-bundle:$(cat
-      VERSION) example-runtime-bundle
+      docker build -f example-runtime-bundle/Dockerfile -t docker.io/activiti/example-runtime-bundle:$(cat VERSION) example-runtime-bundle
       echo "Building docker image for activiti-cloud-modeling..."
-      docker build -f activiti-cloud-modeling/Dockerfile -q -t docker.io/activiti/activiti-cloud-modeling:$(cat
-      VERSION) activiti-cloud-modeling
+      docker build -f activiti-cloud-modeling/Dockerfile -t docker.io/activiti/activiti-cloud-modeling:$(cat VERSION) activiti-cloud-modeling
       make create-helm-charts-release-and-upload
       docker push docker.io/activiti/activiti-cloud-query:$(cat VERSION)
       docker push docker.io/activiti/example-runtime-bundle:$(cat VERSION)
@@ -63,8 +59,7 @@ jobs:
       docker push docker.io/activiti/activiti-cloud-modeling:$(cat VERSION)
       cp VERSION  activiti-cloud-dependencies/
       cd activiti-cloud-dependencies
-      travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off
-      -DnewVersion=${VERSION}
+      travis_wait ${TRAVIS_WAIT_TIMEOUT} mvn -q versions:set -Droot.log.level=off -DnewVersion=${VERSION}
       make updatebot/push-version-dry
       sleep 20
       make prepare-helm-chart
