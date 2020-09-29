@@ -70,11 +70,11 @@ jobs:
       max_attempts=50
       echo "Waiting for services to be up..."
       until curl --silent --head --fail \
-                ${GATEWAY_HOST}/modeling-service/v2/api-docs > /dev/null &&
+                ${GATEWAY_HOST}/modeling-service/v2/api-docs > /dev/null 2>&1 &&
             curl --silent --head --fail \
-                 ${GATEWAY_HOST}/rb/v2/api-docs > /dev/null &&
+                 ${GATEWAY_HOST}/rb/v2/api-docs > /dev/null 2>&1 &&
              curl --silent --head --fail \
-                  ${GATEWAY_HOST}/query/v2/api-docs > /dev/null; do
+                  ${GATEWAY_HOST}/query/v2/api-docs > /dev/null 2>&1; do
           if [ ${attempt_counter} -eq ${max_attempts} ];then
             echo "Max attempts reached"
             break
