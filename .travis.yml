@@ -64,7 +64,7 @@ jobs:
       sleep 20
       make prepare-helm-chart
       make run-helm-chart
-      cd-
+      cd -
 
       attempt_counter=0
       max_attempts=50
