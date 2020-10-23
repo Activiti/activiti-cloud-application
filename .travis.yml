@@ -93,18 +93,19 @@ jobs:
 
   - name: Run acceptance tests
     stage: Run acceptance tests
-    script:
-      - make create-helm-charts-release-and-upload
-      - cp VERSION  activiti-cloud-dependencies/
-      - cd activiti-cloud-dependencies
-      - mvn -B versions:set -Droot.log.level=off -DnewVersion=${VERSION}
-      - make updatebot/push-version-dry
-      - sleep 20
-      - make prepare-helm-chart
-      - make run-helm-chart
-      - cd -
+    script: |
+       (
+        set -e
+        make create-helm-charts-release-and-upload
+        cp VERSION  activiti-cloud-dependencies/
+        cd activiti-cloud-dependencies
+        mvn -B versions:set -Droot.log.level=off -DnewVersion=${VERSION}
+        make updatebot/push-version-dry
+        sleep 20
+        make prepare-helm-chart
+        make run-helm-chart
+        cd -
 
-      - |
         attempt_counter=0
         max_attempts=50
         echo "Waiting for services to be up..."
@@ -124,10 +125,11 @@ jobs:
             sleep 5
         done
 
-      - cd activiti-cloud-acceptance-scenarios
-      - mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q clean verify
-      - mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q clean verify
-      - cd -
+      cd activiti-cloud-acceptance-scenarios
+      mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q clean verify
+      mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q clean verify
+      cd -
+      )
 
   - name: tag_updatebot
     stage: tag_updatebot
