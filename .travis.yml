@@ -2,7 +2,6 @@ import: Activiti/activiti-scripts:.travis.java.yml@master
 
 fail_fast: true
 
-before_cache: rm -fr ${HOME}/.m2/repository/org && rm -fr ${HOME}/.m2/repository/com
 cache:
   directories:
     - "${HOME}/.m2/repository"
