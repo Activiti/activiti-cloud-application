@@ -94,36 +94,36 @@ jobs:
   - name: Run acceptance tests
     stage: Run acceptance tests
     script: |
-       (
-        set -e
-        make create-helm-charts-release-and-upload
-        cp VERSION  activiti-cloud-dependencies/
-        cd activiti-cloud-dependencies
-        mvn -B versions:set -Droot.log.level=off -DnewVersion=${VERSION}
-        make updatebot/push-version-dry
-        sleep 20
-        make prepare-helm-chart
-        make run-helm-chart
-        cd -
+      (
+      set -e
+      make create-helm-charts-release-and-upload
+      cp VERSION  activiti-cloud-dependencies/
+      cd activiti-cloud-dependencies
+      mvn -B versions:set -Droot.log.level=off -DnewVersion=${VERSION}
+      make updatebot/push-version-dry
+      sleep 20
+      make prepare-helm-chart
+      make run-helm-chart
+      cd -
 
-        attempt_counter=0
-        max_attempts=50
-        echo "Waiting for services to be up..."
-        until curl --silent --head --fail \
-                  ${GATEWAY_HOST}/modeling-service/v2/api-docs > /dev/null 2>&1 &&
-              curl --silent --head --fail \
-                   ${GATEWAY_HOST}/rb/v2/api-docs > /dev/null 2>&1 &&
-               curl --silent --head --fail \
-                    ${GATEWAY_HOST}/query/v2/api-docs > /dev/null 2>&1; do
-            if [ ${attempt_counter} -eq ${max_attempts} ];then
-              echo "Max attempts reached"
-              break
-            fi
+      attempt_counter=0
+      max_attempts=50
+      echo "Waiting for services to be up..."
+      until curl --silent --head --fail \
+                ${GATEWAY_HOST}/modeling-service/v2/api-docs > /dev/null 2>&1 &&
+            curl --silent --head --fail \
+                 ${GATEWAY_HOST}/rb/v2/api-docs > /dev/null 2>&1 &&
+             curl --silent --head --fail \
+                  ${GATEWAY_HOST}/query/v2/api-docs > /dev/null 2>&1; do
+          if [ ${attempt_counter} -eq ${max_attempts} ];then
+            echo "Max attempts reached"
+            break
+          fi
 
-            printf '.'
-            attempt_counter=$((attempt_counter+1))
-            sleep 5
-        done
+          printf '.'
+          attempt_counter=$((attempt_counter+1))
+          sleep 5
+      done
 
       cd activiti-cloud-acceptance-scenarios
       mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q clean verify
