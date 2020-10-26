@@ -175,7 +175,7 @@ jobs:
                       activiti-cloud-modeling ${VERSION}
 
 before_install:
-- pip install --user awscli==$AWSCLI_VERSION
+- pip install --user awscli
 - echo -e "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
 - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
   "$DOCKER_REGISTRY"
