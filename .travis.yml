@@ -46,13 +46,13 @@ jobs:
   include:
   - name: Build Maven
     stage: Build Maven
-    script: mvn clean install -B -DskipTests -Dmaven.javadoc.skip=true
+    script: mvn install -B -DskipTests -Dmaven.javadoc.skip=true
   - name: Build Example Runtime Bundle
     stage: Build Docker
     script: |
       (
       set -e
-      mvn clean verify -B -pl example-runtime-bundle -am
+      mvn verify -B -pl example-runtime-bundle -am
       echo "Building docker image for example-runtime-bundle..."
       docker build -f example-runtime-bundle/Dockerfile -q -t docker.io/activiti/example-runtime-bundle:$(cat VERSION) example-runtime-bundle
       docker push docker.io/activiti/example-runtime-bundle:$(cat VERSION)
@@ -63,7 +63,7 @@ jobs:
     script: |
       (
       set -e
-      mvn clean verify -B -pl activiti-cloud-query -am
+      mvn verify -B -pl activiti-cloud-query -am
       echo "Building docker image for activiti-cloud-query..."
       docker build -f activiti-cloud-query/Dockerfile -q -t docker.io/activiti/activiti-cloud-query:$(cat VERSION) activiti-cloud-query
       docker push docker.io/activiti/activiti-cloud-query:$(cat VERSION)
@@ -74,7 +74,7 @@ jobs:
     script: |
       (
       set -e
-      mvn clean verify -B -pl example-cloud-connector -am
+      mvn verify -B -pl example-cloud-connector -am
       echo "Building docker image for activiti-cloud-connector..."
       docker build -f example-cloud-connector/Dockerfile -q -t docker.io/activiti/example-cloud-connector:$(cat VERSION) example-cloud-connector
       docker push docker.io/activiti/example-cloud-connector:$(cat VERSION)
@@ -85,7 +85,7 @@ jobs:
     script: |
       (
       set -e
-      mvn clean verify -B -pl activiti-cloud-modeling -am
+      mvn verify -B -pl activiti-cloud-modeling -am
       echo "Building docker image for activiti-cloud-modeling..."
       docker build -f activiti-cloud-modeling/Dockerfile -q -t docker.io/activiti/activiti-cloud-modeling:$(cat VERSION) activiti-cloud-modeling
       docker push docker.io/activiti/activiti-cloud-modeling:$(cat VERSION)
@@ -93,6 +93,7 @@ jobs:
 
   - name: Run acceptance tests
     stage: Run acceptance tests
+    after_script: cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd -
     script: |
       (
       set -e
@@ -126,8 +127,8 @@ jobs:
       done
 
       cd activiti-cloud-acceptance-scenarios
-      mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q clean verify
-      mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q clean verify
+      mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q verify
+      mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q verify
       cd -
       )
 
@@ -159,12 +160,7 @@ jobs:
                       activiti-cloud-connector ${VERSION} \
                       activiti-cloud-query ${VERSION} \
                       activiti-cloud-modeling ${VERSION}
-after_failure:
-- cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart"
-  &&  cd -
-after_success:
-- cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart"
-  &&  cd -
+
 before_install:
 - echo -e "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
 - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
