@@ -127,15 +127,15 @@ jobs:
       done
 
       cd activiti-cloud-acceptance-scenarios
-      mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off -q verify
-      mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off -q verify
+      mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off verify
+      mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off verify
       cd -
       )
 
   - name: tag_updatebot
     stage: tag_updatebot
     script: |
-      mvn versions:set -q -DprocessAllModules=true -DgenerateBackupPoms=false  -DnewVersion=$(cat VERSION)
+      mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false  -DnewVersion=$(cat VERSION)
       mvn clean deploy -DskipTests
       git add -u
       git commit -m "Release $(cat VERSION)" --allow-empty
