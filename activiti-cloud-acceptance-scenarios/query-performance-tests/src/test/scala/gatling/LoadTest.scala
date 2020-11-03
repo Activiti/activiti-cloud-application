@@ -26,7 +26,7 @@ class LoadTest extends Simulation {
 
   val httpConf = http.disableFollowRedirect
 
-  val ssoUrl = "http://${domain}:8180/auth/realms/${realm}/protocol/openid-connect/token"
+  val ssoUrl = "http://${sso}/auth/realms/${realm}/protocol/openid-connect/token"
   val rbUrl = "http://${domain}/rb"
   val queryUrl = "http://${domain}/query"
   val graphqlUrl = "http://${domain}/query/graphql"
