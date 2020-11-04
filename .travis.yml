@@ -102,10 +102,31 @@ jobs:
       cd activiti-cloud-dependencies
       mvn -B versions:set -Droot.log.level=off -DnewVersion=${VERSION}
       make updatebot/push-version-dry
-      sleep 20
-      make prepare-helm-chart
+      cd  .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example
+      cat requirements.yaml
+      rm -rf requirements.lock
+      rm -rf charts
+      rm -rf *.tgz
+      helm init --client-only
+      helm repo add activiti-cloud-helm-charts https://activiti.github.io/activiti-cloud-helm-charts
+
+      attempt_counter=0
+      max_attempts=25
+      echo "Waiting for chart dependencies..."
+      until helm dep up; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+          echo "/!\ Max attempts reached!"
+          break
+        fi
+        attempt_counter=$((attempt_counter+1))
+        sleep 5
+        echo "/!\.... Retrying `helm dep up` after updating repo: $attempt_counter out $max_attempts ...."
+        helm repo update
+      done
+      cd ${TRAVIS_BUILD_DIR}/${TRAVIS_REPO_SLUG}/activiti-cloud-dependencies
+
+
       make run-helm-chart
-      cd -
 
       attempt_counter=0
       max_attempts=50
@@ -126,7 +147,7 @@ jobs:
           sleep 5
       done
 
-      cd activiti-cloud-acceptance-scenarios
+      cd ../activiti-cloud-acceptance-scenarios
       mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off verify
       mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off verify
       cd -
