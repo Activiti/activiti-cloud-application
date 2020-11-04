@@ -123,7 +123,7 @@ jobs:
         echo "/!\.... Retrying `helm dep up` after updating repo: $attempt_counter out $max_attempts ...."
         helm repo update
       done
-      cd ${TRAVIS_BUILD_DIR}/${TRAVIS_REPO_SLUG}/activiti-cloud-dependencies
+      cd ${TRAVIS_BUILD_DIR}/activiti-cloud-dependencies
 
 
       make run-helm-chart
