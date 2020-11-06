@@ -48,8 +48,8 @@ prepare-helm-chart:
         	helm lint
 
 run-helm-chart: delete
-	helm repo add activiti-cloud-helm-charts https://activiti.github.io/activiti-cloud-helm-charts/ && \
 	helm init --client-only && \
+	helm repo add activiti-cloud-helm-charts https://activiti.github.io/activiti-cloud-helm-charts/ && \
 	helm repo update && \
 	cat ../current_build_values.yml && \
 	helm upgrade ${PREVIEW_NAMESPACE} activiti-cloud-helm-charts/activiti-cloud-full-example \
