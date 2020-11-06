@@ -41,9 +41,9 @@ stages:
 - name: Build Docker
 - name: Run acceptance tests
 - name: Publish helm charts
-  if: type != pull_request AND branch = develop
+  if: type != pull_request
 - name: tag_updatebot
-  if: type != pull_request AND branch = develop
+  if: type != pull_request
 
 install: skip
 
