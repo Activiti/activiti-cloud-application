@@ -130,10 +130,16 @@ jobs:
 
   - name: Publish helm charts
     stage: Publish helm charts
+    branches:
+      only:
+        - develop
     script: make create-helm-charts-release-and-upload
 
   - name: tag_updatebot
     stage: tag_updatebot
+    branches:
+      only:
+        - develop
     script: |
       mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false  -DnewVersion=$(cat VERSION)
       mvn clean deploy -DskipTests
