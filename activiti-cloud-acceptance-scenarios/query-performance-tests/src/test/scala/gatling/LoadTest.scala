@@ -26,11 +26,11 @@ class LoadTest extends Simulation {
 
   val httpConf = http.disableFollowRedirect
 
-  val ssoUrl = "http://${sso}/auth/realms/${realm}/protocol/openid-connect/token"
-  val rbUrl = "http://${domain}/rb"
-  val queryUrl = "http://${domain}/query"
-  val graphqlUrl = "http://${domain}/query/graphql"
-  val auditUrl = "http://${domain}/audit"
+  val ssoUrl = "${proto}://${domain}/auth/realms/${realm}/protocol/openid-connect/token"
+  val rbUrl = "${proto}://${domain}${path}/rb"
+  val queryUrl = "${proto}://${domain}${path}/query"
+  val graphqlUrl = "${proto}://${domain}${path}/query/graphql"
+  val auditUrl = "${proto}://${domain}${path}/audit"
 
   var access_token: String = ""
   val sessionHeaders = Map(
@@ -41,14 +41,15 @@ class LoadTest extends Simulation {
 
   val authenticate = scenario("Get access_token")
     .exec(session => session
+      .set("proto", Config.proto)
       .set("domain", Config.domain)
       .set("realm", Config.realm))
     .exec(http("Login")
       .post(ssoUrl)
       .header("Content-Type", "application/x-www-form-urlencoded")
-      .formParam("client_id", "activiti")
+      .formParam("client_id", "alfresco")
       .formParam("grant_type", "password")
-      .formParam("username", "hradmin")
+      .formParam("username", "testadmin")
       .formParam("password", "password")
       .check(status.is(200))
       .check(jsonPath("$.access_token").exists.saveAs("access_token")))
@@ -63,6 +64,8 @@ class LoadTest extends Simulation {
   object Scenarios {
     val healthCheck: ChainBuilder =
       exec(session => session
+        .set("proto", Config.proto)
+        .set("path", Config.path)
         .set("domain", Config.domain))
       .exec(http("Query is Up")
         .get(queryUrl + "/actuator/health")
@@ -71,6 +74,8 @@ class LoadTest extends Simulation {
 
     val slaCheck: ChainBuilder =
       exec(session => session
+        .set("proto", Config.proto)
+        .set("path", Config.path)
         .set("domain", Config.domain)
         .set("access_token", access_token)
       )
@@ -118,6 +123,8 @@ class LoadTest extends Simulation {
                 .set("processInstanceId", Random.nextInt(maxProcessInstances)+1)
                 .set("taskId", Random.nextInt(maxTasks)+1)
                 .set("domain", Config.domain)
+                .set("proto", Config.proto)
+                .set("path", Config.path)
                 .set("access_token", access_token)
       })
       .exec(http("Process by Page")
@@ -148,6 +155,8 @@ class LoadTest extends Simulation {
          session.set("processInstanceId", Random.nextInt(maxProcessInstances)+1)
          		.set("taskId", Random.nextInt(maxTasks)+1)
                 .set("domain", Config.domain)
+                .set("proto", Config.proto)
+                .set("path", Config.path)
                 .set("access_token", access_token)
       })
       .exec(http("tasks")
@@ -166,6 +175,8 @@ class LoadTest extends Simulation {
       exec(session => {
          session.set("processInstanceId", Random.nextInt(maxProcessInstances)+1)
                 .set("domain", Config.domain)
+                .set("proto", Config.proto)
+                .set("path", Config.path)
                 .set("access_token", access_token)
       })
       .exec(http("/v1/process-instances/${processInstanceId}/variables")
@@ -179,6 +190,8 @@ class LoadTest extends Simulation {
       exec(session => {
          session.set("taskId", Random.nextInt(maxTasks)+1)
                 .set("domain", Config.domain)
+                .set("proto", Config.proto)
+                .set("path", Config.path)
                 .set("access_token", access_token)
       })
       .exec(http("/v1/tasks/${taskId}/variables")
@@ -196,6 +209,8 @@ class LoadTest extends Simulation {
                 .set("limit", limit)
                 .set("eventId", Random.nextInt(maxEvents * 2)+1)
                 .set("domain", Config.domain)
+                .set("proto", Config.proto)
+                .set("path", Config.path)
                 .set("access_token", access_token)
       })
       .exec(http("Audit Events by Page")

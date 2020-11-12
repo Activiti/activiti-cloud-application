@@ -1,8 +1,10 @@
 package gatling.config
 
 object Config {
-  val domain = System.getProperty("domain", "localhost:8080").toString()
-  val sso = System.getProperty("sso", "localhost:8180").toString()
 
-  val realm = System.getProperty("realm", "activiti").toString()
+  val proto = System.getProperty("proto", "https").toString()
+  val domain = System.getProperty("domain", "aae-3896.envalfresco.com").toString()
+  val path = System.getProperty("path", "/postgres-performance-test").toString()
+  val sso = System.getProperty("sso", "aae-3896.envalfresco.com").toString()
+  val realm = System.getProperty("realm", "alfresco").toString()
 }
