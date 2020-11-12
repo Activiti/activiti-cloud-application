@@ -1,4 +1,6 @@
 -- config
+ALTER ROLE alfresco IN DATABASE postgres SET search_path TO apppostgresperformancetest,public;
+
 set session query.process_definitions = '100';
 set session query.process_instances = '1000';
 set session query.tasks = '1000';
@@ -7,6 +9,7 @@ set session query.task_variables = '10000';
 
 -- clean up
 DELETE FROM task_variable;
+DELETE FROM process_model;
 DELETE FROM process_variable;
 DELETE FROM task;
 DELETE FROM process_instance;
@@ -37,6 +40,8 @@ SELECT
   'Task Name ' || seq AS task_name,
   '{"id":"' || seq || '", "status":"COMPLETED"}' AS task
 FROM GENERATE_SERIES(current_setting('query.tasks')::int + 1 , current_setting('query.tasks')::int * 2) seq;
+
+select id, event_id, sequence_number, type, event_type, task_id, task_name, task from audit_event LIMIT 100;
 
 -- Process Definitions
 INSERT INTO process_definition(id, name, description, process_definition_key, version)
@@ -167,4 +172,5 @@ SELECT
   ) as value
 FROM shuffled s;
 
-SELECT id,task_id,name, type, value FROM task_variable LIMIT 10;
+SELECT id,task_id,name, type, value FROM task_variable LIMIT 100;
+
