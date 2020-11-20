@@ -20,7 +20,7 @@ class LoadTest extends Simulation {
   // Log all HTTP requests
   //context.getLogger("io.gatling.http").setLevel(Level.valueOf("TRACE"))
   // Log failed HTTP requests
-  //context.getLogger("io.gatling.http").setLevel(Level.valueOf("DEBUG"))
+  // context.getLogger("io.gatling.http").setLevel(Level.valueOf("DEBUG"))
 
   var authenticated = new CountDownLatch(1);
 
@@ -248,10 +248,10 @@ class LoadTest extends Simulation {
 
   setUp(authenticate.inject(constantUsersPerSec(1) during (1 seconds)),
         healthCheck.inject(constantUsersPerSec(1) during (1 seconds)),
-        audit.inject(incrementConcurrentUsers(10)
-          .times(2)
+        query.inject(incrementConcurrentUsers(1)
+          .times(10)
           .eachLevelLasting(10 seconds)
-          .separatedByRampsLasting(10 seconds)
+          .separatedByRampsLasting(1 seconds)
           .startingFrom(1))
         .protocols(httpConf))
         .assertions(global.successfulRequests.percent.is(100))
