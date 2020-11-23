@@ -47,6 +47,7 @@ run-helm-chart: delete
 	cat ../current_build_values.yml && \
 	helm repo add activiti-cloud-helm-charts https://activiti.github.io/activiti-cloud-helm-charts/ && \
 	helm repo update && \
+	kubectl create namespace ${PREVIEW_NAMESPACE} && \
 	helm upgrade ${PREVIEW_NAMESPACE} activiti-cloud-helm-charts/activiti-cloud-full-example \
 		--install \
 		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
