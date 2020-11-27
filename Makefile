@@ -70,7 +70,7 @@ release:
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && helm dep up
 	updatebot --dry push-version --kind helm $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)
 
-	sed -i -e "s/version:.*/version: $(VERSION)/" $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)/Chart.yaml
+	sed -i -e "s/version:.*/version: $(VERSION)/" $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/Chart.yaml
 
 	@for chart in $(charts) ; do \
 		cd $$chart ; \
