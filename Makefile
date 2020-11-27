@@ -82,8 +82,8 @@ release:
 		cd - ; \
 	done
 	
-	cat $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/Chart.yaml -la
-	cat $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/requirements.yaml -la
+	cat $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/Chart.yaml
+	cat $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/requirements.yaml
 	ls $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/charts -la
 	
 	cd  $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
