@@ -57,7 +57,7 @@ jobs:
 
   - name: Run Acceptance Tests
     stage: test
-    after_script: echo make delete || echo "Trying to delete helm chart"
+    after_script: make delete || echo "Trying to delete helm chart"
     script: |
       (
       set -e
