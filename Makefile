@@ -109,3 +109,10 @@ update-common-helm-chart-version:
 		make common-helm-chart-version; \
 		cd -; \
 	done
+
+docker/%:
+	set -e
+	mvn verify -B -pl $@ -am
+	@echo "Building docker image for $@..."
+	docker build -f $@/Dockerfile -q -t docker.io/activiti/$@:$(cat VERSION) $@
+	docker push docker.io/activiti/$@:$(cat VERSION)
