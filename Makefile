@@ -103,7 +103,7 @@ update-common-helm-chart-version:
 		cd -; \
 	done
 
-build/%: 
+docker/%: 
 	$(eval MODULE=$(word 2, $(subst /, ,$@)))
 
 	mvn verify -B -pl $(MODULE) -am
