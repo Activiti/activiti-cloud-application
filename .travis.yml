@@ -44,15 +44,8 @@ jobs:
     script: make docker/example-runtime-bundle
 
   - name: Build Activity Cloud Query Liquibase
-    stage: Build Docker
-    script: |
-      (
-      set -e
-      mvn verify -B -pl activiti-cloud-query-liquibase -am
-      echo "Building docker image for activiti-cloud-query-liquibase..."
-      docker build -f activiti-cloud-query-liquibase/Dockerfile -q -t docker.io/activiti/activiti-cloud-query-liquibase:$(cat VERSION) activiti-cloud-query-liquibase
-      docker push docker.io/activiti/activiti-cloud-query-liquibase:$(cat VERSION)
-      )
+    stage: docker
+    script: make docker/activiti-cloud-query-liquibase
 
   - name: Build Activity Cloud Query
     stage: docker
