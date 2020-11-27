@@ -82,6 +82,8 @@ jobs:
           sleep 5
       done
       
+      kubectl get po -n ${PREVIEW_NAMESPACE}
+      
       make test/modeling-acceptance-tests
       make test/runtime-acceptance-tests
       )
