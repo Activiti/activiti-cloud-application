@@ -30,6 +30,7 @@ db:
   platform:
   generateDdl: "false"
   ddlAuto: "none"
+  
 init:
   container:
     image: alpine:3.8
@@ -42,6 +43,11 @@ postgres:
   password:
   generateDdl: "false"
   ddlAuto: "none"
+  liquibase: 
+    enabled: true
+    image: activiti/activiti-cloud-query-liquibase
+    tag: # defaults to Chart.Version 
+    imagePullPolicy: IfNotPresent  
 
 javaOpts:
   xmx: 2048m
@@ -55,6 +61,10 @@ extraEnv: |
     value: /notifications/graphql
   - name: GRAPHIQL_GRAPHQL_WS_PATH
     value: /notifications/ws/graphql
+  {{- if and .Values.postgres.enabled .Values.postgres.liquibase.enabled }}
+  - name: SPRING_LIQUIBASE_ENABLED
+    value: "false"
+  {{- end }}
     
   # - name: ACT_KEYCLOAK_URL
   #   valueFrom:
