@@ -85,13 +85,11 @@ jobs:
 
   - name: Run acceptance tests
     stage: Run acceptance tests
-    after_script: cd activiti-cloud-dependencies && make delete|| echo "Trying to delete helm chart" &&  cd -
+    after_script: echo make delete || echo "Trying to delete helm chart"
     script: |
       (
       set -e
-      envsubst < .values_template.yml > current_build_values.yml
-      cd activiti-cloud-dependencies
-      make run-helm-chart
+      make install
 
       attempt_counter=0
       max_attempts=50
@@ -112,7 +110,7 @@ jobs:
           sleep 5
       done
 
-      cd ../activiti-cloud-acceptance-scenarios
+      cd activiti-cloud-acceptance-scenarios
       mvn -pl 'modeling-acceptance-tests' -Droot.log.level=off verify
       mvn -pl 'runtime-acceptance-tests'  -Droot.log.level=off verify
       cd -
@@ -123,7 +121,7 @@ jobs:
     branches:
       only:
         - develop
-    script: make create-helm-charts-release-and-upload
+    script: make publish
 
   - name: tag_updatebot
     stage: tag_updatebot

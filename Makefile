@@ -8,17 +8,21 @@ RELEASE_VERSION := $(or $(shell cat VERSION), $(shell mvn help:evaluate -Dexpres
 GROUP_ID := $(shell mvn help:evaluate -Dexpression=project.groupId -q -DforceStdout)
 ARTIFACT_ID := $(shell mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
 RELEASE_ARTIFACT := $(GROUP_ID):$(ARTIFACT_ID)
+ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example
 
-ACTIVITI_CLOUD_FULL_CHART_VERSIONS := runtime-bundle $(VERSION) activiti-cloud-connector $(VERSION) \
-    activiti-cloud-query $(VERSION)  \
-    activiti-cloud-modeling $(VERSION)
-charts := "activiti-cloud-query/charts/activiti-cloud-query" "example-runtime-bundle/charts/runtime-bundle" "example-cloud-connector/charts/activiti-cloud-connector" "activiti-cloud-modeling/charts/activiti-cloud-modeling/"
+ACTIVITI_CLOUD_FULL_CHART_VERSIONS := runtime-bundle $(VERSION) \
+									  activiti-cloud-connector $(VERSION) \
+    								  activiti-cloud-query $(VERSION)  \
+    								  activiti-cloud-modeling $(VERSION)
+    
+charts := "activiti-cloud-query/charts/activiti-cloud-query" \
+	      "example-runtime-bundle/charts/runtime-bundle" \
+	      "example-cloud-connector/charts/activiti-cloud-connector" \
+	      "activiti-cloud-modeling/charts/activiti-cloud-modeling"
+
 updatebot/push:
 	@echo doing updatebot push $(RELEASE_VERSION)
 	updatebot push --ref $(RELEASE_VERSION)
-
-updatebot/push-version-dry:
-	updatebot --dry push-version --kind helm activiti-cloud-dependencies $(RELEASE_VERSION) $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)
 
 updatebot/push-version:
 	@echo Resolving push versions for artifacts........
@@ -46,25 +50,50 @@ updatebot/update-loop:
 	@echo doing updatebot update-loop $(RELEASE_VERSION)
 	updatebot update-loop --poll-time-ms 60000
 
-
-prepare-helm-chart:
-	cd  .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example/ && \
-		rm -rf requirements.lock && \
-		rm -rf charts && \
-		rm -rf *.tgz && \
-        	helm dep up && \
-        	helm lint && \
-		helm package .
-
-run-helm-chart:
-	cd  .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example/ && \
+install: release
+	helm version
+	cd  $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
             	helm upgrade ${PREVIEW_NAMESPACE} . \
             		--install \
             		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
             		--namespace ${PREVIEW_NAMESPACE} \
+            		--create-namespace \
             		--wait
 
-create-helm-charts-release-and-upload:
+delete:
+	helm delete ${PREVIEW_NAMESPACE} --namespace  ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
+	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
+
+release: 
+	echo "RELEASE_VERSION: $(RELEASE_VERSION)"
+	updatebot --dry push-version --kind helm activiti-cloud-dependencies $(RELEASE_VERSION)
+	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && helm dep up
+	updatebot --dry push-version --kind helm $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)
+
+	sed -i -e "s/version:.*/version: $(VERSION)/" $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)/Chart.yaml
+
+	@for chart in $(charts) ; do \
+		cd $$chart ; \
+		make version; \
+		make build; \
+		make release; \
+		rm $(CURRENT)/$(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/charts/$$(basename `pwd`)*.tgz; \
+		cp $$(basename `pwd`)*.tgz $(CURRENT)/$(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/charts/; \
+		cd - ; \
+	done
+	
+	cat $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/Chart.yaml -la
+	cat $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/requirements.yaml -la
+	ls $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/charts -la
+	
+	cd  $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
+		rm -rf requirements.lock && \
+		rm -rf *.tgz && \
+		helm lint && \
+		helm package .
+	
+
+publish:
 	@for chart in $(charts) ; do \
 		cd $$chart ; \
 		make version; \
@@ -73,6 +102,7 @@ create-helm-charts-release-and-upload:
 		make github; \
 		cd - ; \
 	done
+	
 update-common-helm-chart-version:
 	@for chart in $(charts) ; do \
 		cd $$chart ; \
