@@ -33,13 +33,19 @@ init:
   image:
     repository: alpine:3.8
     pullPolicy: IfNotPresent
+  liquibase: 
+    enabled: true
+    image: activiti/activiti-cloud-modeling-liquibase
+    tag: # defaults to Chart.Version 
+    imagePullPolicy: IfNotPresent    
+    
 postgres:
   enabled: true
   name: postgres
   port: 5432
   username: postgres
   password:
-
+  
 service:
   type: ClusterIP
   backend:
@@ -113,7 +119,7 @@ backend:
   #       key: expose-keycloak-service-key
   image:
     repository: activiti/activiti-cloud-modeling
-    tag: 7.1.0.M1
+    tag: # defaults to Chart.Version
     pullPolicy: Always
   resources:
     limits:

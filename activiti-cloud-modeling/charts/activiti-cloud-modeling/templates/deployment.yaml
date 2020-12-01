@@ -31,6 +31,50 @@ spec:
             done;
             echo 'PostgreSQL OK ✓'
       {{- end }}
+      {{- if .Values.init.liquibase.enabled }}      
+      - name: liquibase
+        image: {{ .Values.init.liquibase.image }}:{{ .Values.init.liquibase.tag | default .Chart.Version }}
+        imagePullPolicy: {{ .Values.init.liquibase.imagePullPolicy }}
+        env: 
+        {{- if .Values.postgres.enabled }}
+          - name: SPRING_DATASOURCE_URL
+          {{- if .Values.postgres.uri }} 
+            value: {{ tpl .Values.postgres.uri $ | quote }}
+          {{- else }}
+            value: "jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgres.name }}:{{ .Values.postgres.port }}/postgres"
+          {{- end }}
+          - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+            value: {{ default "org.postgresql.Driver" .Values.postgres.driver | quote }}
+          - name: SPRING_DATASOURCE_USERNAME
+            value: {{ default "postgres" .Values.postgres.username | quote }}
+          - name: SPRING_DATASOURCE_PASSWORD
+          {{- if .Values.postgres.password }}
+            value: {{ .Values.postgres.password | quote }}
+          {{- else }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-{{ .Values.postgres.name }}
+                key: postgresql-password
+          {{- end }}      
+        {{- else }}
+          {{- if .Values.db.uri }}
+          - name: SPRING_DATASOURCE_URL
+            value: {{ tpl .Values.db.uri $ | quote }}
+          {{- end }}
+          {{- if .Values.db.driver }}
+          - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+            value: {{ .Values.db.driver | quote }}
+          {{- end }}
+          {{- if .Values.db.username }}
+          - name: SPRING_DATASOURCE_USERNAME
+            value: {{ .Values.db.username | quote }}
+          {{- end }}
+          {{- if .Values.db.password}}
+          - name: SPRING_DATASOURCE_PASSWORD
+            value: {{ .Values.db.password | quote }}
+          {{- end }}
+        {{- end }}  
+      {{- end }}  
       {{- if .Values.extraInitContainers }}
       {{ tpl .Values.extraInitContainers . | indent 8 }}
       {{- end }}
@@ -40,7 +84,7 @@ spec:
 {{- end }}
       containers:
       - name: {{ .Chart.Name }}-service
-        image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+        image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.Version }}"
         resources:
 {{ toYaml .Values.backend.resources | indent 10 }}
         env:
@@ -66,6 +110,10 @@ spec:
           value: {{ include "common.keycloak-resource" . | quote }}
         - name: ACTIVITI_CLOUD_MODELING_URL
           value: "localhost:{{ .Values.service.backend.internalPort }}"
+{{- if .Values.init.liquibase.enabled }}      
+        - name: SPRING_LIQUIBASE_ENABLED
+          value: "false"
+{{- end }}          
 {{- if .Values.postgres.enabled }}
         - name: SPRING_DATASOURCE_URL
           {{- if .Values.postgres.uri }}

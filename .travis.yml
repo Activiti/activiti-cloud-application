@@ -55,6 +55,10 @@ jobs:
     stage: docker
     script: make docker/example-cloud-connector
 
+  - name: Build Activiti Cloud Modeling Liquibase
+    stage: docker
+    script: make docker/activiti-cloud-modeling-liquibase
+
   - name: Build Activiti Cloud Modeling
     stage: docker
     script: make docker/activiti-cloud-modeling
