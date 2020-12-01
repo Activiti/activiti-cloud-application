@@ -34,6 +34,7 @@
     <module>activiti-cloud-modeling</module>
     <module>activiti-cloud-acceptance-scenarios</module>
     <module>activiti-cloud-dependencies</module>
+    <module>activiti-cloud-modeling-liquibase</module>
   </modules>
   <scm>
     <url>http://github.com/${project.scm.organization}/${project.scm.repository}</url>
