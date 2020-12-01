@@ -117,6 +117,7 @@ backend:
   #     configMapKeyRef:
   #       name: {{ .Release.Name }}-keycloak-http
   #       key: expose-keycloak-service-key
+  
   # image.tag defaults to Chart.Version
   image:
     repository: activiti/activiti-cloud-modeling
