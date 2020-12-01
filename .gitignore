@@ -40,3 +40,6 @@ hs_err_pid*
 .updatebot-repos/**
 
 config/
+
+requirements.lock
+*.tgz
