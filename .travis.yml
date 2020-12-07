@@ -110,6 +110,12 @@ before_install:
 - export ACTIVITI_CLOUD_VERSION=$(grep -oPm1 "(?<=<activiti-cloud.version>)[^<]+"
   "activiti-cloud-dependencies/pom.xml")
 - echo ACTIVITI_CLOUD_VERSION=${ACTIVITI_CLOUD_VERSION}
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then export BRANCH_NAME=${TRAVIS_BRANCH}; else export BRANCH_NAME=pr-${TRAVIS_PULL_REQUEST}-${TRAVIS_BUILD_NUMBER}; fi
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then echo $(jx-release-version) > VERSION; else echo 7.1.0-${BRANCH_NAME} > VERSION; fi
+- export VERSION=$(cat VERSION)
+- echo "Version=$VERSION"
+- export PREVIEW_NAMESPACE=$(echo "${BRANCH_NAME}-${TRAVIS_BUILD_ID}" |  tr '[:upper:]' '[:lower:]' | tr . -)
+- echo "PREVIEW_NAMESPACE=$PREVIEW_NAMESPACE"
 
 notifications:
   slack:
