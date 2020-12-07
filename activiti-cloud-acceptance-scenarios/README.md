@@ -1,6 +1,5 @@
 # Acceptance Tests Scenarios for Activiti Cloud
 
-
 This repo now includes a set of modules which contains different acceptances tests. This acceptance tests rely on having an environment to run against.
 
 In order to point to an environment you can export the following *ENVIRONMENT VARIABLES*

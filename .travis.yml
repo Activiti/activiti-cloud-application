@@ -81,14 +81,14 @@ jobs:
           attempt_counter=$((attempt_counter+1))
           sleep 5
       done
-      
+
       kubectl get all -n ${PREVIEW_NAMESPACE}
-      
+
       make test/modeling-acceptance-tests
       make test/runtime-acceptance-tests
       )
 
-  - name: Publish Helm Charts
+  - name: Publish Helm Chart
     stage: publish
     branches:
       only:
@@ -106,7 +106,6 @@ before_install:
 - echo -e "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
 - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
   "$DOCKER_REGISTRY"
-- curl -sSL https://download.sourceclear.com/ci.sh | CACHE_DIR=${HOME}/sourceclear
 - export ACTIVITI_CLOUD_VERSION=$(grep -oPm1 "(?<=<activiti-cloud.version>)[^<]+"
   "activiti-cloud-dependencies/pom.xml")
 - echo ACTIVITI_CLOUD_VERSION=${ACTIVITI_CLOUD_VERSION}
