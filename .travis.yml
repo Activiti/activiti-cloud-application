@@ -113,9 +113,13 @@ before_install:
 - if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then export BRANCH_NAME=${TRAVIS_BRANCH}; else export BRANCH_NAME=PR-${TRAVIS_PULL_REQUEST}; fi
 - if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then echo $(jx-release-version) > VERSION; else echo 7.1.0-${BRANCH_NAME}-${TRAVIS_BUILD_NUMBER} > VERSION; fi
 - export VERSION=$(cat VERSION)
-- echo "Version=$VERSION"
+- echo "VERSION=$VERSION"
 - export PREVIEW_NAMESPACE=$(echo "${BRANCH_NAME}" | tr '[:upper:]' '[:lower:]' )
 - echo "PREVIEW_NAMESPACE=$PREVIEW_NAMESPACE"
+- export GATEWAY_HOST="gateway.$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN" 
+- echo GATEWAY_HOST=$GATEWAY_HOST
+- export SSO_HOST="identity.$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN" && echo $SSO_HOST
+- echo SSO_HOST=$SSO_HOST
 
 notifications:
   slack:
