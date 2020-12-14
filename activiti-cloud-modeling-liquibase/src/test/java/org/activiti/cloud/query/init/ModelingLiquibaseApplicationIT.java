@@ -15,16 +15,16 @@
  */
 package org.activiti.cloud.query.init;
 
-import org.activiti.cloud.query.liquibase.QueryLiquibaseApplication;
+import org.activiti.cloud.modeling.liquibase.ModelingLiquibaseApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(classes = {QueryLiquibaseApplication.class})
-public class ApplicationIT {
+@SpringBootTest(classes = {ModelingLiquibaseApplication.class})
+public class ModelingLiquibaseApplicationIT {
 
-	@Test
-	public void contextLoads() throws Exception {
+    @Test
+    public void contextLoads() {
 
-	}
+    }
 
 }
