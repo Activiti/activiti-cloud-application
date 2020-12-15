@@ -30,6 +30,8 @@ before_script:
 stages:
 - name: docker
 - name: test
+- name: deploy_preview
+  if: type = pull_request
 - name: publish
   if: type != pull_request
 - name: promote
@@ -87,6 +89,12 @@ jobs:
       make test/modeling-acceptance-tests
       make test/runtime-acceptance-tests
       )
+
+  - name: Deploy Preview
+    stage: deploy_preview
+    script: |
+      mvn versions:set -DnewVersion=$(cat VERSION)-SNAPSHOT -DprocessAllModules=true -DgenerateBackupPoms=false  || travis_terminate 1
+      mvn clean deploy -pl activiti-cloud-dependencies -DskipTests || travis_terminate 1       
 
   - name: Publish Helm Charts
     stage: publish
