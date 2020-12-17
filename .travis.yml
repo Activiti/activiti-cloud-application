@@ -94,7 +94,7 @@ jobs:
     stage: deploy_preview
     script: |
       mvn versions:set -DnewVersion=$(cat VERSION)-SNAPSHOT -DprocessAllModules=true -DgenerateBackupPoms=false  || travis_terminate 1
-      mvn clean deploy -pl activiti-cloud-dependencies -DskipTests || travis_terminate 1       
+      mvn clean deploy -pl activiti-cloud-dependencies/dependencies -am -DskipTests || travis_terminate 1       
 
   - name: Publish Helm Charts
     stage: publish
