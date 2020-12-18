@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java $JAVA_OPTS -jar "$@"
+java $JAVA_OPTS "$@"

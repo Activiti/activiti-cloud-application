@@ -21,12 +21,12 @@ spec:
         - name: liquibase
           image: {{ .Values.init.liquibase.image | default .Values.image.repository }}:{{ .Values.init.liquibase.tag | default .Values.image.tag }}
           imagePullPolicy: {{ .Values.init.liquibase.imagePullPolicy }}
-          args: 
-          {{ toYaml .Values.init.liquibase.args | indent 12 }}
-          env: 
+          args:
+            {{ toYaml .Values.init.liquibase.args | nindent 12 }}
+          env:
           {{- if .Values.postgres.enabled }}
             - name: SPRING_DATASOURCE_URL
-            {{- if .Values.postgres.uri }} 
+            {{- if .Values.postgres.uri }}
               value: {{ tpl .Values.postgres.uri $ | quote }}
               {{- else }}
               value: "jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgres.name }}:{{ .Values.postgres.port }}/postgres"
@@ -62,7 +62,7 @@ spec:
               value: {{ .Values.db.password | quote }}
             {{- end }}
         {{- end }}
-      {{- end }}        
+      {{- end }}
       {{- if .Values.extraInitContainers }}
 {{ tpl .Values.extraInitContainers . | indent 8 }}
       {{- end }}
