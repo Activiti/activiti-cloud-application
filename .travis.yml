@@ -31,7 +31,7 @@ stages:
 - name: docker
 - name: test
 - name: deploy_preview
-  if: type = pull_request
+  if: type = pull_request AND head_branch =~ ^.*preview$
 - name: publish
   if: type != pull_request
 - name: promote
