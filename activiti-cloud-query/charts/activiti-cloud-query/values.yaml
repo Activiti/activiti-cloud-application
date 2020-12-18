@@ -37,8 +37,10 @@ init:
     imagePullPolicy: IfNotPresent
   liquibase: 
     enabled: true
-    image: activiti/activiti-cloud-query-liquibase
-    tag: # defaults to Chart.Version 
+    image: # defaults to image.repository
+    args: 
+     - liquibase.jar
+    tag: # defaults to image.tag
     imagePullPolicy: IfNotPresent  
     
 postgres:

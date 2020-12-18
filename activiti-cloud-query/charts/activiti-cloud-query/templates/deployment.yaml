@@ -19,8 +19,10 @@ spec:
       {{- end }}
       {{- if .Values.init.liquibase.enabled }}
         - name: liquibase
-          image: {{ .Values.init.liquibase.image }}:{{ .Values.init.liquibase.tag | default .Chart.Version }}
+          image: {{ .Values.init.liquibase.image | default .Values.image.repository }}:{{ .Values.init.liquibase.tag | default .Values.image.tag }}
           imagePullPolicy: {{ .Values.init.liquibase.imagePullPolicy }}
+          args: 
+          {{ toYaml .Values.init.liquibase.args | indent 12 }}
           env: 
           {{- if .Values.postgres.enabled }}
             - name: SPRING_DATASOURCE_URL

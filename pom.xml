@@ -28,8 +28,8 @@
   </licenses>
   <modules>
     <module>example-runtime-bundle</module>
+    <module>activiti-cloud-query/liquibase</module>
     <module>activiti-cloud-query</module>
-    <module>activiti-cloud-query-liquibase</module>
     <module>example-cloud-connector</module>
     <module>activiti-cloud-modeling</module>
     <module>activiti-cloud-acceptance-scenarios</module>
