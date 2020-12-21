@@ -3,7 +3,7 @@ NAME := $(or $(APP_NAME),$(shell basename $(CURRENT)))
 OS := $(shell uname)
 ACTIVITI_CLOUD_VERSION := $(shell grep -oPm1 "(?<=<activiti-cloud.version>)[^<]+" "activiti-cloud-dependencies/pom.xml")
 RELEASE_VERSION := $(or $(shell cat VERSION), $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout))
-ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := activiti-cloud-full-chart/charts/activiti-cloud-full-chart
+ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := activiti-cloud-full-chart/charts/activiti-cloud-full-example
 
 updatebot/push-version:
 	updatebot push-version --kind maven \
@@ -43,9 +43,11 @@ delete:
 	helm delete ${PREVIEW_NAMESPACE} --namespace ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
 	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
 
-release:
-	echo "RELEASE_VERSION: $(RELEASE_VERSION)"
+clone:
 	git clone -b fix-modeling https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git
+
+release: clone
+	echo "RELEASE_VERSION: $(RELEASE_VERSION)"
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
     helm dep up && \
 	  yq write --inplace Chart.yaml 'version' $(VERSION) && \
