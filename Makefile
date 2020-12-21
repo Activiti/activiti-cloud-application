@@ -55,7 +55,7 @@ release: clone
 
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
     cat Chart.yaml && \
-	  cat requirements.yaml && \
+	  cat values.yaml && \
 	  ls charts -la
 
 docker/%:
