@@ -34,7 +34,8 @@ before_script:
   - kubectl get ns || travis_terminate 1
 
 stages:
-  - name: docker
+  - name: lint
+  - name: build
   - name: test
   - name: publish
     if: type != pull_request
@@ -46,19 +47,19 @@ install: skip
 jobs:
   include:
     - name: Build Example Runtime Bundle
-      stage: docker
+      stage: build
       script: make docker/example-runtime-bundle
 
     - name: Build Activity Cloud Query
-      stage: docker
+      stage: build
       script: make docker/activiti-cloud-query
 
     - name: Build Example Cloud Connector
-      stage: docker
+      stage: build
       script: make docker/example-cloud-connector
 
     - name: Build Activiti Cloud Modeling
-      stage: docker
+      stage: build
       script: make docker/activiti-cloud-modeling
 
     - name: Run Acceptance Tests

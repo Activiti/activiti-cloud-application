@@ -40,9 +40,13 @@ install: release
 			--create-namespace \
 			--wait
 
-delete:
+delete-app:
 	helm delete ${PREVIEW_NAMESPACE} --namespace ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
 	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
+
+delete-docker-all: delete-docker/example-runtime-bundle delete-docker/activiti-cloud-query delete-docker/example-cloud-connector delete-docker/activiti-cloud-modeling
+
+delete: delete-app delete-docker-all
 
 clone-chart:
 	gh repo clone Activiti/activiti-cloud-full-chart $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) -- -b fix-modeling
@@ -76,6 +80,12 @@ docker/%:
 	@echo "Building docker image for $(MODULE):$(RELEASE_VERSION)..."
 	docker build -f $(MODULE)/Dockerfile -q -t docker.io/activiti/$(MODULE):$(RELEASE_VERSION) $(MODULE)
 	docker push docker.io/activiti/$(MODULE):$(RELEASE_VERSION)
+
+docker-delete/%:
+	$(eval MODULE=$(word 2, $(subst /, ,$@)))
+
+	@echo "Delete image from Docker Hub for $(MODULE):$(RELEASE_VERSION)..."
+	curl -X DELETE -u "$DOCKER_REGISTRY_USERNAME:$DOCKER_REGISTRY_PASSWORD" https://cloud.docker.com/v2/repositories/activiti/$(MODULE)/tags/$(RELEASE_VERSION)
 
 version:
 	mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$(RELEASE_VERSION)
