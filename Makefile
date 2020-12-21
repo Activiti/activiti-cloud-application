@@ -18,6 +18,12 @@ updatebot/push-version:
 		org.activiti.cloud:activiti-cloud-service-common-dependencies ${ACTIVITI_CLOUD_VERSION} \
 		--merge false
 
+dependabot:
+	curl --silent --show-error --fail -X POST \
+		-d "{\"name\":\"org.activiti.cloud:activiti-cloud-dependencies\", \"version\": \"$(RELEASE_VERSION)\", \"package-manager\": \"maven\"}" \
+		-H "Authorization: Personal $GITHUB_TOKEN" \
+		https://api.dependabot.com/release_notifications/private
+
 install: release
 	echo helm $(helm version --short)
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
@@ -97,4 +103,4 @@ test/%:
 	cd activiti-cloud-acceptance-scenarios && \
 		mvn -pl '$(MODULE)' -Droot.log.level=off verify
 
-promote: version deploy tag updatebot/push-version create-pr
+promote: version deploy tag updatebot/push-version dependabot create-pr
