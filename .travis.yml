@@ -99,7 +99,7 @@ jobs:
 
     # for testing this, should be on promote
     - name: Test Promote PR
-      stage: promote
+      stage: test
       branches:
         only:
           - fix-modeling
