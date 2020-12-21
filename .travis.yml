@@ -66,20 +66,21 @@ jobs:
 #      after_script: make delete || echo "Trying to delete helm chart"
       script: |
         (
-        set -e
+          set -e
 
-        # override here as values have changed to be https friendly from dot to dash
-        export GATEWAY_HOST=gateway-$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN
-        export SSO_HOST=identity-$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN
+          # override here as values have changed to be https friendly from dot to dash
+          export GATEWAY_HOST=gateway-$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN
+          export SSO_HOST=identity-$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN
 
-        make install
+          make install
 
-        attempt_counter=0
-        max_attempts=50
-        echo "Waiting for services to be up..."
-        until curl --silent --head --fail $GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 &&
-              curl --silent --head --fail $GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 &&
-              curl --silent --head --fail $GATEWAY_HOST/query/actuator/health > /dev/null 2>&1; do
+          attempt_counter=0
+          max_attempts=50
+          echo "Waiting for services to be up..."
+          until curl --silent --head --fail $GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 &&
+                curl --silent --head --fail $GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 &&
+                curl --silent --head --fail $GATEWAY_HOST/query/actuator/health > /dev/null 2>&1; do
+
             if [ ${attempt_counter} -eq ${max_attempts} ]; then
               echo "Max attempts reached"
               break
@@ -88,15 +89,21 @@ jobs:
             printf '.'
             attempt_counter=$((attempt_counter+1))
             sleep 5
-        done
+          done
 
-        kubectl get all -n ${PREVIEW_NAMESPACE}
+          kubectl get all -n ${PREVIEW_NAMESPACE}
 
-        make test/modeling-acceptance-tests
-        make test/runtime-acceptance-tests
-
-        make createpr # for testing this, should be on promote
+          make test/modeling-acceptance-tests
+          make test/runtime-acceptance-tests
         )
+
+    # for testing this, should be on promote
+    - name: Test Promote PR
+      stage: promote
+      branches:
+        only:
+          - fix-modeling
+      script: make create-pr
 
     - name: Promote Release
       stage: promote
