@@ -9,10 +9,11 @@ import:
   - source: Alfresco/alfresco-build-tools:.travis.yq_install.yml@v1.0.0
   - source: Alfresco/alfresco-build-tools:.travis.gh_install.yml@9a35a0f
   - source: Alfresco/alfresco-build-tools:.travis.pre-commit.yml@v1.0.0
+  - source: Alfresco/alfresco-build-tools:.travis.common.yml@v1.0.0
 
 cache:
   directories:
-    - "${HOME}/.m2/repository"
+    - $HOME/.m2/repository
 
 before_install:
   - |
@@ -22,15 +23,6 @@ before_install:
 before_script:
   - rm ~/.git-credentials
   - kubectl get ns || travis_terminate 1
-
-stages:
-  - name: lint
-  - name: build
-  - name: test
-  - name: publish
-    if: type != pull_request
-  - name: trigger
-    if: type != pull_request
 
 install: skip
 
