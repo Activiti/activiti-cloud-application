@@ -49,20 +49,22 @@ delete-docker-all: delete-docker/example-runtime-bundle delete-docker/activiti-c
 delete: delete-app delete-docker-all
 
 clone-chart:
-	gh repo clone Activiti/activiti-cloud-full-chart $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) -- -b fix-modeling
+	git clone https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) -b fix-modeling
 
 create-pr: update-chart
 	cd $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) && \
 	  git checkout -b dependency-activiti-cloud-application-$(RELEASE_VERSION) && \
 		git diff && \
+		git config user.name "Travis CI" && \
+		git config user.email "travis@travis-ci.org" && \
 		git commit -am "Update 'activiti-cloud-application' dependency to $(RELEASE_VERSION)" && \
-		git push -u origin HEAD && \
+		git push -qu origin HEAD && \
 		gh pr create --fill
 
 update-chart: clone-chart
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
-	  yq write --inplace Chart.yaml 'version' $(RELEASE_VERSION) && \
-    env BACKEND_VERSION=$(RELEASE_VERSION) FRONTEND_VERSION=master make update-docker-images
+		yq write --inplace Chart.yaml 'version' $(RELEASE_VERSION) && \
+		env BACKEND_VERSION=$(RELEASE_VERSION) FRONTEND_VERSION=master make update-docker-images
 
 release: update-chart
 	echo "RELEASE_VERSION: $(RELEASE_VERSION)"
