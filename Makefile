@@ -45,7 +45,7 @@ delete:
 
 release:
 	echo "RELEASE_VERSION: $(RELEASE_VERSION)"
-  git clone -b fix-modeling https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git
+	git clone -b fix-modeling https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
     helm dep up && \
 	  yq write --inplace Chart.yaml 'version' $(VERSION) && \
