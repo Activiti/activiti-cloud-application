@@ -44,9 +44,9 @@ delete-app:
 	helm delete ${PREVIEW_NAMESPACE} --namespace ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
 	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
 
-delete-docker-all: delete-docker/example-runtime-bundle delete-docker/activiti-cloud-query delete-docker/example-cloud-connector delete-docker/activiti-cloud-modeling
+docker-delete-all: docker-delete/example-runtime-bundle docker-delete/activiti-cloud-query docker-delete/example-cloud-connector docker-delete/activiti-cloud-modeling
 
-delete: delete-app delete-docker-all
+delete: delete-app docker-delete-all
 
 clone-chart:
 	git clone https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) -b fix-modeling
