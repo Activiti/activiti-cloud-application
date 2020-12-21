@@ -13,20 +13,20 @@ Alternative, you can also split in multiple services, for instance there are two
 
 -   [activiti-cloud-audit](https://github.com/activiti/activiti-cloud-audit)
 -   [activiti-cloud-notification-graphql](https://github.com/activiti/activiti-cloud-notification-graphql)
- 
+
 For more information about his module and the starters you can take a look at our [Activiti & Activiti Cloud GitBook](https://activiti.gitbooks.io/activiti-7-developers-guide/content/components/activiti-cloud-app/QueryService.html)
 
 [Docker Image](https://hub.docker.com/r/activiti/activiti-cloud-query/)
 
 ## Building & Running this Service
-You can build this service from source using Git & Maven or you can just run our Docker Image. 
+You can build this service from source using Git & Maven or you can just run our Docker Image.
 
-### Spring Boot: 
+### Spring Boot:
 > git clone https://github.com/Activiti/activiti-cloud-query.git
 > cd activiti-cloud-query/
 > mvn clean install spring-boot:run
 
-### Docker: 
+### Docker:
 > docker run -p 8182:8182 -d --name activiti-cloud-query activiti/activiti-cloud-query:latest
 
 ## Environemnt Variables
