@@ -68,6 +68,7 @@ jobs:
         (
         set -e
 
+        # override here as values have changed to be https friendly from dot to dash
         export GATEWAY_HOST=gateway-$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN
         export SSO_HOST=identity-$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN
 
@@ -93,6 +94,8 @@ jobs:
 
         make test/modeling-acceptance-tests
         make test/runtime-acceptance-tests
+
+        make createpr # for testing this, should be on promote
         )
 
     - name: Promote Release

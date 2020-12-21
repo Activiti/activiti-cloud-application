@@ -32,12 +32,12 @@ updatebot/update-loop:
 install: release
 	echo helm $(helm version --short)
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
-            	helm upgrade ${PREVIEW_NAMESPACE} . \
-            		--install \
-            		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
-            		--namespace ${PREVIEW_NAMESPACE} \
-            		--create-namespace \
-            		--wait
+		helm upgrade ${PREVIEW_NAMESPACE} . \
+		--install \
+		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
+		--namespace ${PREVIEW_NAMESPACE} \
+		--create-namespace \
+		--wait
 
 delete:
 	helm delete ${PREVIEW_NAMESPACE} --namespace ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
@@ -45,6 +45,13 @@ delete:
 
 clone:
 	gh repo clone Activiti/activiti-cloud-full-chart -- -b fix-modeling
+
+createpr:
+	git checkout -b dependency-activiti-cloud-application-$(VERSION) && \
+		git diff && \
+		git commit -am "Update activiti-cloud-application dependency to $(VERSION)" && \
+		git push -u origin HEAD && \
+		gh pr create --fill
 
 release: clone
 	echo "RELEASE_VERSION: $(RELEASE_VERSION)"
@@ -67,7 +74,7 @@ docker/%:
 	docker push docker.io/activiti/$(MODULE):$(RELEASE_VERSION)
 
 version:
-	mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false  -DnewVersion=$(RELEASE_VERSION)
+	mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$(RELEASE_VERSION)
 
 deploy:
 	mvn clean deploy -DskipTests
@@ -84,4 +91,4 @@ test/%:
 	cd activiti-cloud-acceptance-scenarios && \
 		mvn -pl '$(MODULE)' -Droot.log.level=off verify
 
-promote: version deploy tag updatebot/push-version
+promote: version deploy tag updatebot/push-version createpr
