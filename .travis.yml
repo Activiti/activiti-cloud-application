@@ -14,13 +14,10 @@ cache:
   directories:
     - "${HOME}/.m2/repository"
 
-env:
-  global:
-    - ORG='activiti'
-    - APP_NAME='activiti-cloud-dependencies'
-    - GITHUB_CHARTS_REPO="https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-helm-charts.git"
-    - RELEASE_BRANCH="develop"
-    - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-180}
+before_install:
+  - |
+    export ACTIVITI_CLOUD_VERSION=$(python -c "from xml.etree.ElementTree import parse; print(parse(open('activiti-cloud-dependencies/pom.xml')).find('.//{http://maven.apache.org/POM/4.0.0}activiti-cloud.version').text)")
+    echo ACTIVITI_CLOUD_VERSION=${ACTIVITI_CLOUD_VERSION}
 
 before_script:
   - rm ~/.git-credentials
@@ -32,7 +29,7 @@ stages:
   - name: test
   - name: publish
     if: type != pull_request
-  - name: promote
+  - name: trigger
     if: type != pull_request
 
 install: skip
@@ -97,19 +94,17 @@ jobs:
       branches:
         only:
           - fix-modeling
+      language: python
+      python: 3.8
+      install: curl https://pre-commit.com/install-local.py | python3 -
       script: make create-pr
 
     - name: Promote Release
-      stage: promote
+      stage: trigger
       branches:
         only:
           - develop
       script: make promote
-
-before_install:
-  - echo -e "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
-  - export ACTIVITI_CLOUD_VERSION=$(python -c "from xml.etree.ElementTree import parse; print(parse(open('activiti-cloud-dependencies/pom.xml')).find('.//{http://maven.apache.org/POM/4.0.0}activiti-cloud.version').text)")
-  - echo ACTIVITI_CLOUD_VERSION=${ACTIVITI_CLOUD_VERSION}
 
 notifications:
   slack:

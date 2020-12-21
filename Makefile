@@ -1,6 +1,3 @@
-CURRENT=$(shell pwd)
-NAME := $(or $(APP_NAME),$(shell basename $(CURRENT)))
-OS := $(shell uname)
 RELEASE_VERSION := $(or $(shell cat VERSION), $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout))
 ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR := .git/activiti-cloud-full-chart
 ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR)/charts/activiti-cloud-full-example
@@ -19,15 +16,7 @@ updatebot/push-version:
 		org.activiti.cloud:activiti-cloud-query-dependencies ${ACTIVITI_CLOUD_VERSION} \
 		org.activiti.cloud:activiti-cloud-runtime-bundle-dependencies ${ACTIVITI_CLOUD_VERSION} \
 		org.activiti.cloud:activiti-cloud-service-common-dependencies ${ACTIVITI_CLOUD_VERSION} \
-		--merge false;
-
-updatebot/update:
-	@echo doing updatebot update $(RELEASE_VERSION)
-	updatebot update
-
-updatebot/update-loop:
-	@echo doing updatebot update-loop $(RELEASE_VERSION)
-	updatebot update-loop --poll-time-ms 60000
+		--merge false
 
 install: release
 	echo helm $(helm version --short)
