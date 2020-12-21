@@ -54,6 +54,7 @@ clone-chart:
 create-pr: update-chart
 	cd $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) && \
 	  git checkout -b dependency-activiti-cloud-application-$(RELEASE_VERSION) && \
+		pre-commit run -a && \
 		git diff && \
 		git config user.name "Travis CI" && \
 		git config user.email "travis@travis-ci.org" && \
@@ -87,7 +88,7 @@ docker-delete/%:
 	$(eval MODULE=$(word 2, $(subst /, ,$@)))
 
 	@echo "Delete image from Docker Hub for $(MODULE):$(RELEASE_VERSION)..."
-	curl -X DELETE -u "$DOCKER_REGISTRY_USERNAME:$DOCKER_REGISTRY_PASSWORD" https://cloud.docker.com/v2/repositories/activiti/$(MODULE)/tags/$(RELEASE_VERSION)
+	curl --silent --show-error --fail -X DELETE -u "$DOCKER_REGISTRY_USERNAME:$DOCKER_REGISTRY_PASSWORD" https://cloud.docker.com/v2/repositories/activiti/$(MODULE)/tags/$(RELEASE_VERSION)
 
 version:
 	mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$(RELEASE_VERSION)
