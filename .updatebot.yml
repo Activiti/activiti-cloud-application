@@ -1,10 +1,5 @@
 github:
   organisations:
-    - name: activiti
-      repositories:
-        - name: activiti-cloud-full-chart
-          branch: master
-          useSinglePullRequest: true
     - name: alfresco
       repositories:
         - name: alfresco-process-parent

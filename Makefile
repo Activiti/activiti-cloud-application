@@ -3,7 +3,7 @@ NAME := $(or $(APP_NAME),$(shell basename $(CURRENT)))
 OS := $(shell uname)
 ACTIVITI_CLOUD_VERSION := $(shell grep -oPm1 "(?<=<activiti-cloud.version>)[^<]+" "activiti-cloud-dependencies/pom.xml")
 RELEASE_VERSION := $(or $(shell cat VERSION), $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout))
-ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example
+ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := activiti-cloud-full-chart/chart/activiti-cloud-full-chart
 
 updatebot/push-version:
 	updatebot push-version --kind maven \
@@ -31,7 +31,7 @@ updatebot/update-loop:
 
 install: release
 	helm version
-	cd  $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
+	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
             	helm upgrade ${PREVIEW_NAMESPACE} . \
             		--install \
             		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
@@ -40,29 +40,21 @@ install: release
             		--wait
 
 delete:
-	helm delete ${PREVIEW_NAMESPACE} --namespace  ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
+	helm delete ${PREVIEW_NAMESPACE} --namespace ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
 	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
 
 release:
 	echo "RELEASE_VERSION: $(RELEASE_VERSION)"
-	updatebot --dry push-version --kind helm activiti-cloud-dependencies $(RELEASE_VERSION)
-	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && helm dep up
-	updatebot --dry push-version --kind helm $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)
+  git clone -b fix-modeling https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git
+	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
+    helm dep up && \
+	  yq write --inplace Chart.yaml 'version' $(VERSION) && \
+    env BACKEND_VERSION=$(VERSION) FRONTEND_VERSION=master make update-docker-images
 
-	yq write --inplace $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/Chart.yaml 'version' $(VERSION)
-
-	cat $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/Chart.yaml
-	cat $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/requirements.yaml
-	ls $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/charts -la
-
-	cd  $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
-		rm -rf requirements.lock && \
-		rm -rf *.tgz && \
-		helm lint && \
-		helm package . || exit 1;
-
-publish:
-	echo "doing stuff on chart"
+	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
+    cat Chart.yaml && \
+	  cat requirements.yaml && \
+	  ls charts -la
 
 docker/%:
 	$(eval MODULE=$(word 2, $(subst /, ,$@)))
