@@ -17,10 +17,6 @@ cache:
   directories:
     - $HOME/.m2/repository
 
-branches:
-  only:
-    - develop
-
 before_install:
   - |
     export ACTIVITI_CLOUD_VERSION=$(python -c "from xml.etree.ElementTree import parse; print(parse(open('activiti-cloud-dependencies/pom.xml')).find('.//{http://maven.apache.org/POM/4.0.0}activiti-cloud.version').text)")
@@ -97,8 +93,7 @@ jobs:
           - fix-modeling
       language: python
       python: 3.8
-      install: |
-        - curl https://pre-commit.com/install-local.py | python3 -
+      install: curl https://pre-commit.com/install-local.py | python3 -
       script: make create-pr
 
     - name: Promote Release
