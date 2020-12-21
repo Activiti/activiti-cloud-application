@@ -44,7 +44,7 @@ delete:
 	helm delete ${PREVIEW_NAMESPACE} --namespace ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
 	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
 
-clone:
+clone-chart:
 	gh repo clone Activiti/activiti-cloud-full-chart $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) -- -b fix-modeling
 
 create-pr: update-chart
@@ -55,7 +55,7 @@ create-pr: update-chart
 		git push -u origin HEAD && \
 		gh pr create --fill
 
-update-chart: clone
+update-chart: clone-chart
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
 	  yq write --inplace Chart.yaml 'version' $(RELEASE_VERSION) && \
     env BACKEND_VERSION=$(RELEASE_VERSION) FRONTEND_VERSION=master make update-docker-images
