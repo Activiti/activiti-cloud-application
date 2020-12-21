@@ -4,9 +4,9 @@ export REALM=${REALM:-activiti}
 export DOMAIN=${DOMAIN:-activiti-community.envalfresco.com}
 export NAMESPACE=${NAMESPACE:-default}
 export GATEWAY_PROTOCOL=${GATEWAY_PROTOCOL:-http}
-export GATEWAY_HOST=${GATEWAY_HOST:-gateway.$NAMESPACE.$DOMAIN}
+export GATEWAY_HOST=${GATEWAY_HOST:-gateway-$NAMESPACE.$DOMAIN}
 export SSO_PROTOCOL=${SSO_PROTOCOL:-http}
-export SSO_HOST=${SSO_HOST:-identity.$NAMESPACE.$DOMAIN}
+export SSO_HOST=${SSO_HOST:-identity-$NAMESPACE.$DOMAIN}
 export SSO_URL=${SSO_URL:-${SSO_PROTOCOL}://${SSO_HOST}/auth}
 export GATEWAY_URL=${GATEWAY_URL:-${GATEWAY_PROTOCOL}://${GATEWAY_HOST}}
 echo running tests on env:

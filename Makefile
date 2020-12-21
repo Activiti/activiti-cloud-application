@@ -30,7 +30,7 @@ updatebot/update-loop:
 	updatebot update-loop --poll-time-ms 60000
 
 install: release
-	helm version
+	echo helm $(helm version --short)
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
             	helm upgrade ${PREVIEW_NAMESPACE} . \
             		--install \
@@ -44,7 +44,7 @@ delete:
 	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
 
 clone:
-	git clone -b fix-modeling https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git
+	gh repo clone Activiti/activiti-cloud-full-chart -- -b fix-modeling
 
 release: clone
 	echo "RELEASE_VERSION: $(RELEASE_VERSION)"

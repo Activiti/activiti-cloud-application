@@ -13,6 +13,14 @@ cache:
   directories:
     - "${HOME}/.m2/repository"
 
+addons:
+  apt:
+    sources:
+      - sourceline: 'deb https://cli.github.com/packages stable main'
+        key_url: 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC99B11DEB97541F0'
+    packages:
+      - gh
+
 env:
   global:
     - ORG='activiti'
@@ -59,18 +67,19 @@ jobs:
       script: |
         (
         set -e
+
+        export GATEWAY_HOST=gateway-$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN
+        export SSO_HOST=identity-$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN
+
         make install
 
         attempt_counter=0
         max_attempts=50
         echo "Waiting for services to be up..."
-        until curl --silent --head --fail \
-                  ${GATEWAY_HOST}/modeling-service/v2/api-docs > /dev/null 2>&1 &&
-              curl --silent --head --fail \
-                   ${GATEWAY_HOST}/rb/v2/api-docs > /dev/null 2>&1 &&
-               curl --silent --head --fail \
-                    ${GATEWAY_HOST}/query/v2/api-docs > /dev/null 2>&1; do
-            if [ ${attempt_counter} -eq ${max_attempts} ];then
+        until curl --silent --head --fail $GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 &&
+              curl --silent --head --fail $GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 &&
+              curl --silent --head --fail $GATEWAY_HOST/query/actuator/health > /dev/null 2>&1; do
+            if [ ${attempt_counter} -eq ${max_attempts} ]; then
               echo "Max attempts reached"
               break
             fi
