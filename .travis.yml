@@ -10,7 +10,6 @@ import:
   - source: Alfresco/alfresco-build-tools:.travis.helm-docs_install.yml@v1.0.0
   - source: Alfresco/alfresco-build-tools:.travis.kubepug_install.yml@v1.0.0
   - source: Alfresco/alfresco-build-tools:.travis.gh_install.yml@9a35a0f
-  - source: Alfresco/alfresco-build-tools:.travis.helm_docs-commit.yml@v1.0.0
   - source: Alfresco/alfresco-build-tools:.travis.pre-commit.yml@v1.0.0
   - source: Alfresco/alfresco-build-tools:.travis.common.yml@v1.0.0
 
