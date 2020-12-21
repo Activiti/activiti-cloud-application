@@ -1,7 +1,6 @@
 CURRENT=$(shell pwd)
 NAME := $(or $(APP_NAME),$(shell basename $(CURRENT)))
 OS := $(shell uname)
-ACTIVITI_CLOUD_VERSION := $(shell grep -oPm1 "(?<=<activiti-cloud.version>)[^<]+" "activiti-cloud-dependencies/pom.xml")
 RELEASE_VERSION := $(or $(shell cat VERSION), $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout))
 ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := activiti-cloud-full-chart/charts/activiti-cloud-full-example
 
@@ -32,12 +31,13 @@ updatebot/update-loop:
 install: release
 	echo helm $(helm version --short)
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
+		helm dep up && \
 		helm upgrade ${PREVIEW_NAMESPACE} . \
-		--install \
-		--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
-		--namespace ${PREVIEW_NAMESPACE} \
-		--create-namespace \
-		--wait
+			--install \
+			--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
+			--namespace ${PREVIEW_NAMESPACE} \
+			--create-namespace \
+			--wait
 
 delete:
 	helm delete ${PREVIEW_NAMESPACE} --namespace ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
@@ -46,21 +46,23 @@ delete:
 clone:
 	gh repo clone Activiti/activiti-cloud-full-chart -- -b fix-modeling
 
-createpr:
-	git checkout -b dependency-activiti-cloud-application-$(VERSION) && \
+create-pr: update-chart
+	git checkout -b dependency-activiti-cloud-application-$(RELEASE_VERSION) && \
 		git diff && \
-		git commit -am "Update activiti-cloud-application dependency to $(VERSION)" && \
+		git commit -am "Update activiti-cloud-application dependency to $(RELEASE_VERSION)" && \
 		git push -u origin HEAD && \
 		gh pr create --fill
 
-release: clone
+update-chart: clone
+	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
+	  yq write --inplace Chart.yaml 'version' $(RELEASE_VERSION) && \
+    env BACKEND_VERSION=$(RELEASE_VERSION) FRONTEND_VERSION=master make update-docker-images
+
+release: update-chart
 	echo "RELEASE_VERSION: $(RELEASE_VERSION)"
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
     helm dep up && \
-	  yq write --inplace Chart.yaml 'version' $(VERSION) && \
-    env BACKEND_VERSION=$(VERSION) FRONTEND_VERSION=master make update-docker-images
-
-	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
+    helm lint && \
     cat Chart.yaml && \
 	  cat values.yaml && \
 	  ls charts -la
@@ -91,4 +93,4 @@ test/%:
 	cd activiti-cloud-acceptance-scenarios && \
 		mvn -pl '$(MODULE)' -Droot.log.level=off verify
 
-promote: version deploy tag updatebot/push-version createpr
+promote: version deploy tag updatebot/push-version create-pr
