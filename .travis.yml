@@ -18,10 +18,17 @@ cache:
   directories:
     - $HOME/.m2/repository
 
+branches:
+  only:
+    - develop
+
 before_install:
   - |
     export ACTIVITI_CLOUD_VERSION=$(python -c "from xml.etree.ElementTree import parse; print(parse(open('activiti-cloud-dependencies/pom.xml')).find('.//{http://maven.apache.org/POM/4.0.0}activiti-cloud.version').text)")
     echo ACTIVITI_CLOUD_VERSION=${ACTIVITI_CLOUD_VERSION}
+  - |
+    git config user.name "Alfresco Build User"
+    git config user.email "build_user@alfresco.com"
 
 before_script:
   - rm ~/.git-credentials

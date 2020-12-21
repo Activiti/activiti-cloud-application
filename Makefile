@@ -51,8 +51,6 @@ create-pr: update-chart
 	  git checkout -b dependency-activiti-cloud-application-$(RELEASE_VERSION) && \
 		pre-commit run -a && \
 		git diff && \
-		git config user.name "Travis CI" && \
-		git config user.email "travis@travis-ci.org" && \
 		git commit -am "Update 'activiti-cloud-application' dependency to $(RELEASE_VERSION)" && \
 		git push -qu origin HEAD && \
 		gh pr create --fill
