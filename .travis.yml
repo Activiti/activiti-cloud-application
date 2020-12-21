@@ -2,10 +2,12 @@ import:
   - source: Activiti/activiti-scripts:.travis.java.yml@master
   - source: Activiti/activiti-scripts:.travis.awscli-install.yml@master
   - source: Activiti/activiti-scripts:.travis.maven-s3-config.yml@master
-  - source: Activiti/activiti-scripts:.travis.helm_install.yml@master
-  - source: Activiti/activiti-scripts:.travis.kubernetes_config.yml@master
-  - source: Activiti/activiti-scripts:.travis.kubernetes_install.yml@master
-
+  - source: Alfresco/alfresco-build-tools:.travis.helm_install.yml@v1.0.0
+  - source: Alfresco/alfresco-build-tools:.travis.docker_login.yml@v1.0.0
+  - source: Alfresco/alfresco-build-tools:.travis.kubernetes_config.yml@v1.0.0
+  - source: Alfresco/alfresco-build-tools:.travis.kubernetes_install.yml@v1.0.0
+  - source: Alfresco/alfresco-build-tools:.travis.yq_install.yml@v1.0.0
+  - source: Alfresco/alfresco-build-tools:.travis.pre-commit.yml@v1.0.0
 
 fail_fast: true
 
@@ -104,8 +106,6 @@ jobs:
 
 before_install:
 - echo -e "https://$GITHUB_USER:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
-- echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin
-  "$DOCKER_REGISTRY"
 - export ACTIVITI_CLOUD_VERSION=$(grep -oPm1 "(?<=<activiti-cloud.version>)[^<]+"
   "activiti-cloud-dependencies/pom.xml")
 - echo ACTIVITI_CLOUD_VERSION=${ACTIVITI_CLOUD_VERSION}

@@ -21,12 +21,6 @@ updatebot/push-version:
 		org.activiti.cloud:activiti-cloud-service-common-dependencies ${ACTIVITI_CLOUD_VERSION} \
 		--merge false;
 
-	updatebot push-version --kind helm activiti-cloud-dependencies ${RELEASE_VERSION} \
-		runtime-bundle ${RELEASE_VERSION} \
-		activiti-cloud-connector ${RELEASE_VERSION} \
-		activiti-cloud-query ${RELEASE_VERSION} \
-		activiti-cloud-modeling ${RELEASE_VERSION}
-
 updatebot/update:
 	@echo doing updatebot update $(RELEASE_VERSION)
 	updatebot update
@@ -55,7 +49,7 @@ release:
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && helm dep up
 	updatebot --dry push-version --kind helm $(ACTIVITI_CLOUD_FULL_CHART_VERSIONS)
 
-	sed -i -e "s/version:.*/version: $(VERSION)/" $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/Chart.yaml
+	yq write --inplace $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/Chart.yaml 'version' $(VERSION)
 
 	cat $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/Chart.yaml
 	cat $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/requirements.yaml
@@ -97,4 +91,3 @@ test/%:
 		mvn -pl '$(MODULE)' -Droot.log.level=off verify
 
 promote: version deploy tag updatebot/push-version
-
