@@ -3,7 +3,7 @@ NAME := $(or $(APP_NAME),$(shell basename $(CURRENT)))
 OS := $(shell uname)
 ACTIVITI_CLOUD_VERSION := $(shell grep -oPm1 "(?<=<activiti-cloud.version>)[^<]+" "activiti-cloud-dependencies/pom.xml")
 RELEASE_VERSION := $(or $(shell cat VERSION), $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout))
-ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := activiti-cloud-full-chart/chart/activiti-cloud-full-chart
+ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := activiti-cloud-full-chart/charts/activiti-cloud-full-chart
 
 updatebot/push-version:
 	updatebot push-version --kind maven \
