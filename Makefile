@@ -81,7 +81,8 @@ docker-delete/%:
 	$(eval MODULE=$(word 2, $(subst /, ,$@)))
 
 	@echo "Delete image from Docker Hub for $(MODULE):$(RELEASE_VERSION)..."
-	curl --silent --show-error --fail -X DELETE -u "$DOCKER_REGISTRY_USERNAME:$DOCKER_REGISTRY_PASSWORD" https://cloud.docker.com/v2/repositories/activiti/$(MODULE)/tags/$(RELEASE_VERSION)
+	curl --silent --show-error --fail -X DELETE -u "$DOCKER_REGISTRY_USERNAME:$DOCKER_REGISTRY_PASSWORD" \
+		https://hub.docker.com/v2/repositories/activiti/$(MODULE)/tags/$(RELEASE_VERSION)
 
 version:
 	mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$(RELEASE_VERSION)
