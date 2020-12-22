@@ -40,7 +40,7 @@ delete:
 	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
 
 clone-chart:
-	git clone https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) -b develop
+	git clone https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) -b master
 
 create-pr: update-chart
 	cd $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) && \
@@ -49,7 +49,7 @@ create-pr: update-chart
 		git diff && \
 		git commit -am "Update 'activiti-cloud-application' dependency to $(RELEASE_VERSION)" && \
 		git push -qu origin HEAD && \
-		gh pr create --fill --base develop --label activiti-cloud-application ${GH_PR_CREATE_OPTS}
+		gh pr create --fill --base master --label activiti-cloud-application ${GH_PR_CREATE_OPTS}
 
 update-chart: clone-chart
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
