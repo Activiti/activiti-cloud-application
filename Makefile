@@ -35,16 +35,12 @@ install: release
 			--create-namespace \
 			--wait
 
-delete-app:
+delete:
 	helm delete ${PREVIEW_NAMESPACE} --namespace ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
 	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
 
-docker-delete-all: docker-delete/example-runtime-bundle docker-delete/activiti-cloud-query docker-delete/example-cloud-connector docker-delete/activiti-cloud-modeling
-
-delete: delete-app docker-delete-all
-
 clone-chart:
-	git clone https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) -b fix-modeling
+	git clone https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) -b develop
 
 create-pr: update-chart
 	cd $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) && \
@@ -53,7 +49,7 @@ create-pr: update-chart
 		git diff && \
 		git commit -am "Update 'activiti-cloud-application' dependency to $(RELEASE_VERSION)" && \
 		git push -qu origin HEAD && \
-		gh pr create --fill --base fix-modeling --label do-not-merge
+		gh pr create --fill --base develop --label activiti-cloud-application ${GH_PR_CREATE_OPTS}
 
 update-chart: clone-chart
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
@@ -83,6 +79,8 @@ docker-delete/%:
 	@echo "Delete image from Docker Hub for $(MODULE):$(RELEASE_VERSION)..."
 	curl --silent --show-error --fail -X DELETE -u "$DOCKER_REGISTRY_USERNAME:$DOCKER_REGISTRY_PASSWORD" \
 		https://hub.docker.com/v2/repositories/activiti/$(MODULE)/tags/$(RELEASE_VERSION)
+
+docker-delete-all: docker-delete/example-runtime-bundle docker-delete/activiti-cloud-query docker-delete/example-cloud-connector docker-delete/activiti-cloud-modeling
 
 version:
 	mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$(RELEASE_VERSION)

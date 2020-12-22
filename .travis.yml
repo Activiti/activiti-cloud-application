@@ -50,7 +50,9 @@ jobs:
 
     - name: Run Acceptance Tests
       stage: test
-      after_script: make delete || echo "Trying to delete helm chart"
+      after_script:
+        - make delete || echo "Trying to delete helm chart"
+        - [[ "$TRAVIS_PULL_REQUEST" == "true" ]] && make docker-delete-all
       script: |
         (
           set -e
@@ -83,14 +85,6 @@ jobs:
           make test/modeling-acceptance-tests
           make test/runtime-acceptance-tests
         )
-
-    # for testing this, should be on promote
-    - name: Test Promote PR
-      stage: test
-      branches:
-        only:
-          - fix-modeling
-      script: make create-pr dependabot
 
     - name: Promote Release
       stage: trigger
