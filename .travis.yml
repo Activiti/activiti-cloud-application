@@ -53,10 +53,7 @@ jobs:
       after_script:
         - make delete || echo "Trying to delete helm chart"
         - |
-          if [[ "$TRAVIS_PULL_REQUEST" == "true" ]];
-          then
-            make docker-delete-all
-          fi
+          [[ "$TRAVIS_PULL_REQUEST" == "true" ]] && make docker-delete-all
       script: |
         (
           set -e
