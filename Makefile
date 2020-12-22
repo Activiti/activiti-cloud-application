@@ -19,7 +19,7 @@ updatebot/push-version:
 		--merge false
 
 dependabot:
-	curl --silent --show-error --fail -X POST \
+	curl --silent --show-error --fail -X POST -H "Content-Type: application/json" \
 		-d "{\"name\":\"org.activiti.cloud:activiti-cloud-dependencies\", \"version\": \"$(RELEASE_VERSION)\", \"package-manager\": \"maven\"}" \
 		-H "Authorization: Personal ${GITHUB_TOKEN}" \
 		https://api.dependabot.com/release_notifications/private
