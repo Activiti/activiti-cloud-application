@@ -49,7 +49,7 @@ clone-chart:
 create-pr: update-chart
 	cd $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) && \
 	  git checkout -b dependency-activiti-cloud-application-$(RELEASE_VERSION) && \
-		pre-commit run -a && \
+		helm-docs && \
 		git diff && \
 		git commit -am "Update 'activiti-cloud-application' dependency to $(RELEASE_VERSION)" && \
 		git push -qu origin HEAD && \
