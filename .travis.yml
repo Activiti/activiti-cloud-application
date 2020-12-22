@@ -90,7 +90,7 @@ jobs:
       branches:
         only:
           - fix-modeling
-      script: make create-pr
+      script: make create-pr dependabot
 
     - name: Promote Release
       stage: trigger
