@@ -52,7 +52,11 @@ jobs:
       stage: test
       after_script:
         - make delete || echo "Trying to delete helm chart"
-        - [[ "$TRAVIS_PULL_REQUEST" == "true" ]] && make docker-delete-all
+        - |
+          if [[ "$TRAVIS_PULL_REQUEST" == "true" ]];
+          then
+            make docker-delete-all
+          fi
       script: |
         (
           set -e
