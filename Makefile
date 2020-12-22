@@ -21,7 +21,7 @@ updatebot/push-version:
 dependabot:
 	curl --silent --show-error --fail -X POST \
 		-d "{\"name\":\"org.activiti.cloud:activiti-cloud-dependencies\", \"version\": \"$(RELEASE_VERSION)\", \"package-manager\": \"maven\"}" \
-		-H "Authorization: Personal $GITHUB_TOKEN" \
+		-H "Authorization: Personal ${GITHUB_TOKEN}" \
 		https://api.dependabot.com/release_notifications/private
 
 install: release
@@ -53,7 +53,7 @@ create-pr: update-chart
 		git diff && \
 		git commit -am "Update 'activiti-cloud-application' dependency to $(RELEASE_VERSION)" && \
 		git push -qu origin HEAD && \
-		gh pr create --fill
+		gh pr create --fill --base fix-modeling --label do-not-merge
 
 update-chart: clone-chart
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
