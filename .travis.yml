@@ -37,7 +37,7 @@ jobs:
       script: make docker/example-runtime-bundle
 
     - name: Build Activity Cloud Query
-      stage: docker
+      stage: build
       script: make mvn/activiti-cloud-query/liquibase docker/activiti-cloud-query
 
     - name: Build Example Cloud Connector
@@ -45,7 +45,7 @@ jobs:
       script: make docker/example-cloud-connector
 
     - name: Build Activiti Cloud Modeling
-      stage: docker
+      stage: build
       script: make mvn/activiti-cloud-modeling/liquibase docker/activiti-cloud-modeling
 
     - name: Run Acceptance Tests
