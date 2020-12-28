@@ -69,12 +69,12 @@ release: update-chart
 	  cat values.yaml && \
 	  ls charts -la
 
-mvn/%: 
+mvn/%:
 	$(eval MODULE=$(word 1, $(subst mvn/, ,$@)))
 
 	mvn clean verify package -B -pl $(MODULE) -am
 
-docker/%: 
+docker/%:
 	$(eval MODULE=$(word 1, $(subst docker/, ,$@)))
 
 	mvn verify -B -pl $(MODULE) -am

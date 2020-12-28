@@ -11,4 +11,3 @@ COPY liquibase/target/*.jar liquibase.jar
 
 ENTRYPOINT ["./entrypoint.sh"]
 CMD ["-jar", "app.jar"]
-
