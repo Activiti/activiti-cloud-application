@@ -51,9 +51,9 @@ jobs:
     - name: Run Acceptance Tests
       stage: test
       after_script:
-        - echo make delete || echo "Trying to delete helm chart"
+        - make delete || echo "Trying to delete helm chart"
         - |
-          [[ "$TRAVIS_PULL_REQUEST" == "true" ]] && echo make docker-delete-all
+          [[ "$TRAVIS_PULL_REQUEST" == "true" ]] && make docker-delete-all
       script: |
         (
           set -e
