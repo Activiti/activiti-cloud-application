@@ -11,4 +11,4 @@ Then application deployed events are emitted on start
 
 Scenario: getting applications
 Given the user is authenticated as hruser
-Then the user can get applications 
+Then the user can get applications
