@@ -63,7 +63,9 @@ public class ApplicationActions {
     @Then("the user can get applications")
     public void checkIfApplicationsArePresent(){
         Collection <CloudApplication> applications = applicationQuerySteps.getAllApplications().getContent();
-        assertThat(applications).isNotEmpty();
+        assertThat(applications)
+                .extracting(CloudApplication::getName)
+                .containsExactly("default-app");
     }
 
     private Deployment deployment(CloudRuntimeEvent<?, ?> event) {
