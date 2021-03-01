@@ -1,0 +1,14 @@
+inputs:
+  version:
+    description: 'Version of yq'
+    default: 3.4.1
+runs:
+  using: composite
+  steps:
+    - run: |
+        curl -fsSLo yq https://github.com/mikefarah/yq/releases/download/$YQ_VERSION/yq_$(uname | tr '[:upper:]' '[:lower:]')_amd64
+        chmod +x yq
+        sudo mv yq /usr/local/bin/
+        yq --version
+      env:
+        YQ_VERSION: ${{ input.version }}

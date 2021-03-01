@@ -24,7 +24,7 @@ install: release
 			--wait
 
 delete:
-	helm delete ${PREVIEW_NAMESPACE} --namespace ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
+	helm uninstall ${PREVIEW_NAMESPACE} --namespace ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
 	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
 
 clone-chart:
@@ -72,7 +72,7 @@ docker-delete/%:
 	$(eval MODULE=$(word 2, $(subst /, ,$@)))
 
 	@echo "Delete image from Docker Hub for $(MODULE):$(RELEASE_VERSION)..."
-	curl --silent --show-error --fail -X DELETE -u "$DOCKER_REGISTRY_USERNAME:$DOCKER_REGISTRY_PASSWORD" \
+	curl --silent --show-error --fail -X DELETE -u "${DOCKERHUB_USERNAME}:${DOCKERHUB_PASSWORD}" \
 		https://hub.docker.com/v2/repositories/activiti/$(MODULE)/tags/$(RELEASE_VERSION)
 
 docker-delete-all: docker-delete/example-runtime-bundle docker-delete/activiti-cloud-query \

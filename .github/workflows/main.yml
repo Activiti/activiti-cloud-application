@@ -12,7 +12,8 @@ on:
   workflow_dispatch:
 
 env:
-  GLOBAL_GATEWAY_DOMAIN: activiti.envalfresco.com
+  CLUSTER_NAME: activiti
+  CLUSTER_DOMAIN: envalfresco.com
 
 jobs:
 
@@ -60,7 +61,7 @@ jobs:
         run: |
           echo "MAVEN_USERNAME=$MAVEN_USERNAME" >> $GITHUB_ENV
           echo "MAVEN_PASSWORD=$MAVEN_PASSWORD" >> $GITHUB_ENV
-          echo "MAVEN_OPTS='-s settings.xml -B -ntp'" >> $GITHUB_ENV
+          echo 'MAVEN_OPTS="-s settings.xml -B -ntp"' >> $GITHUB_ENV
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -73,13 +74,7 @@ jobs:
 
       - name: Set up jx-release-version
         if: ${{ github.event_name == 'push' }}
-        run: |
-          curl -fsSL https://github.com/jenkins-x-plugins/jx-release-version/releases/download/v$JX_RELEASE_VERSION_VERSION/jx-release-version-linux-amd64.tar.gz \
-            | tar xz jx-release-version
-          sudo mv jx-release-version /usr/local/bin/
-          echo jx-release-version $(jx-release-version --version)
-        env:
-          JX_RELEASE_VERSION_VERSION: 2.2.3
+        uses: ./.github/actions/setup-jx-release-version
 
       - name: Bump version with jx-release-version
         if: ${{ github.event_name == 'push' }}
@@ -91,7 +86,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           BRANCH_NAME=${GITHUB_HEAD_REF#refs/heads/}
-          BRANCH_NAME=$(echo ${BRANCH_NAME/\//-} | tr '[:upper:]' '[:lower:] }
+          BRANCH_NAME=$(echo ${BRANCH_NAME/\//-} | tr '[:upper:]' '[:lower:]'}
           echo set BRANCH_NAME=$BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
@@ -128,20 +123,34 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
 
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: v1.19.6
+
       - name: Set up Helm
         uses: azure/setup-helm@v1
         with:
           version: v3.5.2
 
+      - name: Set up rancher
+        uses: ./.github/actions/setup-rancher-cli
+        with:
+          url: ${{ secrets.RANCHER2_URL }}
+          access-key: ${{ secrets.RANCHER2_ACCESS_KEY }}
+          secret-key: ${{ secrets.RANCHER2_SECRET_KEY }}
+          context: ${{ env.CLUSTER_NAME }}
+
       - name: Run Acceptance Tests
+        continue-on-error: true
         run: |
           set -e
 
           # override here as values have changed to be https friendly from dot to dash
           export SSO_PROTOCOL=https
           export GATEWAY_PROTOCOL=https
-          export GATEWAY_HOST=gateway-$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN
-          export SSO_HOST=identity-$PREVIEW_NAMESPACE.$GLOBAL_GATEWAY_DOMAIN
+          export GATEWAY_HOST=gateway-$PREVIEW_NAMESPACE.$CLUSTER_NAME.$CLUSTER_DOMAIN
+          export SSO_HOST=identity-$PREVIEW_NAMESPACE.$CLUSTER_NAME.$CLUSTER_DOMAIN
 
           make install
 
@@ -170,12 +179,14 @@ jobs:
           make test/runtime-acceptance-tests
 
       - name: Delete Helm chart
-        if: ${{ always() }}
         run: make delete
 
       - name: Delete Docker images
-        if: ${{ github.event_name == 'pull_request' && always() }}
+        if: ${{ github.event_name == 'pull_request' }}
         run: make docker-delete-all
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Deploy with Maven
         if: ${{ github.event_name == 'push' || contains(github.head_ref, 'preview') }}
@@ -196,35 +207,15 @@ jobs:
 
       - name: Set up updatebot
         if: ${{ github.event_name == 'push' }}
-        run: |
-          curl -fsSLo updatebot.jar \
-            https://repo1.maven.org/maven2/io/jenkins/updatebot/updatebot/$UPDATEBOT_VERSION/updatebot-$UPDATEBOT_VERSION.jar
-          echo "java -jar /usr/local/bin/updatebot.jar \$@" > updatebot
-          chmod +x updatebot
-          sudo mv updatebot* /usr/local/bin/
-          echo updatebot $(updatebot version)
-        env:
-          UPDATEBOT_VERSION: 1.1.60
+        uses: ./.github/actions/setup-updatebot
 
       - name: Set up helm-docs
         if: ${{ github.event_name == 'push' }}
-        run: |
-          curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_linux_x86_64.tar.gz \
-            | tar xz helm-docs
-          sudo mv helm-docs /usr/local/bin/
-          helm-docs --version
-        env:
-          HELM_DOCS_VERSION: 1.4.0
+        uses: ./.github/actions/setup-helm-docs
 
       - name: Set up yq
         if: ${{ github.event_name == 'push' }}
-        run: |
-          curl -fsSLo yq https://github.com/mikefarah/yq/releases/download/$YQ_VERSION/yq_$(uname | tr '[:upper:]' '[:lower:]')_amd64
-          chmod +x yq
-          sudo mv yq /usr/local/bin/
-          yq --version
-        env:
-          YQ_VERSION: 3.4.1
+        uses: ./.github/actions/setup-yq
 
       - name: Promote Release
         if: ${{ github.event_name == 'push' }}

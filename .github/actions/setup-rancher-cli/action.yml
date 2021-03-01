@@ -1,0 +1,30 @@
+inputs:
+  version:
+    description: 'Version of Rancher CLI'
+    default: 2.4.10
+  access-key:
+    description: 'Rancher API access key'
+    required: false
+  secret-key:
+    description: 'Rancher API secret key'
+    required: false
+  context:
+    description: 'Rancher context for kubectl configuration'
+    required: false
+runs:
+  using: composite
+  steps:
+    - run: |
+        curl -fsSL https://github.com/rancher/cli/releases/download/v$RANCHER_CLI_VERSION/rancher-linuc-amd64-v$RANCHER_CLI_VERSION.tar.gz \
+          | tar xz --strip=2 ./rancher-v$RANCHER_CLI_VERSION/rancher
+        sudo mv rancher /usr/local/bin/
+        rancher --version
+      env:
+        RANCHER_CLI_VERSION: ${{ input.version }}
+    - run: |
+        RANCHER2_BEARER_TOKEN=${RANCHER2_BEARER_TOKEN:-${{ input.access-key }}:${{ input.secret-key }}
+        RANCHER_SYSTEM_CONTEXT_INDEX=$(echo 1 | rancher login $RANCHER2_URL -t $RANCHER2_BEARER_TOKEN | grep local | grep System | cut -d ' ' -f1)
+        echo $RANCHER_SYSTEM_CONTEXT_INDEX | rancher login $RANCHER2_URL -t $RANCHER2_BEARER_TOKEN > /dev/null
+    - if: ${{ input.context }}
+      run: |
+        mkdir -p $HOME/.kube && rancher cluster kubeconfig ${{ input.context }} > $HOME/.kube/config
