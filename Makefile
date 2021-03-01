@@ -9,24 +9,7 @@ ACTIVITI_CLOUD_FULL_CHART_BRANCH := dependency-activiti-cloud-application-$(RELE
 updatebot/push-version:
 	updatebot push-version --kind maven \
 		org.activiti.cloud:activiti-cloud-dependencies ${RELEASE_VERSION} \
-		org.activiti.cloud:activiti-cloud-modeling-dependencies ${ACTIVITI_CLOUD_VERSION} \
-		org.activiti.cloud:activiti-cloud-audit-dependencies ${ACTIVITI_CLOUD_VERSION} \
-		org.activiti.cloud:activiti-cloud-api-dependencies ${ACTIVITI_CLOUD_VERSION} \
-		org.activiti.cloud:activiti-cloud-parent ${ACTIVITI_CLOUD_VERSION} \
-		org.activiti.cloud:activiti-cloud-connectors-dependencies ${ACTIVITI_CLOUD_VERSION} \
-		org.activiti.cloud:activiti-cloud-messages-dependencies ${ACTIVITI_CLOUD_VERSION} \
-		org.activiti.cloud:activiti-cloud-modeling-dependencies ${ACTIVITI_CLOUD_VERSION} \
-		org.activiti.cloud:activiti-cloud-notifications-graphql-dependencies ${ACTIVITI_CLOUD_VERSION} \
-		org.activiti.cloud:activiti-cloud-query-dependencies ${ACTIVITI_CLOUD_VERSION} \
-		org.activiti.cloud:activiti-cloud-runtime-bundle-dependencies ${ACTIVITI_CLOUD_VERSION} \
-		org.activiti.cloud:activiti-cloud-service-common-dependencies ${ACTIVITI_CLOUD_VERSION} \
 		--merge false
-
-dependabot:
-	curl --silent --show-error --fail -X POST -H "Content-Type: application/json" \
-		-d "{\"name\":\"org.activiti.cloud:activiti-cloud-dependencies\", \"version\": \"$(RELEASE_VERSION)\", \"package-manager\": \"maven\"}" \
-		-H "Authorization: Personal ${GITHUB_TOKEN}" \
-		https://api.dependabot.com/release_notifications/private
 
 install: release
 	echo helm $(helm version --short)
@@ -92,7 +75,8 @@ docker-delete/%:
 	curl --silent --show-error --fail -X DELETE -u "$DOCKER_REGISTRY_USERNAME:$DOCKER_REGISTRY_PASSWORD" \
 		https://hub.docker.com/v2/repositories/activiti/$(MODULE)/tags/$(RELEASE_VERSION)
 
-docker-delete-all: docker-delete/example-runtime-bundle docker-delete/activiti-cloud-query docker-delete/example-cloud-connector docker-delete/activiti-cloud-modeling
+docker-delete-all: docker-delete/example-runtime-bundle docker-delete/activiti-cloud-query \
+	docker-delete/example-cloud-connector docker-delete/activiti-cloud-modeling
 
 version:
 	mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$(RELEASE_VERSION)
@@ -103,8 +87,8 @@ deploy:
 tag:
 	git add -u
 	git commit -m "Release $(RELEASE_VERSION)" --allow-empty
-	git tag -fa v$(RELEASE_VERSION) -m "Release version $(RELEASE_VERSION)" || travis_terminate 1;
-	git push -f -q https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git v$(RELEASE_VERSION) || travis_terminate 1;
+	git tag -fa v$(RELEASE_VERSION) -m "Release version $(RELEASE_VERSION)"
+	git push -f -q origin v$(RELEASE_VERSION)
 
 test/%:
 	$(eval MODULE=$(word 2, $(subst /, ,$@)))
@@ -112,4 +96,4 @@ test/%:
 	cd activiti-cloud-acceptance-scenarios && \
 		mvn -pl '$(MODULE)' -Droot.log.level=off verify
 
-promote: version deploy tag updatebot/push-version dependabot create-pr
+promote: version deploy tag updatebot/push-version create-pr
