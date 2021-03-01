@@ -58,7 +58,7 @@ release: update-chart
 mvn/%:
 	$(eval MODULE=$(word 1, $(subst mvn/, ,$@)))
 
-	mvn -s settings.xml verify -B -pl $(MODULE) -am
+	mvn verify -pl $(MODULE) -am
 
 docker/%:
 	$(eval MODULE=$(word 1, $(subst docker/, ,$@)))

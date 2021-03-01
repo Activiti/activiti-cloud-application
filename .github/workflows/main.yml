@@ -61,7 +61,7 @@ jobs:
         run: |
           echo "MAVEN_USERNAME=$MAVEN_USERNAME" >> $GITHUB_ENV
           echo "MAVEN_PASSWORD=$MAVEN_PASSWORD" >> $GITHUB_ENV
-          echo 'MAVEN_OPTS="-s settings.xml -B -ntp"' >> $GITHUB_ENV
+          echo 'MAVEN_CLI_OPTS="-s settings.xml -B -ntp"' >> $GITHUB_ENV
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -188,15 +188,6 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Deploy with Maven
-        if: ${{ github.event_name == 'push' || contains(github.head_ref, 'preview') }}
-        run: |
-          mvn versions:set -DnewVersion=$VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
-          mvn deploy -DskipTests
-        env:
-          MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-
       - name: Configure git user
         if: ${{ github.event_name == 'push' }}
         run: |
@@ -227,5 +218,5 @@ jobs:
       - name: Deploy preview
         if: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
         run: |
-          mvn versions:set -DnewVersion=$VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
-          mvn deploy -pl activiti-cloud-dependencies/dependencies -am -DskipTests
+          mvn $MAVEN_CLI_OPTS versions:set -DnewVersion=$VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
+          mvn $MAVEN_CLI_OPTS deploy -pl activiti-cloud-dependencies/dependencies -am -DskipTests
