@@ -58,12 +58,12 @@ release: update-chart
 mvn/%:
 	$(eval MODULE=$(word 1, $(subst mvn/, ,$@)))
 
-	mvn clean verify package -B -pl $(MODULE) -am
+	mvn -s settings.xml verify -B -pl $(MODULE) -am
 
 docker/%:
 	$(eval MODULE=$(word 1, $(subst docker/, ,$@)))
 
-	mvn verify -B -pl $(MODULE) -am
+	make mvn/$(MODULE)
 	@echo "Building docker image for $(MODULE):$(RELEASE_VERSION)..."
 	docker build -f $(MODULE)/Dockerfile -q -t docker.io/activiti/$(MODULE):$(RELEASE_VERSION) $(MODULE)
 	docker push docker.io/activiti/$(MODULE):$(RELEASE_VERSION)
@@ -82,7 +82,7 @@ version:
 	mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$(RELEASE_VERSION)
 
 deploy:
-	mvn clean deploy -DskipTests
+	mvn deploy -DskipTests
 
 tag:
 	git add -u

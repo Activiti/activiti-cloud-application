@@ -56,6 +56,15 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Configure Maven
+        run: |
+          echo "MAVEN_USERNAME=$MAVEN_USERNAME" >> $GITHUB_ENV
+          echo "MAVEN_PASSWORD=$MAVEN_PASSWORD" >> $GITHUB_ENV
+          echo "MAVEN_OPTS='-s settings.xml -B -ntp'" >> $GITHUB_ENV
+        env:
+          MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -87,19 +96,18 @@ jobs:
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
       - name: Set preview version
-        if: ${{ contains(github.head_ref, 'preview') }}
+        if: ${{ github.event_name == 'pull_request' }}
         run: |
           echo 0.0.1-$BRANCH_NAME-$GITHUB_RUN_NUMBER-SNAPSHOT > VERSION
 
       - name: Set PREVIEW_NAMESPACE env variable
-        if: ${{ contains(github.head_ref, 'preview') }}
+        if: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
         run: |
           PREVIEW_NAMESPACE=$BRANCH_NAME-$GITHUB_RUN_NUMBER
           echo set PREVIEW_NAMESPACE=$PREVIEW_NAMESPACE
           echo "PREVIEW_NAMESPACE=$PREVIEW_NAMESPACE" >> $GITHUB_ENV
 
       - name: Set VERSION env variable
-        if: ${{ github.event_name == 'push' || contains(github.head_ref, 'preview') }}
         run: |
           VERSION=$(cat VERSION)
           echo set VERSION=$VERSION
@@ -172,8 +180,8 @@ jobs:
       - name: Deploy with Maven
         if: ${{ github.event_name == 'push' || contains(github.head_ref, 'preview') }}
         run: |
-          mvn -B versions:set -DnewVersion=$VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
-          mvn -B -s settings.xml deploy -DskipTests
+          mvn versions:set -DnewVersion=$VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
+          mvn deploy -DskipTests
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -208,14 +216,25 @@ jobs:
         env:
           HELM_DOCS_VERSION: 1.4.0
 
+      - name: Set up yq
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          curl -fsSLo yq https://github.com/mikefarah/yq/releases/download/$YQ_VERSION/yq_$(uname | tr '[:upper:]' '[:lower:]')_amd64
+          chmod +x yq
+          sudo mv yq /usr/local/bin/
+          yq --version
+        env:
+          YQ_VERSION: 3.4.1
+
       - name: Promote Release
+        if: ${{ github.event_name == 'push' }}
         run: make promote
         env:
           GITHUB_USERNAME: ${{ secrets.BOT_GITHUB_USERNAME }}
           GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
 
-      - name: Deploy Preview
+      - name: Deploy preview
         if: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
         run: |
           mvn versions:set -DnewVersion=$VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
-          mvn clean deploy -pl activiti-cloud-dependencies/dependencies -am -DskipTests
+          mvn deploy -pl activiti-cloud-dependencies/dependencies -am -DskipTests
