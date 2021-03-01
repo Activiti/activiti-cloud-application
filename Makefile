@@ -58,7 +58,7 @@ release: update-chart
 mvn/%:
 	$(eval MODULE=$(word 1, $(subst mvn/, ,$@)))
 
-	mvn verify -pl $(MODULE) -am
+	mvn ${MAVEN_CLI_OPTS} verify -pl $(MODULE) -am
 
 docker/%:
 	$(eval MODULE=$(word 1, $(subst docker/, ,$@)))
@@ -79,10 +79,10 @@ docker-delete-all: docker-delete/example-runtime-bundle docker-delete/activiti-c
 	docker-delete/example-cloud-connector docker-delete/activiti-cloud-modeling
 
 version:
-	mvn versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$(RELEASE_VERSION)
+	mvn ${MAVEN_CLI_OPTS} versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$(RELEASE_VERSION)
 
 deploy:
-	mvn deploy -DskipTests
+	mvn ${MAVEN_CLI_OPTS} deploy -DskipTests
 
 tag:
 	git add -u
@@ -94,6 +94,6 @@ test/%:
 	$(eval MODULE=$(word 2, $(subst /, ,$@)))
 
 	cd activiti-cloud-acceptance-scenarios && \
-		mvn -pl '$(MODULE)' -Droot.log.level=off verify
+		mvn ${MAVEN_CLI_OPTS} -pl $(MODULE) -Droot.log.level=off verify
 
 promote: version deploy tag updatebot/push-version create-pr
