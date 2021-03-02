@@ -134,6 +134,9 @@ jobs:
         with:
           version: v3.5.2
 
+      - name: Set up yq
+        uses: ./.github/actions/setup-yq
+
       - name: Set up rancher
         uses: ./.github/actions/setup-rancher-cli
         with:
@@ -145,8 +148,6 @@ jobs:
       - name: Run Acceptance Tests
         continue-on-error: true
         run: |
-          set -e
-
           # override here as values have changed to be https friendly from dot to dash
           export SSO_PROTOCOL=https
           export GATEWAY_PROTOCOL=https
@@ -204,10 +205,6 @@ jobs:
       - name: Set up helm-docs
         if: ${{ github.event_name == 'push' }}
         uses: ./.github/actions/setup-helm-docs
-
-      - name: Set up yq
-        if: ${{ github.event_name == 'push' }}
-        uses: ./.github/actions/setup-yq
 
       - name: Promote Release
         if: ${{ github.event_name == 'push' }}
