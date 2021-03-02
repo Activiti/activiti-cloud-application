@@ -1,14 +1,23 @@
-RELEASE_VERSION := $(or $(shell cat VERSION), $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout))
-ifeq ($(FRONT_RELEASE_VERSION),)
-FRONT_RELEASE_VERSION := master
-endif
+RELEASE_VERSION := $(or $(shell cat VERSION), $(shell python -c "from xml.etree.ElementTree import parse; print(parse(open('pom.xml')).find('{http://maven.apache.org/POM/4.0.0}version').text)"))
 ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR := .git/activiti-cloud-full-chart
 ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR)/charts/activiti-cloud-full-example
 ACTIVITI_CLOUD_FULL_CHART_BRANCH := dependency-activiti-cloud-application-$(RELEASE_VERSION)
 
 updatebot/push-version:
+	$(eval ACTIVITI_CLOUD_VERSION=$(shell python -c "from xml.etree.ElementTree import parse; print(parse(open('activiti-cloud-dependencies/pom.xml')).find('.//{http://maven.apache.org/POM/4.0.0}activiti-cloud.version').text)"))
 	updatebot push-version --kind maven \
-		org.activiti.cloud:activiti-cloud-dependencies ${RELEASE_VERSION} \
+		org.activiti.cloud:activiti-cloud-dependencies $(RELEASE_VERSION) \
+		org.activiti.cloud:activiti-cloud-modeling-dependencies $(ACTIVITI_CLOUD_VERSION) \
+		org.activiti.cloud:activiti-cloud-audit-dependencies $(ACTIVITI_CLOUD_VERSION) \
+		org.activiti.cloud:activiti-cloud-api-dependencies $(ACTIVITI_CLOUD_VERSION) \
+		org.activiti.cloud:activiti-cloud-parent $(ACTIVITI_CLOUD_VERSION) \
+		org.activiti.cloud:activiti-cloud-connectors-dependencies $(ACTIVITI_CLOUD_VERSION) \
+		org.activiti.cloud:activiti-cloud-messages-dependencies $(ACTIVITI_CLOUD_VERSION) \
+		org.activiti.cloud:activiti-cloud-modeling-dependencies $(ACTIVITI_CLOUD_VERSION) \
+		org.activiti.cloud:activiti-cloud-notifications-graphql-dependencies $(ACTIVITI_CLOUD_VERSION) \
+		org.activiti.cloud:activiti-cloud-query-dependencies $(ACTIVITI_CLOUD_VERSION) \
+		org.activiti.cloud:activiti-cloud-runtime-bundle-dependencies $(ACTIVITI_CLOUD_VERSION) \
+		org.activiti.cloud:activiti-cloud-service-common-dependencies $(ACTIVITI_CLOUD_VERSION) \
 		--merge false
 
 install: release
@@ -42,9 +51,10 @@ create-pr: update-chart
 		gh pr create --fill --head $(ACTIVITI_CLOUD_FULL_CHART_BRANCH) --label updatebot ${GH_PR_CREATE_OPTS}
 
 update-chart: clone-chart
+	$(eval FRONTEND_VERSION ?= master)
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
 		yq write --inplace Chart.yaml 'version' $(RELEASE_VERSION) && \
-		env BACKEND_VERSION=$(RELEASE_VERSION) FRONTEND_VERSION=$(FRONT_RELEASE_VERSION) make update-docker-images
+		env BACKEND_VERSION=$(RELEASE_VERSION) FRONTEND_VERSION=$(FRONTEND_VERSION) make update-docker-images
 
 release: update-chart
 	echo "RELEASE_VERSION: $(RELEASE_VERSION)"
