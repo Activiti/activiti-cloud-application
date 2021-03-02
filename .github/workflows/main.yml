@@ -83,7 +83,6 @@ jobs:
           echo $(jx-release-version) > VERSION
 
       - name: Set BRANCH_NAME env variable
-        if: ${{ github.event_name == 'pull_request' }}
         run: |
           BRANCH_NAME=${GITHUB_HEAD_REF#refs/heads/}
           BRANCH_NAME=$(echo ${BRANCH_NAME/\//-} | tr '[:upper:]' '[:lower:]')
@@ -96,7 +95,6 @@ jobs:
           echo 0.0.1-$BRANCH_NAME-$GITHUB_RUN_NUMBER-SNAPSHOT > VERSION
 
       - name: Set PREVIEW_NAMESPACE env variable
-        if: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
         run: |
           PREVIEW_NAMESPACE=$BRANCH_NAME-$GITHUB_RUN_NUMBER
           echo set PREVIEW_NAMESPACE=$PREVIEW_NAMESPACE
@@ -145,9 +143,7 @@ jobs:
           context: ${{ env.CLUSTER_NAME }}
 
       - name: Run Acceptance Tests
-        continue-on-error: true
         run: |
-          # override here as values have changed to be https friendly from dot to dash
           export SSO_PROTOCOL=https
           export GATEWAY_PROTOCOL=https
           export GATEWAY_HOST=gateway-$PREVIEW_NAMESPACE.$CLUSTER_NAME.$CLUSTER_DOMAIN
@@ -180,10 +176,11 @@ jobs:
           make test/runtime-acceptance-tests
 
       - name: Delete Helm chart
+        if: ${{ always() }}
         run: make delete
 
       - name: Delete Docker images
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ always() && github.event_name == 'pull_request' }}
         run: make docker-delete-all
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
