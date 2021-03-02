@@ -11,4 +11,3 @@ repos:
     rev: 0.3.0
     hooks:
       - id: check-github-workflows
-      - id: check-github-actions
