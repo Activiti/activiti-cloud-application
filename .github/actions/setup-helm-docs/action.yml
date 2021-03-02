@@ -3,12 +3,13 @@ inputs:
     description: 'Version of helm-docs'
     default: 1.4.0
 runs:
-  using: composite
+  using: "composite"
   steps:
     - run: |
         curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_linux_x86_64.tar.gz \
           | tar xz helm-docs
         sudo mv helm-docs /usr/local/bin/
         helm-docs --version
+      shell: bash
       env:
         HELM_DOCS_VERSION: ${{ input.version }}

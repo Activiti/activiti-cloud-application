@@ -3,7 +3,7 @@ inputs:
     description: 'Version of updatebot'
     default: 1.1.60
 runs:
-  using: composite
+  using: "composite"
   steps:
     - run: |
         curl -fsSLo updatebot.jar \
@@ -12,5 +12,6 @@ runs:
         chmod +x updatebot
         sudo mv updatebot* /usr/local/bin/
         echo updatebot $(updatebot version)
+      shell: bash
       env:
         UPDATEBOT_VERSION: ${{ input.version }}
