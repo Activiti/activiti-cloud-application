@@ -1,6 +1,9 @@
+name: 'Setup updatebot'
+description: 'Set up a specific version of updatebot and add it to the PATH.'
 inputs:
   version:
     description: 'Version of updatebot'
+    required: false
     default: 1.1.60
 runs:
   using: "composite"
@@ -14,4 +17,4 @@ runs:
         echo updatebot $(updatebot version)
       shell: bash
       env:
-        UPDATEBOT_VERSION: ${{ input.version }}
+        UPDATEBOT_VERSION: ${{ inputs.version }}

@@ -1,6 +1,9 @@
+name: 'Setup Rancher CLI'
+description: 'Set up a specific version of Rancher CLI and add it to the PATH.'
 inputs:
   version:
     description: 'Version of Rancher CLI'
+    required: false
     default: 2.4.10
   access-key:
     description: 'Rancher API access key'
@@ -21,16 +24,16 @@ runs:
         rancher --version
       shell: bash
       env:
-        RANCHER_CLI_VERSION: ${{ input.version }}
+        RANCHER_CLI_VERSION: ${{ inputs.version }}
     - run: |
-        RANCHER2_BEARER_TOKEN=${RANCHER2_BEARER_TOKEN:-${{ input.access-key }}:${{ input.secret-key }}
+        RANCHER2_BEARER_TOKEN=${RANCHER2_BEARER_TOKEN:-${{ inputs.access-key }}:${{ inputs.secret-key }}
         RANCHER_SYSTEM_CONTEXT_INDEX=$(echo 1 | rancher login $RANCHER2_URL -t $RANCHER2_BEARER_TOKEN | grep local | grep System | cut -d ' ' -f1)
         echo $RANCHER_SYSTEM_CONTEXT_INDEX | rancher login $RANCHER2_URL -t $RANCHER2_BEARER_TOKEN > /dev/null
       shell: bash
     - run: |
-        KUBECONTEXT="${{ input.context }}"
+        KUBECONTEXT="${{ inputs.context }}"
         if [[ -n "$KUBECONTEXT" ]]
         then
-          mkdir -p $HOME/.kube && rancher cluster kubeconfig ${{ input.context }} > $HOME/.kube/config
+          mkdir -p $HOME/.kube && rancher cluster kubeconfig ${{ inputs.context }} > $HOME/.kube/config
         fi
       shell: bash

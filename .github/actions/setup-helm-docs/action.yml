@@ -1,6 +1,9 @@
+name: 'Setup helm-docs'
+description: 'Set up a specific version of helm-docs and add it to the PATH.'
 inputs:
   version:
     description: 'Version of helm-docs'
+    required: false
     default: 1.4.0
 runs:
   using: "composite"
@@ -12,4 +15,4 @@ runs:
         helm-docs --version
       shell: bash
       env:
-        HELM_DOCS_VERSION: ${{ input.version }}
+        HELM_DOCS_VERSION: ${{ inputs.version }}

@@ -1,6 +1,9 @@
+name: 'Setup jx-release-version'
+description: 'Set up a specific version of jx-release-version and add it to the PATH.'
 inputs:
   version:
     description: 'Version of jx-release-version'
+    required: false
     default: 2.2.3
 runs:
   using: "composite"
@@ -12,4 +15,4 @@ runs:
         echo jx-release-version $(jx-release-version --version)
       shell: bash
       env:
-        JX_RELEASE_VERSION_VERSION: ${{ input.version }}
+        JX_RELEASE_VERSION_VERSION: ${{ inputs.version }}

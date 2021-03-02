@@ -1,6 +1,9 @@
+name: 'Setup yq'
+description: 'Set up a specific version of yq and add it to the PATH.'
 inputs:
   version:
     description: 'Version of yq'
+    required: false
     default: 3.4.1
 runs:
   using: "composite"
@@ -12,4 +15,4 @@ runs:
         yq --version
       shell: bash
       env:
-        YQ_VERSION: ${{ input.version }}
+        YQ_VERSION: ${{ inputs.version }}
