@@ -18,13 +18,16 @@ runs:
   using: "composite"
   steps:
     - run: |
-        curl -fsSL https://github.com/rancher/cli/releases/download/v$RANCHER_CLI_VERSION/rancher-linuc-amd64-v$RANCHER_CLI_VERSION.tar.gz \
-          | tar xz --strip=2 ./rancher-v$RANCHER_CLI_VERSION/rancher
-        sudo mv rancher /usr/local/bin/
-        rancher --version
+        TOOL_VERSION=${{ inputs.version }}
+        TOOL_NAME=rancher
+        TOOL_REPO=rancher/cli
+        TOOL_OS=$(uname | tr '[:upper:]' '[:lower:]')
+        TOOL_ARCH=amd64
+        curl -fsSL https://github.com/$TOOL_REPO/releases/download/v$TOOL_VERSION/$TOOL_NAME-$TOOL_OS-$TOOL_ARCH-v$TOOL_VERSION.tar.gz \
+          | tar xz --strip=2 ./$TOOL_NAME-v$TOOL_VERSION/$TOOL_NAME
+        sudo mv $TOOL_NAME /usr/local/bin/
+        echo $($TOOL_NAME --version)
       shell: bash
-      env:
-        RANCHER_CLI_VERSION: ${{ inputs.version }}
     - run: |
         RANCHER2_BEARER_TOKEN=${RANCHER2_BEARER_TOKEN:-${{ inputs.access-key }}:${{ inputs.secret-key }}
         RANCHER_SYSTEM_CONTEXT_INDEX=$(echo 1 | rancher login $RANCHER2_URL -t $RANCHER2_BEARER_TOKEN | grep local | grep System | cut -d ' ' -f1)

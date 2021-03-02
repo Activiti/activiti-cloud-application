@@ -9,10 +9,14 @@ runs:
   using: "composite"
   steps:
     - run: |
-        curl -fsSL https://github.com/jenkins-x-plugins/jx-release-version/releases/download/v$JX_RELEASE_VERSION_VERSION/jx-release-version-linux-amd64.tar.gz \
-          | tar xz jx-release-version
-        sudo mv jx-release-version /usr/local/bin/
-        echo jx-release-version $(jx-release-version --version)
+        TOOL_VERSION=${{ inputs.version }}
+        TOOL_NAME=jx-release-version
+        TOOL_REPO=jenkins-x-plugins/$TOOL_NAME
+        TOOL_OS=$(uname | tr '[:upper:]' '[:lower:]')
+        TOOL_ARCH=amd64
+        curl -fsSL https://github.com/$TOOL_REPO/releases/download/v$TOOL_VERSION/$TOOL_NAME-$TOOL_OS-$TOOL_ARCH.tar.gz | tar xz $TOOL_NAME
+        sudo mv $TOOL_NAME /usr/local/bin/
+        echo $TOOL_NAME $($TOOL_NAME --version)
       shell: bash
       env:
         JX_RELEASE_VERSION_VERSION: ${{ inputs.version }}

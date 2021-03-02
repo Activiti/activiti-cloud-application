@@ -9,10 +9,15 @@ runs:
   using: "composite"
   steps:
     - run: |
-        curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_linux_x86_64.tar.gz \
-          | tar xz helm-docs
-        sudo mv helm-docs /usr/local/bin/
-        helm-docs --version
+        TOOL_VERSION=${{ inputs.version }}
+        TOOL_NAME=helm-docs
+        TOOL_REPO=norwoodj/$TOOL_NAME
+        TOOL_OS=$(uname | tr '[:upper:]' '[:lower:]')
+        TOOL_ARCH=x86_64
+        curl -fsSL https://github.com/$TOOL_REPO/releases/download/v$TOOL_VERSION/${TOOL_NAME}_${TOOL_VERSION}_${TOOL_OS}_${TOOL_ARCH}.tar.gz \
+          | tar xz $TOOL_NAME
+        sudo mv $TOOL_NAME /usr/local/bin/
+        echo $($TOOL_NAME --version)
       shell: bash
       env:
         HELM_DOCS_VERSION: ${{ inputs.version }}
