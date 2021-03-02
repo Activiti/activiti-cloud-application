@@ -75,7 +75,7 @@ jobs:
       - name: Set up jx-release-version
         if: ${{ github.event_name == 'push' }}
         uses: ./.github/actions/setup-jx-release-version
-#        uses: Alfresco/alfresco-build-tools/.github/actions/setup-jx-release-version@v1
+#        uses: Alfresco/alfresco-build-tools/.github/actions/setup-jx-release-version@v1.0.0
 
       - name: Bump version with jx-release-version
         if: ${{ github.event_name == 'push' }}
