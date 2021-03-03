@@ -18,7 +18,7 @@ env:
 jobs:
 
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -28,7 +28,7 @@ jobs:
         uses: pre-commit/action@v2.0.0
 
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
 
       - name: Checkout repository
@@ -204,7 +204,9 @@ jobs:
 
       - name: Promote Release
         if: ${{ github.event_name == 'push' }}
-        run: make promote
+        run: |
+          echo -e "https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
+          make promote
         env:
           GITHUB_USERNAME: ${{ secrets.BOT_GITHUB_USERNAME }}
           GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
