@@ -66,7 +66,7 @@ jobs:
         run: |
           echo "MAVEN_USERNAME=$MAVEN_USERNAME" >> $GITHUB_ENV
           echo "MAVEN_PASSWORD=$MAVEN_PASSWORD" >> $GITHUB_ENV
-          echo 'MAVEN_CLI_OPTS=-s settings.xml -B -ntp' >> $GITHUB_ENV
+          echo "MAVEN_CLI_OPTS=-s $GITHUB_WORKSPACE/settings.xml -B -ntp" >> $GITHUB_ENV
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
