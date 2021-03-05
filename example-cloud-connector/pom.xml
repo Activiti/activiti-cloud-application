@@ -22,8 +22,8 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+      <groupId>${spring-cloud-starter-stream.groupId}</groupId>
+      <artifactId>${spring-cloud-starter-stream.artifactId}</artifactId>
     </dependency>
     <dependency>
       <groupId>org.activiti.cloud</groupId>

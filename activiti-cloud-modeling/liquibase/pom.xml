@@ -34,8 +34,8 @@
       <artifactId>activiti-cloud-services-modeling-liquibase</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
+      <groupId>${jdbc.groupId}</groupId>
+      <artifactId>${jdbc.artifactId}</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
