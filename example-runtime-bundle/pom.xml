@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.activiti.cloud</groupId>
     <artifactId>activiti-cloud-application</artifactId>
-    <version>7.1.1035</version>
+    <version>7.1.0-M12</version>
   </parent>
   <artifactId>example-runtime-bundle</artifactId>
   <name>Activiti Cloud :: Runtime Bundle</name>
-  <version>7.1.1035</version>
+  <version>7.1.0-M12</version>
   <url>http://activiti.org</url>
   <scm>
     <url>https://github.com/Activiti/${project.artifactId}</url>
@@ -22,7 +22,7 @@
     <java.release>11</java.release>
     <java.version>1.${java.release}</java.version>
     <maven.compiler.release>${java.release}</maven.compiler.release>
-    <activiti-cloud.version>7.1.662</activiti-cloud.version>
+    <activiti-cloud.version>7.1.0-M12</activiti-cloud.version>
     <docker-maven-plugin.version>0.34.1</docker-maven-plugin.version>
   </properties>
   <dependencyManagement>
