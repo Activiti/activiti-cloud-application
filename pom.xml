@@ -71,8 +71,6 @@
     <project.scm.organization>Activiti</project.scm.organization>
     <project.scm.repository>activiti-cloud-application</project.scm.repository>
     <project.year>2020</project.year>
-    <activiti-cloud.messaging>rabbit</activiti-cloud.messaging>
-    <spring-cloud-starter-stream.artifactId>spring-cloud-starter-stream-${activiti-cloud.messaging}</spring-cloud-starter-stream.artifactId>
   </properties>
   <repositories>
     <repository>
@@ -143,4 +141,21 @@ limitations under the License.]]>
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>rabbitmq</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <spring-cloud-starter-stream.artifactId>spring-cloud-starter-stream-rabbit</spring-cloud-starter-stream.artifactId>
+      </properties>
+    </profile>
+    <profile>
+      <id>kafka</id>
+      <properties>
+        <spring-cloud-starter-stream.artifactId>spring-cloud-starter-stream-kafka</spring-cloud-starter-stream.artifactId>
+      </properties>
+    </profile>
+  </profiles>
 </project>
