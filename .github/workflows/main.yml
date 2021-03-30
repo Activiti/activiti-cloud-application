@@ -105,7 +105,7 @@ jobs:
         run: |
           test ${GITHUB_PR_NUMBER} && PREVIEW_NAME=pr-${GITHUB_PR_NUMBER}-$GITHUB_RUN_NUMBER || PREVIEW_NAME=${BRANCH_NAME:0:28}-$GITHUB_RUN_NUMBER
           echo set PREVIEW_NAME=$PREVIEW_NAME
-          echo "PREVIEW_NAME=${{ matrix.messaging }}-$PREVIEW_NAME" >> $GITHUB_ENV
+          echo "PREVIEW_NAME=${MESSAGING:0:2}-$PREVIEW_NAME" >> $GITHUB_ENV
 
       - name: Set preview version
         if: ${{ github.event_name == 'pull_request' }}
