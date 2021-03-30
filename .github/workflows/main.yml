@@ -30,8 +30,11 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     needs: pre-commit
-    steps:
+    strategy:
+      matrix:
+        messaging: [rabbitmq, kafka]
 
+    steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
         with:
@@ -63,11 +66,12 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Configure Maven
+      - name: Configure Maven for ${{ matrix.messaging }}
         run: |
           echo "MAVEN_USERNAME=$MAVEN_USERNAME" >> $GITHUB_ENV
           echo "MAVEN_PASSWORD=$MAVEN_PASSWORD" >> $GITHUB_ENV
-          echo "MAVEN_CLI_OPTS=-s $GITHUB_WORKSPACE/settings.xml -B -ntp" >> $GITHUB_ENV
+          echo "MESSAGING=${{ matrix.messaging }}" >> $GITHUB_ENV
+          echo "MAVEN_CLI_OPTS=-s $GITHUB_WORKSPACE/settings.xml -B -ntp -P ${{ matrix.messaging }}" >> $GITHUB_ENV
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
@@ -96,11 +100,11 @@ jobs:
           echo set BRANCH_NAME=$BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
-      - name: Set PREVIEW_NAME env variable
+      - name: Set PREVIEW_NAME env variable for ${{ matrix.messaging }}
         run: |
           PREVIEW_NAME=${BRANCH_NAME:0:28}-$GITHUB_RUN_NUMBER
           echo set PREVIEW_NAME=$PREVIEW_NAME
-          echo "PREVIEW_NAME=$PREVIEW_NAME" >> $GITHUB_ENV
+          echo "PREVIEW_NAME=$PREVIEW_NAME-${{ matrix.messaging }}" >> $GITHUB_ENV
 
       - name: Set preview version
         if: ${{ github.event_name == 'pull_request' }}
@@ -113,16 +117,16 @@ jobs:
           echo set VERSION=$VERSION
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: Build Example Runtime Bundle
+      - name: Build Example Runtime Bundle for ${{ matrix.messaging }}
         run: make docker/example-runtime-bundle
 
-      - name: Build Activity Cloud Query
+      - name: Build Activity Cloud Query for ${{ matrix.messaging }}
         run: make mvn/activiti-cloud-query/liquibase docker/activiti-cloud-query
 
-      - name: Build Example Cloud Connector
+      - name: Build Example Cloud Connector for ${{ matrix.messaging }}
         run: make docker/example-cloud-connector
 
-      - name: Build Activiti Cloud Modeling
+      - name: Build Activiti Cloud Modeling for ${{ matrix.messaging }}
         run: make mvn/activiti-cloud-modeling/liquibase docker/activiti-cloud-modeling
 
       - name: Upload coverage to Codecov
@@ -149,13 +153,16 @@ jobs:
           secret-key: ${{ secrets.RANCHER2_SECRET_KEY }}
           context: ${{ env.CLUSTER_NAME }}
 
-      - name: Run Acceptance Tests
+      - name: Run Acceptance Tests for ${{ matrix.messaging }}
         run: |
           export SSO_PROTOCOL=https
           export GATEWAY_PROTOCOL=https
           export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
           export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
           export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+
+          # TODO remove
+          export ACTIVITI_CLOUD_FULL_CHART_REF=dev-igdianov-kafka
 
           make install
 
@@ -183,16 +190,16 @@ jobs:
           make test/modeling-acceptance-tests
           make test/runtime-acceptance-tests
 
-      - name: Delete Helm chart
-        if: ${{ always() }}
-        run: make delete
+    #   - name: Delete Helm chart for ${{ matrix.messaging }}
+    #     if: ${{ always() }}
+    #     run: make delete
 
-      - name: Delete Docker images
-        if: ${{ always() && github.event_name == 'pull_request' }}
-        run: make docker-delete-all
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+    #   - name: Delete Docker images
+    #     if: ${{ always() && github.event_name == 'pull_request' }}
+    #     run: make docker-delete-all
+    #     env:
+    #       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+    #       DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Configure git user
         if: ${{ github.event_name == 'push' }}

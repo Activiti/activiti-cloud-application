@@ -2,6 +2,7 @@ RELEASE_VERSION := $(or $(shell cat VERSION), $(shell python -c "from xml.etree.
 ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR := .git/activiti-cloud-full-chart
 ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR)/charts/activiti-cloud-full-example
 ACTIVITI_CLOUD_FULL_CHART_BRANCH := dependency-activiti-cloud-application-$(RELEASE_VERSION)
+ACTIVITI_CLOUD_FULL_CHART_REF := $(or $(ACTIVITI_CLOUD_FULL_CHART_REF),master)
 
 updatebot/push-version:
 	$(eval ACTIVITI_CLOUD_VERSION=$(shell python -c "from xml.etree.ElementTree import parse; print(parse(open('activiti-cloud-dependencies/pom.xml')).find('.//{http://maven.apache.org/POM/4.0.0}activiti-cloud.version').text)"))
@@ -22,6 +23,8 @@ updatebot/push-version:
 
 install: release
 	echo helm $(helm version --short)
+	test $(MESSAGING) || exit 1
+
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
 		helm dep up && \
 		helm upgrade ${PREVIEW_NAME} . \
@@ -30,6 +33,7 @@ install: release
 			--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
 			--namespace ${PREVIEW_NAME} \
 			--create-namespace \
+			--set $(MESSAGING).enabled=true
 			--wait
 
 delete:
@@ -38,7 +42,10 @@ delete:
 
 clone-chart:
 	rm -rf $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) && \
-		git clone https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) --depth 1
+		git clone https://${GITHUB_TOKEN}@github.com/Activiti/activiti-cloud-full-chart.git \
+			--branch $(ACTIVITI_CLOUD_FULL_CHART_REF) \
+			$(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) \
+			--depth 1
 
 create-pr: update-chart
 	cd $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR) && \
