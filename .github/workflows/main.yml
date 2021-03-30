@@ -14,6 +14,7 @@ on:
 env:
   CLUSTER_NAME: activiti
   CLUSTER_DOMAIN: envalfresco.com
+  GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
 
 jobs:
 
@@ -102,9 +103,9 @@ jobs:
 
       - name: Set PREVIEW_NAME env variable for ${{ matrix.messaging }}
         run: |
-          PREVIEW_NAME=${BRANCH_NAME:0:28}-$GITHUB_RUN_NUMBER
+          test ${GITHUB_PR_NUMBER} && PREVIEW_NAME=pr-${GITHUB_PR_NUMBER}-$GITHUB_RUN_NUMBER || PREVIEW_NAME=${BRANCH_NAME:0:28}-$GITHUB_RUN_NUMBER
           echo set PREVIEW_NAME=$PREVIEW_NAME
-          echo "PREVIEW_NAME=$PREVIEW_NAME-${{ matrix.messaging }}" >> $GITHUB_ENV
+          echo "PREVIEW_NAME=${{ matrix.messaging }}-$PREVIEW_NAME" >> $GITHUB_ENV
 
       - name: Set preview version
         if: ${{ github.event_name == 'pull_request' }}
@@ -170,9 +171,9 @@ jobs:
           max_attempts=50
           echo "Waiting for services to be up..."
           until \
-            curl --silent --head --fail $GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 && \
-            curl --silent --head --fail $GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 && \
-            curl --silent --head --fail $GATEWAY_HOST/query/actuator/health > /dev/null 2>&1
+            curl --silent --head --fail https://$GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 && \
+            curl --silent --head --fail https://$GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 && \
+            curl --silent --head --fail https://$GATEWAY_HOST/query/actuator/health > /dev/null 2>&1
           do
             if [ ${attempt_counter} -eq ${max_attempts} ]
             then
