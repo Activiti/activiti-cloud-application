@@ -33,7 +33,7 @@ install: release
 			--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
 			--namespace ${PREVIEW_NAME} \
 			--create-namespace \
-			--set $(MESSAGING).enabled=true
+			--set $(MESSAGING).enabled=true \
 			--wait
 
 delete:
