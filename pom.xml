@@ -28,7 +28,6 @@
   </licenses>
   <modules>
     <module>example-runtime-bundle</module>
-    <module>activiti-cloud-query/liquibase</module>
     <module>activiti-cloud-query</module>
     <module>example-cloud-connector</module>
     <module>activiti-cloud-modeling/liquibase</module>
@@ -141,21 +140,4 @@ limitations under the License.]]>
       </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>rabbitmq</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <spring-cloud-starter-stream.artifactId>spring-cloud-starter-stream-rabbit</spring-cloud-starter-stream.artifactId>
-      </properties>
-    </profile>
-    <profile>
-      <id>kafka</id>
-      <properties>
-        <spring-cloud-starter-stream.artifactId>spring-cloud-starter-stream-kafka</spring-cloud-starter-stream.artifactId>
-      </properties>
-    </profile>
-  </profiles>
 </project>
