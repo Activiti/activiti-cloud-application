@@ -11,10 +11,6 @@
 
   <artifactId>activiti-cloud-query-rabbitmq</artifactId>
 
-  <properties>
-    <start-class>org.activiti.cloud.query.QueryApplication</start-class>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.activiti.cloud</groupId>

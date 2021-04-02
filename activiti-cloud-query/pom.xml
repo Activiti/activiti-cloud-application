@@ -24,6 +24,7 @@
     <java.version>1.${java.release}</java.version>
     <maven.compiler.release>${java.release}</maven.compiler.release>
     <activiti-cloud.version>7.1.670</activiti-cloud.version>
+    <start-class>org.activiti.cloud.query.QueryApplication</start-class>
   </properties>
   <dependencyManagement>
     <dependencies>
