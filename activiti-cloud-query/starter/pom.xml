@@ -11,6 +11,10 @@
 
   <artifactId>activiti-cloud-query-starter</artifactId>
 
+  <properties>
+    <spring-boot.repackage.skip>true</spring-boot.repackage.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework.cloud</groupId>
