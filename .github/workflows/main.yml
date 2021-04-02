@@ -160,6 +160,31 @@ jobs:
           secret-key: ${{ secrets.RANCHER2_SECRET_KEY }}
           context: ${{ env.CLUSTER_NAME }}
 
+      - name: Set BRANCH_NAME env variable
+        run: |
+          BRANCH_NAME=${GITHUB_HEAD_REF:-$GITHUB_REF}
+          BRANCH_NAME=${BRANCH_NAME#refs/heads/}
+          BRANCH_NAME=$(echo ${BRANCH_NAME/\//-} | tr '[:upper:]' '[:lower:]')
+          echo set BRANCH_NAME=$BRANCH_NAME
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Set PREVIEW_NAME env variable
+        run: |
+          test ${GITHUB_PR_NUMBER} && PREVIEW_NAME=pr-${GITHUB_PR_NUMBER}-$GITHUB_RUN_NUMBER || PREVIEW_NAME=${BRANCH_NAME:0:28}-$GITHUB_RUN_NUMBER
+          echo set PREVIEW_NAME=$PREVIEW_NAME
+          echo "PREVIEW_NAME=$PREVIEW_NAME" >> $GITHUB_ENV
+
+      - name: Set preview version
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          echo 0.0.1-$PREVIEW_NAME-SNAPSHOT > VERSION
+
+      - name: Set VERSION env variable
+        run: |
+          VERSION=$(cat VERSION)
+          echo set VERSION=$VERSION
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Run Acceptance Tests for ${{ matrix.message-broker }}
         run: |
           export MATRIX_MESSAGE_BROKER=${{ matrix.message-broker }}
