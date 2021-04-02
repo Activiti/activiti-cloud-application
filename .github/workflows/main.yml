@@ -35,7 +35,7 @@ jobs:
     outputs:
       version: ${{ steps.set-version.outputs.version }}
       branch-name: ${{ steps.set-branch-name.outputs.branch-name }}
-      preview-name: ${{ steps.set-review-name.outputs.preview-name }}
+      preview-name: ${{ steps.set-preview-name.outputs.preview-name }}
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
