@@ -136,6 +136,9 @@ jobs:
       matrix:
         message-broker: [rabbitmq, kafka]
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
         with:
@@ -159,13 +162,15 @@ jobs:
 
       - name: Run Acceptance Tests for ${{ matrix.message-broker }}
         run: |
+          export MATRIX_MESSAGE_BROKER=${{ matrix.message-broker }}
+          export PREVIEW_NAME=$PREVIEW_NAME-$MATRIX_MESSAGE_BROKER
+          echo PREVIEW_NAME=$PREVIEW_NAME
+
           export SSO_PROTOCOL=https
           export GATEWAY_PROTOCOL=https
           export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
           export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
           export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
-          export MATRIX_MESSAGE_BROKER=${{ matrix.message-broker }}
-          export PREVIEW_NAME=$PREVIEW_NAME-$MATRIX_MESSAGE_BROKER
 
           # TODO remove
           export ACTIVITI_CLOUD_FULL_CHART_RELEASE_BRANCH=dev-igdianov-kafka
