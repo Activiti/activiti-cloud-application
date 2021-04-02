@@ -31,9 +31,6 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     needs: pre-commit
-    strategy:
-      matrix:
-        messaging: [rabbitmq, kafka]
 
     steps:
       - name: Cancel Previous Runs
@@ -71,7 +68,6 @@ jobs:
         run: |
           echo "MAVEN_USERNAME=$MAVEN_USERNAME" >> $GITHUB_ENV
           echo "MAVEN_PASSWORD=$MAVEN_PASSWORD" >> $GITHUB_ENV
-          echo "MAVEN_PROFILE=${{ matrix.messaging }}" >> $GITHUB_ENV
           echo "MAVEN_CLI_OPTS=-s $GITHUB_WORKSPACE/settings.xml -B -ntp" >> $GITHUB_ENV
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
@@ -101,11 +97,11 @@ jobs:
           echo set BRANCH_NAME=$BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
-      - name: Set PREVIEW_NAME env variable for ${{ matrix.messaging }}
+      - name: Set PREVIEW_NAME env variable
         run: |
           test ${GITHUB_PR_NUMBER} && PREVIEW_NAME=pr-${GITHUB_PR_NUMBER}-$GITHUB_RUN_NUMBER || PREVIEW_NAME=${BRANCH_NAME:0:28}-$GITHUB_RUN_NUMBER
           echo set PREVIEW_NAME=$PREVIEW_NAME
-          echo "PREVIEW_NAME=$PREVIEW_NAME-${MAVEN_PROFILE:0:3}" >> $GITHUB_ENV
+          echo "PREVIEW_NAME=$PREVIEW_NAME" >> $GITHUB_ENV
 
       - name: Set preview version
         if: ${{ github.event_name == 'pull_request' }}
@@ -118,21 +114,28 @@ jobs:
           echo set VERSION=$VERSION
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: Build Example Runtime Bundle for ${{ matrix.messaging }}
+      - name: Build Example Runtime Bundle
         run: make docker/example-runtime-bundle
 
-      - name: Build Activity Cloud Query for ${{ matrix.messaging }}
-        run: make mvn/activiti-cloud-query/liquibase docker/activiti-cloud-query
+      - name: Build Activity Cloud Query
+        run: make docker/activiti-cloud-query
 
-      - name: Build Example Cloud Connector for ${{ matrix.messaging }}
+      - name: Build Example Cloud Connector
         run: make docker/example-cloud-connector
 
-      - name: Build Activiti Cloud Modeling for ${{ matrix.messaging }}
+      - name: Build Activiti Cloud Modeling
         run: make mvn/activiti-cloud-modeling/liquibase docker/activiti-cloud-modeling
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
 
+  test:
+    runs-on: ubuntu-20.04
+    needs: build
+    strategy:
+      matrix:
+        message-broker: [rabbitmq, kafka]
+    steps:
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
         with:
@@ -154,13 +157,15 @@ jobs:
           secret-key: ${{ secrets.RANCHER2_SECRET_KEY }}
           context: ${{ env.CLUSTER_NAME }}
 
-      - name: Run Acceptance Tests for ${{ matrix.messaging }}
+      - name: Run Acceptance Tests for ${{ matrix.message-broker }}
         run: |
           export SSO_PROTOCOL=https
           export GATEWAY_PROTOCOL=https
           export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
           export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
           export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+          export MATRIX_MESSAGE_BROKER=${{ matrix.message-broker }}
+          export PREVIEW_NAME=$PREVIEW_NAME-$MATRIX_MESSAGE_BROKER
 
           # TODO remove
           export ACTIVITI_CLOUD_FULL_CHART_RELEASE_BRANCH=dev-igdianov-kafka
@@ -171,9 +176,9 @@ jobs:
           max_attempts=50
           echo "Waiting for services to be up..."
           until \
-            curl --silent --head --fail https://$GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 && \
-            curl --silent --head --fail https://$GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 && \
-            curl --silent --head --fail https://$GATEWAY_HOST/query/actuator/health > /dev/null 2>&1
+            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 && \
+            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 && \
+            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/query/actuator/health > /dev/null 2>&1
           do
             if [ ${attempt_counter} -eq ${max_attempts} ]
             then
@@ -191,10 +196,25 @@ jobs:
           make test/modeling-acceptance-tests
           make test/runtime-acceptance-tests
 
-    #   - name: Delete Helm chart for ${{ matrix.messaging }}
-    #     if: ${{ always() }}
-    #     run: make delete
+      #   - name: Delete Helm chart for ${{ matrix.message-broker }}
+      #     if: ${{ always() }}
+      #     run: make delete
 
+  clean:
+    runs-on: ubuntu-20.04
+    needs: test
+    steps:
+      - name: Delete Docker images
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        run: make docker-delete-all
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+  promote:
+    runs-on: ubuntu-20.04
+    needs: test
+    steps:
       - name: Delete Docker images
         if: ${{ always() && github.event_name == 'pull_request' }}
         run: make docker-delete-all
