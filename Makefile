@@ -76,8 +76,7 @@ release: update-chart
 
 mvn/%:
 	$(eval MODULE=$(word 1, $(subst mvn/, ,$@)))
-
-	mvn ${MAVEN_CLI_OPTS} verify -pl $(MODULE) -am
+	cd $(MODULE) &&	mvn ${MAVEN_CLI_OPTS} verify
 
 docker/%:
 	$(eval MODULE=$(word 1, $(subst docker/, ,$@)))
