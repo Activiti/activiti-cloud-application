@@ -3,8 +3,7 @@ ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR := .git/activiti-cloud-full-chart
 ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR)/charts/activiti-cloud-full-example
 ACTIVITI_CLOUD_FULL_CHART_BRANCH := dependency-activiti-cloud-application-$(RELEASE_VERSION)
 ACTIVITI_CLOUD_FULL_CHART_RELEASE_BRANCH := $(or $(ACTIVITI_CLOUD_FULL_CHART_RELEASE_BRANCH),master)
-ACTIVITI_CLOUD_FULL_CHART_MESSAGE_BROKER := $(MAVEN_PROFILE)
-MAVEN_CLI_OPTS := $(MAVEN_CLI_OPTS) -P $(MAVEN_PROFILE)
+ACTIVITI_CLOUD_FULL_CHART_MESSAGE_BROKER := $(MATRIX_MESSAGE_BROKER)
 
 updatebot/push-version:
 	$(eval ACTIVITI_CLOUD_VERSION=$(shell python -c "from xml.etree.ElementTree import parse; print(parse(open('activiti-cloud-dependencies/pom.xml')).find('.//{http://maven.apache.org/POM/4.0.0}activiti-cloud.version').text)"))
@@ -33,9 +32,10 @@ install: release
 			--install \
 			--set global.gateway.http=false \
 			--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
+			--set global.$(ACTIVITI_CLOUD_FULL_CHART_MESSAGE_BROKER).enabled=true \
+			--set global.$(ACTIVITI_CLOUD_FULL_CHART_MESSAGE_BROKER).deploy=true \
 			--namespace ${PREVIEW_NAME} \
 			--create-namespace \
-			--set $(ACTIVITI_CLOUD_FULL_CHART_MESSAGE_BROKER).enabled=true \
 			--wait
 
 delete:
