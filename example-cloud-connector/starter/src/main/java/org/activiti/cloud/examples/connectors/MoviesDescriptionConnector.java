@@ -15,8 +15,6 @@
  */
 package org.activiti.cloud.examples.connectors;
 
-import java.util.Map;
-
 import org.activiti.api.process.model.IntegrationContext;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
@@ -27,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @Component
 @EnableBinding(MoviesDescriptionConnectorChannels.class)

@@ -15,9 +15,6 @@
  */
 package org.activiti.cloud.examples.connectors;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
@@ -29,6 +26,9 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @EnableBinding(HeadersConnectorChannels.class)
