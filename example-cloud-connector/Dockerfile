@@ -4,4 +4,11 @@ ENV PORT 8080
 EXPOSE 8080
 COPY target/*.jar /opt/app.jar
 WORKDIR /opt
-ENTRYPOINT exec java $JAVA_OPTS -jar app.jar
+COPY entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
+COPY rabbitmq/target/*.jar app-rabbitmq.jar
+COPY kafka/target/*.jar app-kafka.jar
+
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["-jar", "app-rabbitmq.jar"]
