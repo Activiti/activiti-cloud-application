@@ -32,8 +32,8 @@ install: release
 			--install \
 			--set global.gateway.http=false \
 			--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
-			--set global.$(ACTIVITI_CLOUD_FULL_CHART_MESSAGE_BROKER).enabled=true \
-			--set global.$(ACTIVITI_CLOUD_FULL_CHART_MESSAGE_BROKER).deploy=true \
+			--set global.messaging.broker=$(ACTIVITI_CLOUD_FULL_CHART_MESSAGE_BROKER) \
+			--set $(ACTIVITI_CLOUD_FULL_CHART_MESSAGE_BROKER).enabled=true \
 			--namespace ${PREVIEW_NAME} \
 			--create-namespace \
 			--wait
