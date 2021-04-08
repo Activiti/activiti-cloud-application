@@ -218,11 +218,11 @@ jobs:
           make test/runtime-acceptance-tests
 
       - name: Delete Helm chart for ${{ matrix.message-broker }}
-        if: ${{ always() && "!contains(github.ref, 'preview')" }}
+        if: ${{ always() && '!contains(github.ref, "preview")' }}
         run: make delete
 
       - name: Delete Docker images
-        if: ${{ always() && github.event_name == 'pull_request' && && "!contains(github.ref, 'preview')" }}
+        if: ${{ always() && github.event_name == 'pull_request' && && '!contains(github.ref, "preview")' }}
         run: make docker-delete-all
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -232,13 +232,6 @@ jobs:
     runs-on: ubuntu-20.04
     needs: test
     steps:
-      - name: Delete Docker images
-        if: ${{ always() && github.event_name == 'pull_request' }}
-        run: make docker-delete-all
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-
       - name: Configure git user
         if: ${{ github.event_name == 'push' }}
         run: |
