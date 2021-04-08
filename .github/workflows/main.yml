@@ -68,7 +68,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Configure Maven for ${{ matrix.messaging }}
+      - name: Configure Maven
         run: |
           echo "MAVEN_USERNAME=$MAVEN_USERNAME" >> $GITHUB_ENV
           echo "MAVEN_PASSWORD=$MAVEN_PASSWORD" >> $GITHUB_ENV
@@ -217,16 +217,12 @@ jobs:
           make test/modeling-acceptance-tests
           make test/runtime-acceptance-tests
 
-      #   - name: Delete Helm chart for ${{ matrix.message-broker }}
-      #     if: ${{ always() }}
-      #     run: make delete
+      - name: Delete Helm chart for ${{ matrix.message-broker }}
+        if: ${{ always() && "!contains(github.ref, 'preview')" }}
+        run: make delete
 
-  clean:
-    runs-on: ubuntu-20.04
-    needs: test
-    steps:
       - name: Delete Docker images
-        if: ${{ always() && github.event_name == 'pull_request' }}
+        if: ${{ always() && github.event_name == 'pull_request' && && "!contains(github.ref, 'preview')" }}
         run: make docker-delete-all
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
