@@ -222,7 +222,7 @@ jobs:
         run: make delete
 
       - name: Delete Docker images
-        if: ${{ always() && github.event_name == 'pull_request' && && '!contains(github.ref, "preview")' }}
+        if: ${{ always() && github.event_name == 'pull_request' && '!contains(github.ref, "preview")' }}
         run: make docker-delete-all
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
