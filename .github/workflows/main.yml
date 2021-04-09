@@ -223,7 +223,7 @@ jobs:
       - name: Delete preview for ${{ matrix.messaging-broker }}
         if: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
         run: |
-          kubectl delete ns $PREVIEW_NAME || true          
+          kubectl delete ns $PREVIEW_NAME || true
 
       - name: Run Acceptance Tests for ${{ matrix.messaging-broker }}
         run: |
