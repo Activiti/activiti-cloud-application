@@ -258,11 +258,11 @@ jobs:
           make test/runtime-acceptance-tests
 
       - name: Delete Helm chart for ${{ matrix.messaging-broker }}
-        if: ${{ always() && '!contains(github.ref, "preview")' }}
+        if: ${{ always() && !contains(github.ref, "preview") }}
         run: make delete
 
       - name: Delete Docker images
-        if: ${{ always() && github.event_name == 'pull_request' && '!contains(github.ref, "preview")' }}
+        if: ${{ always() && github.event_name == 'pull_request' && !contains(github.ref, "preview") }}
         run: make docker-delete-all
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
