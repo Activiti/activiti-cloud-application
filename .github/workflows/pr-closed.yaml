@@ -10,7 +10,6 @@ env:
   CLUSTER_DOMAIN: envalfresco.com
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
 
-
 jobs:
   cleanup:
     if: ${{ contains(github.head_ref, 'preview') }}
@@ -43,4 +42,3 @@ jobs:
         run: |
           echo PR #${{ github.event.pull_request.number }} has been closed
           kubectl delete ns $PREVIEW_NAME || true
-
