@@ -31,12 +31,12 @@ jobs:
           secret-key: ${{ secrets.RANCHER2_SECRET_KEY }}
           context: ${{ env.CLUSTER_NAME }}
 
-      - name: Set PREVIEW_NAME env variable
+      - name: Set PREVIEW_NAME env variable for ${{ matrix.messaging-broker }}
         id: set-preview-name
         run: |
           test ${GITHUB_PR_NUMBER} && PREVIEW_NAME=pr-${GITHUB_PR_NUMBER} || PREVIEW_NAME=${BRANCH_NAME:0:28}-$GITHUB_RUN_NUMBER
-          echo set PREVIEW_NAME=$PREVIEW_NAME
-          echo "PREVIEW_NAME=$PREVIEW_NAME" >> $GITHUB_ENV
+          echo set PREVIEW_NAME=$PREVIEW_NAME-${{ matrix.messaging-broker }}
+          echo "PREVIEW_NAME=$PREVIEW_NAME-${{ matrix.messaging-broker }}" >> $GITHUB_ENV
 
       - name: Delete preview for ${{ matrix.messaging-broker }}
         run: |
