@@ -270,7 +270,7 @@ jobs:
 
   promote:
     runs-on: ubuntu-20.04
-    needs: test
+    needs: [build,test] 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
