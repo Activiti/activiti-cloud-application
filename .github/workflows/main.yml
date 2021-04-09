@@ -346,4 +346,4 @@ jobs:
           mvn $MAVEN_CLI_OPTS versions:set -DnewVersion=$VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
           mvn $MAVEN_CLI_OPTS deploy -pl activiti-cloud-dependencies/dependencies -am -DskipTests
         env:
-          VERSION: ${{ needs.build.outputs.version }}          
+          VERSION: ${{ needs.build.outputs.version }}
