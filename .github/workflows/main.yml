@@ -220,6 +220,11 @@ jobs:
           echo BRANCH_NAME=$BRANCH_NAME
           echo VERSION=$VERSION
 
+      - name: Delete preview for ${{ matrix.messaging-broker }}
+        if: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
+        run: |
+          kubectl delete ns $PREVIEW_NAME || true          
+
       - name: Run Acceptance Tests for ${{ matrix.messaging-broker }}
         run: |
           export SSO_PROTOCOL=https
@@ -258,11 +263,11 @@ jobs:
           make test/runtime-acceptance-tests
 
       - name: Delete Helm chart for ${{ matrix.messaging-broker }}
-        if: ${{ !contains(github.ref, 'preview') }}
+        if: ${{ !contains(github.head_ref, 'preview') }}
         run: make delete
 
       - name: Delete Docker images
-        if: ${{ github.event_name == 'pull_request' && !contains(github.ref, 'preview') }}
+        if: ${{ github.event_name == 'pull_request' && !contains(github.head_ref, 'preview') }}
         run: make docker-delete-all
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
