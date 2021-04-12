@@ -31,8 +31,7 @@ install: release
 			--install \
 			--set global.gateway.http=false \
 			--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
-			--set global.messaging.broker=$(MESSAGING_BROKER) \
-			--set $(MESSAGING_BROKER).enabled=true \
+			--values $(MESSAGING_BROKER)-values.yaml \
 			--namespace ${PREVIEW_NAME} \
 			--create-namespace \
 			--wait
