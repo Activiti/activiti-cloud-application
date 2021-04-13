@@ -233,9 +233,6 @@ jobs:
           export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
           export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
 
-          # TODO remove
-          export ACTIVITI_CLOUD_FULL_CHART_RELEASE_BRANCH=dev-igdianov-kafka
-
           make install
 
           attempt_counter=0
