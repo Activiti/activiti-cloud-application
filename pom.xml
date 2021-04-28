@@ -70,7 +70,7 @@
     <project.scm.organization>Activiti</project.scm.organization>
     <project.scm.repository>activiti-cloud-application</project.scm.repository>
     <project.year>2020</project.year>
-    <activiti-cloud.version>0.0.1-dev-igdianov-partitioned-stream-preview-178-SNAPSHOT</activiti-cloud.version>
+    <activiti-cloud.version>0.0.1-dev-igdianov-partitioned-stream-preview-180-SNAPSHOT</activiti-cloud.version>
   </properties>
   <repositories>
     <repository>
