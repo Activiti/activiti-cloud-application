@@ -24,9 +24,9 @@ updatebot/push-version:
 
 install: release
 	echo helm $(helm version --short)
-	test $(MESSAGING_BROKER) || echo "MESSAGING_BROKER is required"; exit 1
-	test $(MESSAGING_PARTITIONED) || echo "MESSAGING_PARTITIONED is required"; exit 1
-	test $(MESSAGING_PARTITION_COUNT) || echo "MESSAGING_PARTITION_COUNT is required"; exit 1
+	test $(MESSAGING_BROKER) ||  exit 1
+	test $(MESSAGING_PARTITIONED) ||  exit 1
+	test $(MESSAGING_PARTITION_COUNT) || exit 1
 
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
 		helm dep up && \
