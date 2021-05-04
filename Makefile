@@ -3,6 +3,7 @@ ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR := .git/activiti-cloud-full-chart
 ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := $(ACTIVITI_CLOUD_FULL_CHART_CHECKOUT_DIR)/charts/activiti-cloud-full-example
 ACTIVITI_CLOUD_FULL_CHART_BRANCH := dependency-activiti-cloud-application-$(RELEASE_VERSION)
 ACTIVITI_CLOUD_FULL_CHART_RELEASE_BRANCH := $(or $(ACTIVITI_CLOUD_FULL_CHART_RELEASE_BRANCH),master)
+MESSAGING_PARTITION_COUNT := $(or $(MESSAGING_PARTITION_COUNT),2)
 
 updatebot/push-version:
 	$(eval ACTIVITI_CLOUD_VERSION=$(shell python -c "from xml.etree.ElementTree import parse; print(parse(open('activiti-cloud-dependencies/pom.xml')).find('.//{http://maven.apache.org/POM/4.0.0}activiti-cloud.version').text)"))
@@ -23,7 +24,9 @@ updatebot/push-version:
 
 install: release
 	echo helm $(helm version --short)
-	test $(MESSAGING_BROKER) || exit 1
+	test $(MESSAGING_BROKER) || echo "MESSAGING_BROKER is required"; exit 1
+	test $(MESSAGING_PARTITIONED) || echo "MESSAGING_PARTITIONED is required"; exit 1
+	test $(MESSAGING_PARTITION_COUNT) || echo "MESSAGING_PARTITION_COUNT is required"; exit 1
 
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
 		helm dep up && \
@@ -32,6 +35,8 @@ install: release
 			--set global.gateway.http=false \
 			--set global.gateway.domain=${GLOBAL_GATEWAY_DOMAIN} \
 			--values $(MESSAGING_BROKER)-values.yaml \
+			--set global.messaging.partitioned=$(MESSAGING_PARTITIONED) \
+			--set global.messaging.partitionCount=$(MESSAGING_PARTITION_COUNT) \
 			--namespace ${PREVIEW_NAME} \
 			--create-namespace \
 			--wait
