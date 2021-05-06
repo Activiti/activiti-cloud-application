@@ -5,8 +5,6 @@
   <packaging>pom</packaging>
   <modules>
     <module>liquibase</module>
-    <module>rabbitmq</module>
-    <module>kafka</module>
     <module>starter</module>
   </modules>
   <parent>
