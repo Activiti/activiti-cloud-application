@@ -140,6 +140,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: build
     strategy:
+      fail-fast: false
       matrix:
         messaging-broker: [rabbitmq, kafka]
         messaging-partitioned: [partitioned, non-partitioned]
