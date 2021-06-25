@@ -36,7 +36,7 @@ jobs:
         id: set-preview-name
         env:
           MESSAGING_BROKER: ${{ matrix.messaging-broker }}
-          MESSAGING_PARTITIONED: ${{ matrix.messaging-partitioned }}        
+          MESSAGING_PARTITIONED: ${{ matrix.messaging-partitioned }}
         run: |
           test ${GITHUB_PR_NUMBER} && PREVIEW_NAME=pr-${GITHUB_PR_NUMBER} || PREVIEW_NAME=gh-$GITHUB_RUN_NUMBER
           echo "PREVIEW_NAME=$PREVIEW_NAME-${MESSAGING_BROKER:0:6}-${MESSAGING_PARTITIONED:0:1}" >> $GITHUB_ENV
