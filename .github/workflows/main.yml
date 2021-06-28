@@ -283,7 +283,7 @@ jobs:
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
           IS_PRERVIEW: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
         run: |
-            if [ $IS_PREVIEW = true]
+            if [ $IS_PREVIEW = true ]
             then
                 echo "Skipping delete Docker images for preview"
             else
