@@ -144,6 +144,11 @@ jobs:
       matrix:
         messaging-broker: [rabbitmq, kafka]
         messaging-partitioned: [partitioned, non-partitioned]
+        include:
+          # for the matrix leg kafka,partitioned
+          - messaging-broker: kafka
+            messaging-partitioned: partitioned
+            query-consumer-number: 2
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -205,6 +210,7 @@ jobs:
         env:
           MESSAGING_BROKER: ${{ matrix.messaging-broker }}
           MESSAGING_PARTITIONED: ${{ matrix.messaging-partitioned }}
+          CONSUMER_NUMBER: ${{ matrix.query-consumer-number }}
           PREVIEW_NAME: ${{ needs.build.outputs.preview-name }}
           BRANCH_NAME: ${{ needs.build.outputs.branch-name }}
           VERSION: ${{ needs.build.outputs.version }}
@@ -237,28 +243,43 @@ jobs:
           export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
           export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
 
+          # evaluated the first parameter and loop if it is false
+          wait_until_true () {
+            local attempt_counter=0
+            local max_attempts=50
+
+            until eval "$1"
+            do
+              if [ ${attempt_counter} -eq ${max_attempts} ]
+              then
+                echo "Max attempts reached"
+                break
+              fi
+
+              printf '.'
+              attempt_counter=$((attempt_counter+1))
+              sleep 5
+            done
+          }
+
           make install
 
-          attempt_counter=0
-          max_attempts=50
           echo "Waiting for services to be up..."
-          until \
-            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 && \
+          wait_until_true \
+            "curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 && \
             curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 && \
-            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/query/actuator/health > /dev/null 2>&1
-          do
-            if [ ${attempt_counter} -eq ${max_attempts} ]
-            then
-              echo "Max attempts reached"
-              break
-            fi
-
-            printf '.'
-            attempt_counter=$((attempt_counter+1))
-            sleep 5
-          done
+            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/query/actuator/health > /dev/null 2>&1"
 
           kubectl get all -n $PREVIEW_NAME
+
+          if [ "${CONSUMER_NUMBER}" != "" ]; then
+            echo "Setting the query consumers to ${CONSUMER_NUMBER}"
+            kubectl -n $PREVIEW_NAME scale statefulset $PREVIEW_NAME-activiti-cloud-query --replicas=${CONSUMER_NUMBER}
+
+            echo "Waiting for the activity-cloud-query pods to be ready..."
+            wait_until_true \
+              'CMD=$(kubectl -n $PREVIEW_NAME get pods -o "custom-columns=POD:metadata.name,READY-true:status.containerStatuses[*].ready" | grep -e "activiti-cloud-query.*true" | wc -l | xargs);[ "$CMD" = "$CONSUMER_NUMBER" ]'
+          fi
 
           make test/modeling-acceptance-tests
           make test/runtime-acceptance-tests
