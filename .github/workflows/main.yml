@@ -238,7 +238,7 @@ jobs:
 
       - name: Run Acceptance Tests for ${{ matrix.messaging-broker }}
         with:
-          query-consumer-number: 1
+          query-consumer-number: ""
         env:
           QUERY_CONSUMER_NUMBER: ${{ matrix.query-consumer-number }}
         run: |
