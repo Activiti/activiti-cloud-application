@@ -210,7 +210,7 @@ jobs:
         env:
           MESSAGING_BROKER: ${{ matrix.messaging-broker }}
           MESSAGING_PARTITIONED: ${{ matrix.messaging-partitioned }}
-          CONSUMER_NUMBER: ${{ matrix.query-consumer-number }}
+          QUERY_CONSUMER_NUMBER: ${{ matrix.query-consumer-number }}
           PREVIEW_NAME: ${{ needs.build.outputs.preview-name }}
           BRANCH_NAME: ${{ needs.build.outputs.branch-name }}
           VERSION: ${{ needs.build.outputs.version }}
@@ -227,6 +227,7 @@ jobs:
           echo MESSAGING_BROKER=$MESSAGING_BROKER
           echo MESSAGING_PARTITIONED=$MESSAGING_PARTITIONED
           echo PREVIEW_NAME=$PREVIEW_NAME
+          echo QUERY_CONSUMER_NUMBER=$QUERY_CONSUMER_NUMBER
           echo BRANCH_NAME=$BRANCH_NAME
           echo VERSION=$VERSION
 
@@ -243,12 +244,14 @@ jobs:
           export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
           export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
 
+          ### Functions ###
+
           # evaluated the first parameter and loop if it is false
           wait_until_true () {
             local attempt_counter=0
             local max_attempts=50
 
-            until eval "$1"
+            until "$@"
             do
               if [ ${attempt_counter} -eq ${max_attempts} ]
               then
@@ -262,24 +265,47 @@ jobs:
             done
           }
 
+          # evaluates a command to count the number of query consumer pods
+          # and assign the result to the CMD variable
+          get_num_query_consumer () {
+            export CMD=$(kubectl -n $PREVIEW_NAME get pods -o 'custom-columns=POD:metadata.name,READY-true:status.containerStatuses[*].ready' | grep -e 'activiti-cloud-query.*true' | wc -l | xargs);
+          }
+
+          # evaluates if the query consumer number is the desired one
+          check_query_consumers () {
+            get_num_query_consumer
+            echo "CMD=$CMD"
+            echo "QUERY_CONSUMER_NUMBER=$QUERY_CONSUMER_NUMBER"
+            [ $CMD == ${QUERY_CONSUMER_NUMBER} ]
+          }
+
+          # request the services API and fails if the health check are not ok
+          check_services_up () {
+            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 && \
+            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 && \
+            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/query/actuator/health > /dev/null 2>&1
+          }
+
+          ### Main ###
+
           make install
 
           echo "Waiting for services to be up..."
-          wait_until_true \
-            "curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 && \
-            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 && \
-            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/query/actuator/health > /dev/null 2>&1"
+          wait_until_true check_services_up
 
-          kubectl get all -n $PREVIEW_NAME
+          echo "QUERY_CONSUMER_NUMBER=${QUERY_CONSUMER_NUMBER}"
+          [ "${QUERY_CONSUMER_NUMBER}" != "" ]; echo "The test '${QUERY_CONSUMER_NUMBER}' != '' returnen $?"
 
-          if [ "${CONSUMER_NUMBER}" != "" ]; then
-            echo "Setting the query consumers to ${CONSUMER_NUMBER}"
-            kubectl -n $PREVIEW_NAME scale statefulset $PREVIEW_NAME-activiti-cloud-query --replicas=${CONSUMER_NUMBER}
+          if [ "${QUERY_CONSUMER_NUMBER}" != "" ]; then
+            echo "Setting the query consumers to ${QUERY_CONSUMER_NUMBER}"
+            kubectl -n $PREVIEW_NAME scale statefulset $PREVIEW_NAME-activiti-cloud-query --replicas=${QUERY_CONSUMER_NUMBER}
 
             echo "Waiting for the activity-cloud-query pods to be ready..."
-            wait_until_true \
-              'CMD=$(kubectl -n $PREVIEW_NAME get pods -o "custom-columns=POD:metadata.name,READY-true:status.containerStatuses[*].ready" | grep -e "activiti-cloud-query.*true" | wc -l | xargs);[ "$CMD" = "$CONSUMER_NUMBER" ]'
+            wait_until_true check_query_consumers
           fi
+
+          # Showing the deployment result
+          kubectl get all -n $PREVIEW_NAME
 
           make test/modeling-acceptance-tests
           make test/runtime-acceptance-tests
