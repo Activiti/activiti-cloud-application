@@ -237,6 +237,8 @@ jobs:
           kubectl delete ns $PREVIEW_NAME || true
 
       - name: Run Acceptance Tests for ${{ matrix.messaging-broker }}
+        env:
+          QUERY_CONSUMER_NUMBER: ${{ matrix.query-consumer-number }}
         run: |
           export SSO_PROTOCOL=https
           export GATEWAY_PROTOCOL=https
