@@ -144,6 +144,7 @@ jobs:
       matrix:
         messaging-broker: [rabbitmq, kafka]
         messaging-partitioned: [partitioned, non-partitioned]
+        query-consumer-number: [1]
         include:
           # for the matrix leg kafka,partitioned
           - messaging-broker: kafka
@@ -237,8 +238,6 @@ jobs:
           kubectl delete ns $PREVIEW_NAME || true
 
       - name: Run Acceptance Tests for ${{ matrix.messaging-broker }}
-        with:
-          query-consumer-number: ""
         env:
           QUERY_CONSUMER_NUMBER: ${{ matrix.query-consumer-number }}
         run: |
@@ -298,9 +297,9 @@ jobs:
           wait_until_true check_services_up
 
           echo "QUERY_CONSUMER_NUMBER=${QUERY_CONSUMER_NUMBER}"
-          [ "${QUERY_CONSUMER_NUMBER}" != "" ]; echo "The test '${QUERY_CONSUMER_NUMBER}' != '' returnen $?"
+          [ "${QUERY_CONSUMER_NUMBER}" != "1" ]; echo "The test '${QUERY_CONSUMER_NUMBER}' != '' returnen $?"
 
-          if [ "${QUERY_CONSUMER_NUMBER}" != "" ]; then
+          if [ "${QUERY_CONSUMER_NUMBER}" != "1" ]; then
             echo "Setting the query consumers to ${QUERY_CONSUMER_NUMBER}"
             kubectl -n $PREVIEW_NAME scale statefulset $PREVIEW_NAME-activiti-cloud-query --replicas=${QUERY_CONSUMER_NUMBER}
 
