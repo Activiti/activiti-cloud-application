@@ -224,7 +224,21 @@ jobs:
           echo BRANCH_NAME=$BRANCH_NAME
           echo VERSION=$VERSION
 
-          ### Functions ###
+      - name: Delete preview for ${{ matrix.messaging-broker }}
+        if: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
+        run: |
+          kubectl delete ns $PREVIEW_NAME || true
+
+      - name: Install release for ${{ matrix.messaging-broker }}
+        run: |
+          ### Variables ###
+          export SSO_PROTOCOL=https
+          export GATEWAY_PROTOCOL=https
+          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
+          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+
+          ### Functions ####
 
           # evaluated the first parameter and loop if it is false
           wait_until_true () {
@@ -244,21 +258,6 @@ jobs:
               sleep 5
             done
           }
-
-      - name: Delete preview for ${{ matrix.messaging-broker }}
-        if: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
-        run: |
-          kubectl delete ns $PREVIEW_NAME || true
-
-      - name: Install release for ${{ matrix.messaging-broker }}
-        run: |
-          export SSO_PROTOCOL=https
-          export GATEWAY_PROTOCOL=https
-          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
-          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
-          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
-
-          ### Functions ####
 
           # request the services API and fails if the health check are not ok
           check_services_up () {
@@ -282,6 +281,25 @@ jobs:
           export QUERY_CONSUMER_NUMBER=2
 
           ### Functions ###
+
+          # evaluated the first parameter and loop if it is false
+          wait_until_true () {
+            local attempt_counter=0
+            local max_attempts=50
+
+            until "$@"
+            do
+              if [ ${attempt_counter} -eq ${max_attempts} ]
+              then
+                echo "Max attempts reached"
+                break
+              fi
+
+              printf '.'
+              attempt_counter=$((attempt_counter+1))
+              sleep 5
+            done
+          }
 
           # evaluates a command to count the number of query consumer pods
           # and assign the result to the CMD variable
