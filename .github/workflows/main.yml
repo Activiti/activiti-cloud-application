@@ -214,6 +214,11 @@ jobs:
           echo "PREVIEW_NAME=$PREVIEW_NAME-${MESSAGING_BROKER:0:6}-${MESSAGING_PARTITIONED:0:1}" >> $GITHUB_ENV
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "SSO_PROTOCOL=https" >> $GITHUB_ENV
+          echo "GATEWAY_PROTOCOL=https" >> $GITHUB_ENV
+          echo "GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN" >> $GITHUB_ENV
+          echo "GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN" >> $GITHUB_ENV
+          echo "SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN" >> $GITHUB_ENV
           echo $VERSION > VERSION
 
           source $GITHUB_ENV
@@ -231,16 +236,12 @@ jobs:
 
       - name: Install release for ${{ matrix.messaging-broker }}
         run: |
-          ### Variables ###
-          export SSO_PROTOCOL=https
-          export GATEWAY_PROTOCOL=https
-          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
-          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
-          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
-
           ### Functions ####
 
-          # evaluated the first parameter and loop if it is false
+          # It evaluates the function passed as a parameter
+          # if the result is different than 0 it waits
+          # for 5 seconds and re-evaluates it again.
+          #
           wait_until_true () {
             local attempt_counter=0
             local max_attempts=50
@@ -259,7 +260,11 @@ jobs:
             done
           }
 
-          # request the services API and fails if the health check are not ok
+          # It makes an HTTP request to the health check of the
+          # modeling, query and runtime-bundles API returning 0
+          # in case their pods are ready and a value different
+          # than 0 otherwise.
+          #
           check_services_up () {
             curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 && \
             curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 && \
@@ -276,32 +281,24 @@ jobs:
 
       - name: Run Acceptance Tests for ${{ matrix.messaging-broker }}
         run: |
-          export SSO_PROTOCOL=https
-          export GATEWAY_PROTOCOL=https
-          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
-          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
-          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
-
           # Showing the deployment result
           kubectl get all -n $PREVIEW_NAME
 
           make test/modeling-acceptance-tests
           make test/runtime-acceptance-tests
 
-      - name: Create another consumer in the case kafka partitioned and launch tests again
+      - name: Increase the consumer number and launch the tests again (kafka partitioned)
         if: ${{ matrix.messaging-broker == 'kafka' && matrix.messaging-partitioned == 'partitioned' }}
         run: |
           ### Variables ###
-          export SSO_PROTOCOL=https
-          export GATEWAY_PROTOCOL=https
-          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
-          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
-          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
           export QUERY_CONSUMER_NUMBER=2
 
           ### Functions ###
 
-          # evaluated the first parameter and loop if it is false
+          # It evaluates the function passed as a parameter
+          # if the result is different than 0 it waits
+          # for 5 seconds and re-evaluates it again.
+          #
           wait_until_true () {
             local attempt_counter=0
             local max_attempts=50
@@ -320,23 +317,33 @@ jobs:
             done
           }
 
-          # evaluates a command to count the number of query consumer pods
-          # and assign the result to the RESULT variable
-          get_num_query_consumer () {
+          # It requests the number of query consumers to the
+          # cluster and set it in the env variable RESULT
+          #
+          get_num_query_consumers () {
             export RESULT=$(kubectl -n $PREVIEW_NAME get pods -o \
             'custom-columns=POD:metadata.name,READY-true:status.containerStatuses[*].ready' \
             | grep -e 'activiti-cloud-query.*true' | wc -l | xargs);
           }
 
-          # evaluates if the query consumer number is the desired one
+          # It compare the query consumer pods deployed in the cluster
+          # and compare it with the desired.
+          #
           check_query_consumers () {
-            get_num_query_consumer
+            get_num_query_consumers
             [ $RESULT == ${QUERY_CONSUMER_NUMBER} ]
           }
 
+          set_query_consumers_num_to () {
+            kubectl -n $PREVIEW_NAME scale \
+              statefulset $PREVIEW_NAME-activiti-cloud-query \
+              --replicas=$1
+          }
+
           ### Main ###
+
           echo "Setting the query consumers to ${QUERY_CONSUMER_NUMBER}"
-          kubectl -n $PREVIEW_NAME scale statefulset $PREVIEW_NAME-activiti-cloud-query --replicas=${QUERY_CONSUMER_NUMBER}
+          set_query_consumers_num_to ${QUERY_CONSUMER_NUMBER}
 
           echo "Waiting for the activity-cloud-query pods to be ready..."
           wait_until_true check_query_consumers
