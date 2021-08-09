@@ -302,9 +302,9 @@ jobs:
           }
 
           # evaluates a command to count the number of query consumer pods
-          # and assign the result to the CMD variable
+          # and assign the result to the RESULT variable
           get_num_query_consumer () {
-            export CMD=$(kubectl -n $PREVIEW_NAME get pods -o \
+            export RESULT=$(kubectl -n $PREVIEW_NAME get pods -o \
             'custom-columns=POD:metadata.name,READY-true:status.containerStatuses[*].ready' \
             | grep -e 'activiti-cloud-query.*true' | wc -l | xargs);
           }
@@ -312,9 +312,7 @@ jobs:
           # evaluates if the query consumer number is the desired one
           check_query_consumers () {
             get_num_query_consumer
-            echo "CMD=$CMD"
-            echo "QUERY_CONSUMER_NUMBER=$QUERY_CONSUMER_NUMBER"
-            [ $CMD == ${QUERY_CONSUMER_NUMBER} ]
+            [ $RESULT == ${QUERY_CONSUMER_NUMBER} ]
           }
 
           ### Main ###
