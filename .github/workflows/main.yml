@@ -274,10 +274,29 @@ jobs:
           echo "Waiting for services to be up..."
           wait_until_true check_services_up
 
-      - name: Create another consumer in the case ${{ matrix.messaging-broker }} ${{ matrix.messaging-partitioned }}
+      - name: Run Acceptance Tests for ${{ matrix.messaging-broker }}
+        run: |
+          export SSO_PROTOCOL=https
+          export GATEWAY_PROTOCOL=https
+          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
+          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+
+          # Showing the deployment result
+          kubectl get all -n $PREVIEW_NAME
+
+          make test/modeling-acceptance-tests
+          make test/runtime-acceptance-tests
+
+      - name: Create another consumer in the case kafka partitioned and launch tests again
         if: ${{ matrix.messaging-broker == 'kafka' && matrix.messaging-partitioned == 'partitioned' }}
         run: |
           ### Variables ###
+          export SSO_PROTOCOL=https
+          export GATEWAY_PROTOCOL=https
+          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
+          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
           export QUERY_CONSUMER_NUMBER=2
 
           ### Functions ###
@@ -316,20 +335,11 @@ jobs:
           }
 
           ### Main ###
-
           echo "Setting the query consumers to ${QUERY_CONSUMER_NUMBER}"
           kubectl -n $PREVIEW_NAME scale statefulset $PREVIEW_NAME-activiti-cloud-query --replicas=${QUERY_CONSUMER_NUMBER}
 
           echo "Waiting for the activity-cloud-query pods to be ready..."
           wait_until_true check_query_consumers
-
-      - name: Run Acceptance Tests for ${{ matrix.messaging-broker }}
-        run: |
-          export SSO_PROTOCOL=https
-          export GATEWAY_PROTOCOL=https
-          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
-          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
-          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
 
           # Showing the deployment result
           kubectl get all -n $PREVIEW_NAME
