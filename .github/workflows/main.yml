@@ -297,7 +297,7 @@ jobs:
           wait_until_true check_services_up
 
           echo "QUERY_CONSUMER_NUMBER=${QUERY_CONSUMER_NUMBER}"
-          [ "${QUERY_CONSUMER_NUMBER}" != "1" ]; echo "The test '${QUERY_CONSUMER_NUMBER}' != '' returnen $?"
+          [ "${QUERY_CONSUMER_NUMBER}" != "1" ]; echo "The test '${QUERY_CONSUMER_NUMBER}' != '' return $?"
 
           if [ "${QUERY_CONSUMER_NUMBER}" != "1" ]; then
             echo "Setting the query consumers to ${QUERY_CONSUMER_NUMBER}"
