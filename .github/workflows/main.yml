@@ -221,7 +221,6 @@ jobs:
           echo MESSAGING_BROKER=$MESSAGING_BROKER
           echo MESSAGING_PARTITIONED=$MESSAGING_PARTITIONED
           echo PREVIEW_NAME=$PREVIEW_NAME
-          echo QUERY_CONSUMER_NUMBER=$QUERY_CONSUMER_NUMBER
           echo BRANCH_NAME=$BRANCH_NAME
           echo VERSION=$VERSION
 
@@ -246,27 +245,6 @@ jobs:
             done
           }
 
-          # evaluates a command to count the number of query consumer pods
-          # and assign the result to the CMD variable
-          get_num_query_consumer () {
-            export CMD=$(kubectl -n $PREVIEW_NAME get pods -o 'custom-columns=POD:metadata.name,READY-true:status.containerStatuses[*].ready' | grep -e 'activiti-cloud-query.*true' | wc -l | xargs);
-          }
-
-          # evaluates if the query consumer number is the desired one
-          check_query_consumers () {
-            get_num_query_consumer
-            echo "CMD=$CMD"
-            echo "QUERY_CONSUMER_NUMBER=$QUERY_CONSUMER_NUMBER"
-            [ $CMD == ${QUERY_CONSUMER_NUMBER} ]
-          }
-
-          # request the services API and fails if the health check are not ok
-          check_services_up () {
-            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 && \
-            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 && \
-            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/query/actuator/health > /dev/null 2>&1
-          }
-
       - name: Delete preview for ${{ matrix.messaging-broker }}
         if: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
         run: |
@@ -280,6 +258,17 @@ jobs:
           export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
           export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
 
+          ### Functions ####
+
+          # request the services API and fails if the health check are not ok
+          check_services_up () {
+            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/modeling-service/actuator/health > /dev/null 2>&1 && \
+            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/rb/actuator/health > /dev/null 2>&1 && \
+            curl --silent --head --fail $GATEWAY_PROTOCOL://$GATEWAY_HOST/query/actuator/health > /dev/null 2>&1
+          }
+
+          ### Main ###
+
           echo "Installing release with make install"
           make install
 
@@ -287,9 +276,30 @@ jobs:
           wait_until_true check_services_up
 
       - name: Create another consumer in the case ${{ matrix.messaging-broker }} ${{ matrix.messaging-partitioned }}
-        if: ${{ matrix.messaging-broker == 'kafka' && matrix.messaging-partitioned == 'partitioned }}
+        if: ${{ matrix.messaging-broker == 'kafka' && matrix.messaging-partitioned == 'partitioned' }}
         run: |
+          ### Variables ###
           export QUERY_CONSUMER_NUMBER=2
+
+          ### Functions ###
+
+          # evaluates a command to count the number of query consumer pods
+          # and assign the result to the CMD variable
+          get_num_query_consumer () {
+            export CMD=$(kubectl -n $PREVIEW_NAME get pods -o \
+            'custom-columns=POD:metadata.name,READY-true:status.containerStatuses[*].ready' \
+            | grep -e 'activiti-cloud-query.*true' | wc -l | xargs);
+          }
+
+          # evaluates if the query consumer number is the desired one
+          check_query_consumers () {
+            get_num_query_consumer
+            echo "CMD=$CMD"
+            echo "QUERY_CONSUMER_NUMBER=$QUERY_CONSUMER_NUMBER"
+            [ $CMD == ${QUERY_CONSUMER_NUMBER} ]
+          }
+
+          ### Main ###
 
           echo "Setting the query consumers to ${QUERY_CONSUMER_NUMBER}"
           kubectl -n $PREVIEW_NAME scale statefulset $PREVIEW_NAME-activiti-cloud-query --replicas=${QUERY_CONSUMER_NUMBER}
