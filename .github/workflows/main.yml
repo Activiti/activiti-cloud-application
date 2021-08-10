@@ -312,49 +312,20 @@ jobs:
 
           ### Functions ###
 
-          # It evaluates the function passed as a parameter
-          # if the result is different than 0 it waits
-          # for 5 seconds and re-evaluates it again.
+          # It scale to query consumers to the number specified
+          # by the first parameter
           #
-          wait_until_true () {
-            local attempt_counter=0
-            local max_attempts=50
-
-            until "$@"
-            do
-              if [ ${attempt_counter} -eq ${max_attempts} ]
-              then
-                echo "Max attempts reached"
-                break
-              fi
-
-              printf '.'
-              attempt_counter=$((attempt_counter+1))
-              sleep 5
-            done
-          }
-
-          # It requests the number of query consumers to the
-          # cluster and set it in the env variable RESULT
-          #
-          get_num_query_consumers () {
-            export RESULT=$(kubectl -n $PREVIEW_NAME get pods -o \
-            'custom-columns=POD:metadata.name,READY-true:status.containerStatuses[*].ready' \
-            | grep -e 'activiti-cloud-query.*true' | wc -l | xargs);
-          }
-
-          # It compare the query consumer pods deployed in the cluster
-          # and compare it with the desired.
-          #
-          check_query_consumers () {
-            get_num_query_consumers
-            [ $RESULT == ${QUERY_CONSUMER_NUMBER} ]
-          }
-
           set_query_consumers_num_to () {
             kubectl -n $PREVIEW_NAME scale \
               statefulset $PREVIEW_NAME-activiti-cloud-query \
               --replicas=$1
+          }
+
+          # It waits for the query consumers to be in ready state
+          # with a timeout of 2 minutes
+          #
+          wait_for_query_consumers_to_be_ready () {
+            kubectl rollout status --watch --timeout=120s statefulset/${PREVIEW_NAME}-activiti-cloud-query
           }
 
           ### Main ###
@@ -363,7 +334,7 @@ jobs:
           set_query_consumers_num_to ${QUERY_CONSUMER_NUMBER}
 
           echo "Waiting for the activity-cloud-query pods to be ready..."
-          wait_until_true check_query_consumers
+          wait_for_query_consumers_to_be_ready
 
           # Showing the deployment result
           kubectl get all -n $PREVIEW_NAME
