@@ -238,6 +238,20 @@ jobs:
           export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
           export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
 
+          ### Main ###
+
+          echo "Installing release with make install"
+          make install
+
+      - name: Run Acceptance Tests for ${{ matrix.messaging-broker }}
+        run: |
+          ### Variables ###
+          export SSO_PROTOCOL=https
+          export GATEWAY_PROTOCOL=https
+          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
+          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+
           ### Functions ####
 
           # It evaluates the function passed as a parameter
@@ -275,28 +289,17 @@ jobs:
 
           ### Main ###
 
-          echo "Installing release with make install"
-          make install
-
           echo "Waiting for services to be up..."
           wait_until_true check_services_up
-
-      - name: Run Acceptance Tests for ${{ matrix.messaging-broker }}
-        run: |
-          ### Variables ###
-          export SSO_PROTOCOL=https
-          export GATEWAY_PROTOCOL=https
-          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
-          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
-          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
 
           # Showing the deployment result
           kubectl get all -n $PREVIEW_NAME
 
+          # Launching the tests
           make test/modeling-acceptance-tests
           make test/runtime-acceptance-tests
 
-      - name: Increase the consumer number and launch the tests again (kafka partitioned)
+      - name: Increase the consumers number and launch the tests again (kafka partitioned)
         if: ${{ matrix.messaging-broker == 'kafka' && matrix.messaging-partitioned == 'partitioned' }}
         run: |
           ### Variables ###
@@ -365,7 +368,7 @@ jobs:
           # Showing the deployment result
           kubectl get all -n $PREVIEW_NAME
 
-          make test/modeling-acceptance-tests
+          # Launching the tests (impacted by increased consumers number)
           make test/runtime-acceptance-tests
 
       - name: Delete Helm chart for ${{ matrix.messaging-broker }}
