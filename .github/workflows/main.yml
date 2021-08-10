@@ -325,7 +325,9 @@ jobs:
           # with a timeout of 2 minutes
           #
           wait_for_query_consumers_to_be_ready () {
-            kubectl rollout status --watch --timeout=120s statefulset/${PREVIEW_NAME}-activiti-cloud-query
+            kubectl rollout status --watch --timeout=120s \
+              statefulset/${PREVIEW_NAME}-activiti-cloud-query \
+              -n ${PREVIEW_NAME}
           }
 
           ### Main ###
