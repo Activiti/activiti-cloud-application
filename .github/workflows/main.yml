@@ -214,11 +214,6 @@ jobs:
           echo "PREVIEW_NAME=$PREVIEW_NAME-${MESSAGING_BROKER:0:6}-${MESSAGING_PARTITIONED:0:1}" >> $GITHUB_ENV
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "SSO_PROTOCOL=https" >> $GITHUB_ENV
-          echo "GATEWAY_PROTOCOL=https" >> $GITHUB_ENV
-          echo "GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN" >> $GITHUB_ENV
-          echo "GATEWAY_HOST=gateway-$PREVIEW_NAME-${MESSAGING_BROKER:0:6}-${MESSAGING_PARTITIONED:0:1}.$CLUSTER_NAME.$CLUSTER_DOMAIN" >> $GITHUB_ENV
-          echo "SSO_HOST=identity-$PREVIEW_NAME-${MESSAGING_BROKER:0:6}-${MESSAGING_PARTITIONED:0:1}.$CLUSTER_NAME.$CLUSTER_DOMAIN" >> $GITHUB_ENV
           echo $VERSION > VERSION
 
           source $GITHUB_ENV
@@ -236,6 +231,13 @@ jobs:
 
       - name: Install release for ${{ matrix.messaging-broker }}
         run: |
+          ### Variables ###
+          export SSO_PROTOCOL=https
+          export GATEWAY_PROTOCOL=https
+          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
+          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+
           ### Functions ####
 
           # It evaluates the function passed as a parameter
@@ -281,6 +283,13 @@ jobs:
 
       - name: Run Acceptance Tests for ${{ matrix.messaging-broker }}
         run: |
+          ### Variables ###
+          export SSO_PROTOCOL=https
+          export GATEWAY_PROTOCOL=https
+          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
+          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+
           # Showing the deployment result
           kubectl get all -n $PREVIEW_NAME
 
@@ -291,6 +300,11 @@ jobs:
         if: ${{ matrix.messaging-broker == 'kafka' && matrix.messaging-partitioned == 'partitioned' }}
         run: |
           ### Variables ###
+          export SSO_PROTOCOL=https
+          export GATEWAY_PROTOCOL=https
+          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
+          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
           export QUERY_CONSUMER_NUMBER=2
 
           ### Functions ###
