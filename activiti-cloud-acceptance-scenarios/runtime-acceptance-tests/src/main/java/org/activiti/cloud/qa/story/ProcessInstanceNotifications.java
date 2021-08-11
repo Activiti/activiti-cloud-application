@@ -265,12 +265,12 @@ public class ProcessInstanceNotifications {
 
     private Long sessionTimeoutSeconds() {
         return sessionVariableCalled("sessionTimeoutSeconds",
-                                     Long.class).orElse(Long.valueOf(12));
+                                     Long.class).orElse(30L);
     }
 
     private Long subscriptionTimeoutSeconds() {
         return sessionVariableCalled("subscriptionTimeoutSeconds",
-                                     Long.class).orElse(Long.valueOf(6));
+                                     Long.class).orElse(30L);
     }
 
     private <T> Optional<T> sessionVariableCalled(String key, Class<T> clazz) {
