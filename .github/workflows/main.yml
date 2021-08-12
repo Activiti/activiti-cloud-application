@@ -297,9 +297,20 @@ jobs:
 
           # Launching the tests
           make test/modeling-acceptance-tests
+
+      - name: Lanunch runtime acceptance test (not kafka partitioned)
+        if: ${{ matrix.messaging-broker != 'kafka' && matrix.messaging-partitioned != 'partitioned' }}
+        run: |
+          ### Variables ###
+          export SSO_PROTOCOL=https
+          export GATEWAY_PROTOCOL=https
+          export GLOBAL_GATEWAY_DOMAIN=$CLUSTER_NAME.$CLUSTER_DOMAIN
+          export GATEWAY_HOST=gateway-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+          export SSO_HOST=identity-$PREVIEW_NAME.$GLOBAL_GATEWAY_DOMAIN
+
           make test/runtime-acceptance-tests
 
-      - name: Increase the consumers number and launch the tests again (kafka partitioned)
+      - name: Increase the consumers number and launch runtime acceptance test (only kafka partitioned)
         if: ${{ matrix.messaging-broker == 'kafka' && matrix.messaging-partitioned == 'partitioned' }}
         run: |
           ### Variables ###
