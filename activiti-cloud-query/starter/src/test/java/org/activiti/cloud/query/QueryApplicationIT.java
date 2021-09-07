@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(classes = {QueryApplication.class})
 @WebAppConfiguration
-@ContextConfiguration(classes = {KeycloakContainerApplicationInitializer.class})
+@ContextConfiguration(initializers = {KeycloakContainerApplicationInitializer.class})
 public class QueryApplicationIT {
 
     @Autowired

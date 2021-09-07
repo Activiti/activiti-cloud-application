@@ -23,7 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest(classes = RuntimeBundleApplication.class)
 @DirtiesContext
-@ContextConfiguration(classes = {KeycloakContainerApplicationInitializer.class})
+@ContextConfiguration(initializers = {KeycloakContainerApplicationInitializer.class})
 public class RuntimeBundleApplicationIT {
 
     @Test

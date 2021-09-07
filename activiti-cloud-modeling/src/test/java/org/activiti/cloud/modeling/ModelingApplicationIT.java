@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest(classes = ModelingApplication.class)
 @DirtiesContext
-@ContextConfiguration(classes = {KeycloakContainerApplicationInitializer.class})
+@ContextConfiguration(initializers = {KeycloakContainerApplicationInitializer.class})
 public class ModelingApplicationIT {
 
     @Autowired
