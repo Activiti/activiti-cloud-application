@@ -19,12 +19,14 @@ import org.activiti.cloud.services.test.containers.KeycloakContainerApplicationI
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,10 +42,13 @@ public class ModelingApplicationIT {
     @Autowired
     private WebApplicationContext context;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Test
     public void contextLoads() throws Exception {
+        assertThat(applicationContext).isNotNull();
     }
-
     @Test
     public void testGetModels() throws Exception {
         MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
