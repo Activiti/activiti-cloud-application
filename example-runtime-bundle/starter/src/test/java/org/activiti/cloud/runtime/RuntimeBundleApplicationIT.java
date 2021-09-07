@@ -15,12 +15,15 @@
  */
 package org.activiti.cloud.runtime;
 
+import org.activiti.cloud.services.test.containers.KeycloakContainerApplicationInitializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest(classes = RuntimeBundleApplication.class)
 @DirtiesContext
+@ContextConfiguration(classes = {KeycloakContainerApplicationInitializer.class})
 public class RuntimeBundleApplicationIT {
 
     @Test
