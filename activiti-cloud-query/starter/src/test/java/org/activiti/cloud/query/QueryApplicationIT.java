@@ -60,10 +60,10 @@ public class QueryApplicationIT {
                        .and(containsString("ListResponseContentOfCloudProcessDefinition"))
                        .and(containsString("EntriesResponseContentOfCloudProcessDefinition"))
                        .and(containsString("EntryResponseContentOfCloudProcessDefinition"))
-                       .and(not(containsString("PagedModel«")))
-                       .and(not(containsString("PagedModel«")))
-                       .and(not(containsString("Resources«Resource«")))
-                       .and(not(containsString("Resource«")))
+                       .and(not(containsString("PagedModelOf")))
+                       .and(not(containsString("PagedModelOf")))
+                       .and(not(containsString("ResourcesOfResourceOf")))
+                       .and(not(containsString("ResourceOf")))
                ));
     }
 
