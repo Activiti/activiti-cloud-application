@@ -252,7 +252,7 @@ jobs:
           make install
 
       - name: (kafka,partitioned) Checks that consumers can be a different number from partitions
-        if: ${{ matrix.messaging-broker == 'kafka' && matrix.messaging-partitioned == 'partitioned' }}
+        if: ${{ matrix.messaging-broker == 'kafka' && matrix.messaging-partitioned == 'partitioned' && matrix.messaging-destinations == 'default-destinations' }}
         run: |
           ### Variables ###
           export SSO_PROTOCOL=https
