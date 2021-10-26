@@ -144,7 +144,12 @@ jobs:
       matrix:
         messaging-broker: [rabbitmq, kafka]
         messaging-partitioned: [partitioned, non-partitioned]
-        messaging-destinations: [override-destinations, default-destinations]
+        messaging-destinations: [default-destinations]
+        include: 
+          - messaging-broker: kafka
+            messaging-partitioned: partitioned
+            messaging-destinations: override-destinations
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
