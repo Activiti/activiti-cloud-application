@@ -1,0 +1,20 @@
+[
+  {
+    "eventType": "APPLICATION_DEPLOYED",
+    "id": "${eventId}-0",
+    "timestamp": 1638921299297,
+    "entity": {
+      "id": "${deploymentId}",
+      "name": "SpringAutoDeployment",
+      "version": 1,
+      "projectReleaseVersion": "1"
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "${deploymentId}",
+    "eventType": "APPLICATION_DEPLOYED"
+  }
+]

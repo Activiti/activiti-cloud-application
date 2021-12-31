@@ -1,0 +1,422 @@
+[
+  {
+    "eventType": "SIGNAL_RECEIVED",
+    "id": "${eventId}-15",
+    "timestamp": 1638921300248,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "elementId": "serviceTask",
+      "processInstanceId": "${processInstanceId}",
+      "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+      "signalPayload": {
+        "payloadType": "SignalPayload",
+        "id": "bd99b90d-d998-43ca-8ebb-051bb4f094cf"
+      }
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "serviceTask",
+    "eventType": "SIGNAL_RECEIVED"
+  },
+  {
+    "eventType": "INTEGRATION_RESULT_RECEIVED",
+    "id": "${eventId}-16",
+    "timestamp": 1638921300249,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "id": "${integrationResultId}",
+      "inBoundVariables": {
+        "firstName": {
+          "type": "string",
+          "value": "John"
+        },
+        "lastName": {
+          "type": "string",
+          "value": "Smith"
+        },
+        "customPojo": {
+          "type": "map",
+          "value": "{\"field1\":\"field1\"}"
+        },
+        "boolVar": {
+          "type": "boolean",
+          "value": "true"
+        },
+        "customPojoAnnotated": {
+          "type": "map",
+          "value": "{\"@class\":\"org.activiti.cloud.starter.tests.runtime.CustomPojoAnnotated\"}"
+        },
+        "age": {
+          "type": "integer",
+          "value": "19"
+        }
+      },
+      "outBoundVariables": {
+        "customPojoAnnotatedTypeInConnector": {
+          "type": "string",
+          "value": "Type of customPojoAnnotated var in connector is class java.util.LinkedHashMap"
+        },
+        "boolVar": {
+          "type": "boolean",
+          "value": "false"
+        },
+        "customPojoTypeInConnector": {
+          "type": "string",
+          "value": "Type of customPojo var in connector is class java.util.LinkedHashMap"
+        },
+        "customPojoField1InConnector": {
+          "type": "string",
+          "value": "Value of field1 on customPojo is field1"
+        },
+        "age": {
+          "type": "integer",
+          "value": "20"
+        }
+      },
+      "processInstanceId": "${processInstanceId}",
+      "rootProcessInstanceId": "${processInstanceId}",
+      "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+      "executionId": "${executionId}",
+      "processDefinitionKey": "MQServiceTaskProcess",
+      "processDefinitionVersion": 1,
+      "businessKey": "businessKey",
+      "clientId": "serviceTask",
+      "clientType": "ServiceTask",
+      "appVersion": "1",
+      "connectorType": "payment"
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "${integrationResultId}",
+    "eventType": "INTEGRATION_RESULT_RECEIVED"
+  },
+  {
+    "eventType": "VARIABLE_CREATED",
+    "id": "${eventId}-17",
+    "timestamp": 1638921300250,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "name": "customPojoAnnotatedTypeInConnector",
+      "type": "string",
+      "processInstanceId": "${processInstanceId}",
+      "value": "Type of customPojoAnnotated var in connector is class java.util.LinkedHashMap",
+      "taskVariable": false
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "customPojoAnnotatedTypeInConnector",
+    "eventType": "VARIABLE_CREATED"
+  },
+  {
+    "eventType": "VARIABLE_CREATED",
+    "id": "${eventId}-18",
+    "timestamp": 1638921300250,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "name": "customPojoTypeInConnector",
+      "type": "string",
+      "processInstanceId": "${processInstanceId}",
+      "value": "Type of customPojo var in connector is class java.util.LinkedHashMap",
+      "taskVariable": false
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "customPojoTypeInConnector",
+    "eventType": "VARIABLE_CREATED"
+  },
+  {
+    "eventType": "VARIABLE_CREATED",
+    "id": "${eventId}-19",
+    "timestamp": 1638921300250,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "name": "customPojoField1InConnector",
+      "type": "string",
+      "processInstanceId": "${processInstanceId}",
+      "value": "Value of field1 on customPojo is field1",
+      "taskVariable": false
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "customPojoField1InConnector",
+    "eventType": "VARIABLE_CREATED"
+  },
+  {
+    "eventType": "VARIABLE_UPDATED",
+    "id": "${eventId}-20",
+    "timestamp": 1638921300252,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "name": "boolVar",
+      "type": "boolean",
+      "processInstanceId": "${processInstanceId}",
+      "value": false,
+      "taskVariable": false
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "boolVar",
+    "previousValue": true,
+    "eventType": "VARIABLE_UPDATED"
+  },
+  {
+    "eventType": "VARIABLE_UPDATED",
+    "id": "${eventId}-21",
+    "timestamp": 1638921300252,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "name": "age",
+      "type": "integer",
+      "processInstanceId": "${processInstanceId}",
+      "value": 20,
+      "taskVariable": false
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "age",
+    "previousValue": 19,
+    "eventType": "VARIABLE_UPDATED"
+  },
+  {
+    "eventType": "ACTIVITY_COMPLETED",
+    "id": "${eventId}-22",
+    "timestamp": 1638921300252,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "elementId": "serviceTask",
+      "processInstanceId": "${processInstanceId}",
+      "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+      "activityType": "serviceTask",
+      "executionId": "${executionId}"
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "serviceTask",
+    "eventType": "ACTIVITY_COMPLETED"
+  },
+  {
+    "eventType": "SEQUENCE_FLOW_TAKEN",
+    "id": "${eventId}-23",
+    "timestamp": 1638921300252,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "elementId": "flow2",
+      "processInstanceId": "${processInstanceId}",
+      "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+      "sourceActivityElementId": "serviceTask",
+      "sourceActivityType": "org.activiti.bpmn.model.ServiceTask",
+      "targetActivityElementId": "userTask",
+      "targetActivityName": "Schedule meeting after service",
+      "targetActivityType": "org.activiti.bpmn.model.UserTask"
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "flow2",
+    "eventType": "SEQUENCE_FLOW_TAKEN"
+  },
+  {
+    "eventType": "ACTIVITY_STARTED",
+    "id": "${eventId}-24",
+    "timestamp": 1638921300252,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "elementId": "userTask",
+      "processInstanceId": "${processInstanceId}",
+      "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+      "activityName": "Schedule meeting after service",
+      "activityType": "userTask",
+      "executionId": "${executionId}"
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "userTask",
+    "eventType": "ACTIVITY_STARTED"
+  },
+  {
+    "eventType": "VARIABLE_CREATED",
+    "id": "${eventId}-18",
+    "timestamp": 1638921300250,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "name": "customPojoTypeInConnector",
+      "type": "string",
+      "processInstanceId": "${processInstanceId}",
+      "value": "Type of customPojo var in connector is class java.util.LinkedHashMap",
+      "taskVariable": true,
+      "taskId": "${taskId}"
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "customPojoTypeInConnector",
+    "eventType": "VARIABLE_CREATED"
+  },
+  {
+    "eventType": "VARIABLE_CREATED",
+    "id": "${eventId}-19",
+    "timestamp": 1638921300250,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "name": "customPojoField1InConnector",
+      "type": "string",
+      "processInstanceId": "${processInstanceId}",
+      "value": "Value of field1 on customPojo is field1",
+      "taskVariable": true,
+      "taskId": "${taskId}"
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "customPojoField1InConnector",
+    "eventType": "VARIABLE_CREATED"
+  },
+  {
+    "eventType": "TASK_CREATED",
+    "id": "${eventId}-25",
+    "timestamp": 1638921300255,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "appVersion": "1",
+      "id": "${taskId}",
+      "name": "Schedule meeting after service",
+      "status": "CREATED",
+      "createdDate": "2021-12-07T23:55:00.252+0000",
+      "priority": 0,
+      "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+      "processInstanceId": "${processInstanceId}",
+      "businessKey": "businessKey",
+      "taskDefinitionKey": "userTask",
+      "candidateUsers": [],
+      "candidateGroups": [],
+      "standalone": false
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "appVersion": "1",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "${taskId}",
+    "eventType": "TASK_CREATED"
+  },
+  {
+    "eventType": "TASK_ASSIGNED",
+    "id": "${eventId}-25",
+    "timestamp": 1638921300255,
+    "processInstanceId": "${processInstanceId}",
+    "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+    "processDefinitionKey": "MQServiceTaskProcess",
+    "processDefinitionVersion": 1,
+    "businessKey": "businessKey",
+    "entity": {
+      "appVersion": "1",
+      "id": "${taskId}",
+      "name": "Schedule meeting after service",
+      "status": "ASSIGNED",
+      "createdDate": "2021-12-07T23:55:00.252+0000",
+      "priority": 0,
+      "processDefinitionId": "MQServiceTaskProcess:1:1156578c-57b9-11ec-9110-747827bd7e73",
+      "processInstanceId": "${processInstanceId}",
+      "businessKey": "businessKey",
+      "taskDefinitionKey": "userTask",
+      "assignee": "hruser",
+      "owner": "hradmin",
+      "claimedDate": "2021-12-07T23:55:00.252+0000",
+      "standalone": false
+    },
+    "appName": "activiti-app",
+    "serviceFullName": "test-app",
+    "appVersion": "1",
+    "serviceName": "test-app",
+    "serviceVersion": "",
+    "serviceType": "runtime-bundle",
+    "entityId": "${taskId}",
+    "eventType": "TASK_ASSIGNED"
+  }
+]
