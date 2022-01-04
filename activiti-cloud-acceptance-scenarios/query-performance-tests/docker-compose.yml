@@ -120,9 +120,8 @@ services:
   query-0:
     image: activiti/activiti-cloud-query:${VERSION}
     container_name: query-0
-#    ports:
-#      - "8080:8080"
-#      - "5005:5005"
+    ports:
+      - "5005:5005"
     volumes:
       - apm-agent:/mnt/apm-agent:ro
     environment:
@@ -138,8 +137,7 @@ services:
       SPRING_DATASOURCE_HIKARI_MAXIMUMPOOLSIZE: ${HIKARI_POOL_SIZE}
       SPRING_DATASOURCE_HIKARI_CONNECTIONTIMEOUT: 10000
       SPRING_DATASOURCE_HIKARI_AUTOCOMMIT: "true"
-      #      ELASTIC_APM_TRACE_METHODS: "public @org.springframework.cloud.stream.annotation.StreamListener org.activiti.cloud.services.*"
-#      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005 -Ddatasource-proxy.enabled=true
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005
       JAVA_OPTS: |
         -Dactiviti.cloud.messaging.broker=${BROKER}
         -Dspring.cloud.stream.kafka.binder.brokers=kafka
@@ -149,6 +147,7 @@ services:
         -Dactiviti.cloud.messaging.instance-index=0
         -Dspring.cloud.stream.bindings.applicationMetrics.destination=metrics
         -Dspring.cloud.stream.metrics.properties=spring.cloud.dataflow**,spring.cloud.application**,spring.application**
+        -Dspring.cloud.stream.metrics.scheduleInterval=1s
         -Dspring.cloud.application.guid=8009cdc3-eae5-41f0-9ee1-773965f00cb6
         -Dspring.cloud.dataflow.stream.app.label=default-app
         -Dspring.cloud.dataflow.stream.name=query
@@ -170,111 +169,111 @@ services:
       - apm-agent-download
       - query-init
 
-  query-1:
-    image: activiti/activiti-cloud-query:${VERSION}
-    container_name: query-1
-    #    ports:
-    #      - "8080:8080"
-    #      - "5005:5005"
-    volumes:
-      - apm-agent:/mnt/apm-agent:ro
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_LIQUIBASE_ENABLED: "false"
-      ACTIVITI_KEYCLOAK_CLIENT_SECRET: dummysecret
-      SERVER_PORT: 8080
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_DATASOURCE_HIKARI_MINIMUMIDLE: ${HIKARI_POOL_SIZE}
-      SPRING_DATASOURCE_HIKARI_MAXLIFETIME: 1000
-      SPRING_DATASOURCE_HIKARI_MAXIMUMPOOLSIZE: ${HIKARI_POOL_SIZE}
-      SPRING_DATASOURCE_HIKARI_CONNECTIONTIMEOUT: 10000
-      SPRING_DATASOURCE_HIKARI_AUTOCOMMIT: "true"
-      #      ELASTIC_APM_TRACE_METHODS: "public @org.springframework.cloud.stream.annotation.StreamListener org.activiti.cloud.services.*"
-      #      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005 -Ddatasource-proxy.enabled=true
-      JAVA_OPTS: |
-        -Dactiviti.cloud.messaging.broker=${BROKER}
-        -Dspring.cloud.stream.kafka.binder.brokers=kafka
-        -Dspring.cloud.stream.kafka.binder.configuration.partition.assignment.strategy=org.apache.kafka.clients.consumer.RoundRobinAssignor
-        -Dactiviti.cloud.messaging.partitioned=true
-        -Dactiviti.cloud.messaging.partition-count=${PARTITION_COUNT}
-        -Dactiviti.cloud.messaging.instance-index=1
-        -Dspring.cloud.stream.bindings.applicationMetrics.destination=metrics
-        -Dspring.cloud.stream.metrics.properties=spring.cloud.dataflow**,spring.cloud.application**,spring.application**
-        -Dspring.cloud.application.guid=8009cdc3-eae5-41f0-9ee1-773965f00cb6
-        -Dspring.cloud.dataflow.stream.app.label=default-app
-        -Dspring.cloud.dataflow.stream.name=query
-        -Dspring.application.index=1
-        -javaagent:/mnt/apm-agent/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar
-        -Djava.security.egd=file:/dev/./urandom
-        -Delastic.apm.enabled=${ELASTIC_APM_ENABLED}
-        -Delastic.apm.service_name=query-1
-        -Delastic.apm.server_urls=http://apm-server:8200
-        -Delastic.apm.log_level=INFO
-        -Delastic.apm.secret_token=${ELASTIC_APM_SERVICE_SECRET_TOKEN}
-        -Delastic.apm.environment=${APM_ENVIRONMENT}
-        -Delastic.apm.application_packages=org.activiti.cloud
-        -Delastic.apm.profiling_inferred_spans_enabled=true
-        -Delastic.apm.profiling_inferred_spans_sampling_interval=${SAMPLING_INTERVAL}
-        -Delastic.apm.transaction_sample_rate=${SAMPLE_RATE}
-        -Ddatasource-proxy.enabled=${DEBUG_SQL}
-    depends_on:
-      - apm-agent-download
-      - query-init
-
-  query-2:
-    image: activiti/activiti-cloud-query:${VERSION}
-    container_name: query-2
-    #    ports:
-    #      - "8080:8080"
-    #      - "5005:5005"
-    volumes:
-      - apm-agent:/mnt/apm-agent:ro
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
-      SPRING_LIQUIBASE_ENABLED: "false"
-      ACTIVITI_KEYCLOAK_CLIENT_SECRET: dummysecret
-      SERVER_PORT: 8080
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_DATASOURCE_HIKARI_MINIMUMIDLE: ${HIKARI_POOL_SIZE}
-      SPRING_DATASOURCE_HIKARI_MAXLIFETIME: 1000
-      SPRING_DATASOURCE_HIKARI_MAXIMUMPOOLSIZE: ${HIKARI_POOL_SIZE}
-      SPRING_DATASOURCE_HIKARI_CONNECTIONTIMEOUT: 10000
-      SPRING_DATASOURCE_HIKARI_AUTOCOMMIT: "true"
-      #      ELASTIC_APM_TRACE_METHODS: "public @org.springframework.cloud.stream.annotation.StreamListener org.activiti.cloud.services.*"
-      #      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005
-      JAVA_OPTS: |
-        -Dactiviti.cloud.messaging.broker=${BROKER}
-        -Dspring.cloud.stream.kafka.binder.brokers=kafka
-        -Dspring.cloud.stream.kafka.binder.configuration.partition.assignment.strategy=org.apache.kafka.clients.consumer.RoundRobinAssignor
-        -Dactiviti.cloud.messaging.partitioned=true
-        -Dactiviti.cloud.messaging.partition-count=${PARTITION_COUNT}
-        -Dactiviti.cloud.messaging.instance-index=2
-        -Dspring.cloud.stream.bindings.applicationMetrics.destination=metrics
-        -Dspring.cloud.stream.metrics.properties=spring.cloud.dataflow**,spring.cloud.application**,spring.application**
-        -Dspring.cloud.application.guid=8009cdc3-eae5-41f0-9ee1-773965f00cb6
-        -Dspring.cloud.dataflow.stream.app.label=default-app
-        -Dspring.cloud.dataflow.stream.name=query
-        -Dspring.application.index=2
-        -javaagent:/mnt/apm-agent/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar
-        -Djava.security.egd=file:/dev/./urandom
-        -Delastic.apm.enabled=${ELASTIC_APM_ENABLED}
-        -Delastic.apm.service_name=query-2
-        -Delastic.apm.server_urls=http://apm-server:8200
-        -Delastic.apm.log_level=INFO
-        -Delastic.apm.secret_token=${ELASTIC_APM_SERVICE_SECRET_TOKEN}
-        -Delastic.apm.environment=${APM_ENVIRONMENT}
-        -Delastic.apm.application_packages=org.activiti.cloud
-        -Delastic.apm.profiling_inferred_spans_enabled=true
-        -Delastic.apm.profiling_inferred_spans_sampling_interval=${SAMPLING_INTERVAL}
-        -Delastic.apm.transaction_sample_rate=${SAMPLE_RATE}
-        -Ddatasource-proxy.enabled=${DEBUG_SQL}
-    depends_on:
-      - apm-agent-download
-      - query-init
+#  query-1:
+#    image: activiti/activiti-cloud-query:${VERSION}
+#    container_name: query-1
+#    #    ports:
+#    #      - "8080:8080"
+#    #      - "5005:5005"
+#    volumes:
+#      - apm-agent:/mnt/apm-agent:ro
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+#      SPRING_DATASOURCE_USERNAME: postgres
+#      SPRING_DATASOURCE_PASSWORD: password
+#      SPRING_LIQUIBASE_ENABLED: "false"
+#      ACTIVITI_KEYCLOAK_CLIENT_SECRET: dummysecret
+#      SERVER_PORT: 8080
+#      SPRING_RABBITMQ_HOST: rabbitmq
+#      SPRING_DATASOURCE_HIKARI_MINIMUMIDLE: ${HIKARI_POOL_SIZE}
+#      SPRING_DATASOURCE_HIKARI_MAXLIFETIME: 1000
+#      SPRING_DATASOURCE_HIKARI_MAXIMUMPOOLSIZE: ${HIKARI_POOL_SIZE}
+#      SPRING_DATASOURCE_HIKARI_CONNECTIONTIMEOUT: 10000
+#      SPRING_DATASOURCE_HIKARI_AUTOCOMMIT: "true"
+#      #      ELASTIC_APM_TRACE_METHODS: "public @org.springframework.cloud.stream.annotation.StreamListener org.activiti.cloud.services.*"
+#      #      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005 -Ddatasource-proxy.enabled=true
+#      JAVA_OPTS: |
+#        -Dactiviti.cloud.messaging.broker=${BROKER}
+#        -Dspring.cloud.stream.kafka.binder.brokers=kafka
+#        -Dspring.cloud.stream.kafka.binder.configuration.partition.assignment.strategy=org.apache.kafka.clients.consumer.RoundRobinAssignor
+#        -Dactiviti.cloud.messaging.partitioned=true
+#        -Dactiviti.cloud.messaging.partition-count=${PARTITION_COUNT}
+#        -Dactiviti.cloud.messaging.instance-index=1
+#        -Dspring.cloud.stream.bindings.applicationMetrics.destination=metrics
+#        -Dspring.cloud.stream.metrics.properties=spring.cloud.dataflow**,spring.cloud.application**,spring.application**
+#        -Dspring.cloud.application.guid=8009cdc3-eae5-41f0-9ee1-773965f00cb6
+#        -Dspring.cloud.dataflow.stream.app.label=default-app
+#        -Dspring.cloud.dataflow.stream.name=query
+#        -Dspring.application.index=1
+#        -javaagent:/mnt/apm-agent/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar
+#        -Djava.security.egd=file:/dev/./urandom
+#        -Delastic.apm.enabled=${ELASTIC_APM_ENABLED}
+#        -Delastic.apm.service_name=query-1
+#        -Delastic.apm.server_urls=http://apm-server:8200
+#        -Delastic.apm.log_level=INFO
+#        -Delastic.apm.secret_token=${ELASTIC_APM_SERVICE_SECRET_TOKEN}
+#        -Delastic.apm.environment=${APM_ENVIRONMENT}
+#        -Delastic.apm.application_packages=org.activiti.cloud
+#        -Delastic.apm.profiling_inferred_spans_enabled=true
+#        -Delastic.apm.profiling_inferred_spans_sampling_interval=${SAMPLING_INTERVAL}
+#        -Delastic.apm.transaction_sample_rate=${SAMPLE_RATE}
+#        -Ddatasource-proxy.enabled=${DEBUG_SQL}
+#    depends_on:
+#      - apm-agent-download
+#      - query-init
+#
+#  query-2:
+#    image: activiti/activiti-cloud-query:${VERSION}
+#    container_name: query-2
+#    #    ports:
+#    #      - "8080:8080"
+#    #      - "5005:5005"
+#    volumes:
+#      - apm-agent:/mnt/apm-agent:ro
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+#      SPRING_DATASOURCE_USERNAME: postgres
+#      SPRING_DATASOURCE_PASSWORD: password
+#      SPRING_LIQUIBASE_ENABLED: "false"
+#      ACTIVITI_KEYCLOAK_CLIENT_SECRET: dummysecret
+#      SERVER_PORT: 8080
+#      SPRING_RABBITMQ_HOST: rabbitmq
+#      SPRING_DATASOURCE_HIKARI_MINIMUMIDLE: ${HIKARI_POOL_SIZE}
+#      SPRING_DATASOURCE_HIKARI_MAXLIFETIME: 1000
+#      SPRING_DATASOURCE_HIKARI_MAXIMUMPOOLSIZE: ${HIKARI_POOL_SIZE}
+#      SPRING_DATASOURCE_HIKARI_CONNECTIONTIMEOUT: 10000
+#      SPRING_DATASOURCE_HIKARI_AUTOCOMMIT: "true"
+#      #      ELASTIC_APM_TRACE_METHODS: "public @org.springframework.cloud.stream.annotation.StreamListener org.activiti.cloud.services.*"
+#      #      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005
+#      JAVA_OPTS: |
+#        -Dactiviti.cloud.messaging.broker=${BROKER}
+#        -Dspring.cloud.stream.kafka.binder.brokers=kafka
+#        -Dspring.cloud.stream.kafka.binder.configuration.partition.assignment.strategy=org.apache.kafka.clients.consumer.RoundRobinAssignor
+#        -Dactiviti.cloud.messaging.partitioned=true
+#        -Dactiviti.cloud.messaging.partition-count=${PARTITION_COUNT}
+#        -Dactiviti.cloud.messaging.instance-index=2
+#        -Dspring.cloud.stream.bindings.applicationMetrics.destination=metrics
+#        -Dspring.cloud.stream.metrics.properties=spring.cloud.dataflow**,spring.cloud.application**,spring.application**
+#        -Dspring.cloud.application.guid=8009cdc3-eae5-41f0-9ee1-773965f00cb6
+#        -Dspring.cloud.dataflow.stream.app.label=default-app
+#        -Dspring.cloud.dataflow.stream.name=query
+#        -Dspring.application.index=2
+#        -javaagent:/mnt/apm-agent/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar
+#        -Djava.security.egd=file:/dev/./urandom
+#        -Delastic.apm.enabled=${ELASTIC_APM_ENABLED}
+#        -Delastic.apm.service_name=query-2
+#        -Delastic.apm.server_urls=http://apm-server:8200
+#        -Delastic.apm.log_level=INFO
+#        -Delastic.apm.secret_token=${ELASTIC_APM_SERVICE_SECRET_TOKEN}
+#        -Delastic.apm.environment=${APM_ENVIRONMENT}
+#        -Delastic.apm.application_packages=org.activiti.cloud
+#        -Delastic.apm.profiling_inferred_spans_enabled=true
+#        -Delastic.apm.profiling_inferred_spans_sampling_interval=${SAMPLING_INTERVAL}
+#        -Delastic.apm.transaction_sample_rate=${SAMPLE_RATE}
+#        -Ddatasource-proxy.enabled=${DEBUG_SQL}
+#    depends_on:
+#      - apm-agent-download
+#      - query-init
 
 #  query-3:
 #    image: activiti/activiti-cloud-query:${VERSION}
