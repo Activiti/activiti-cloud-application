@@ -42,7 +42,7 @@ class TwoStepProcessKafka extends Simulation {
     val taskId = Iterator.continually(Map("taskId" -> generateUUID()))
   }
 
-  val partitionCount = 3
+  val partitionCount = 1
 
   val metricsCollector: ScenarioBuilder = scenario("metricsCollector")
     .exec(http("metrics").get("http://localhost:8080/collector/metrics/streams")

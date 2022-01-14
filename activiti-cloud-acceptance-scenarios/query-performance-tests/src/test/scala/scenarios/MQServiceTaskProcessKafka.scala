@@ -39,7 +39,7 @@ class MQServiceTaskProcessKafka extends Simulation {
     val taskId = Iterator.continually(Map("taskId" -> generateUUID()))
   }
 
-  val partitionCount = 3
+  val partitionCount = 1
 
   val scn: ScenarioBuilder = scenario("MQServiceTaskProcess Performance Test")
     .feed(Feeders.deploymentId)
@@ -69,7 +69,7 @@ class MQServiceTaskProcessKafka extends Simulation {
 
 
   setUp(
-//    scn.inject(atOnceUsers(1))
+    scn.inject(atOnceUsers(40))
 //    scn.inject(rampUsersPerSec(1) to 5 during (60 seconds), constantUsersPerSec(5) during (5 minutes))
 //    scn.inject(      // Traffic shape definition....pretty self explanatory
 //      nothingFor(2 seconds),
@@ -78,11 +78,11 @@ class MQServiceTaskProcessKafka extends Simulation {
 //      constantUsersPerSec(20) during (60 seconds),
 //      constantUsersPerSec(20) during (60 seconds) randomized,
 //    )
-    scn.inject(incrementUsersPerSec(10)
-      .times(9)
-      .eachLevelLasting(10.seconds)
-      .separatedByRampsLasting(3.seconds) // optional
-      .startingFrom(40))
+//    scn.inject(incrementUsersPerSec(10)
+//      .times(8)
+//      .eachLevelLasting(10.seconds)
+//      .separatedByRampsLasting(3.seconds) // optional
+//      .startingFrom(30))
   ).protocols(kafkaConf)
     .maxDuration(10 minutes)
 
