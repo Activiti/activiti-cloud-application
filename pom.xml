@@ -152,59 +152,6 @@ limitations under the License.]]>
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${maven-checkstyle-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>validate</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <configuration>
-              <checkstyleRules>
-                <module name="Checker">
-                  <!-- Checks for whitespace. -->
-                  <module name="FileTabCharacter">
-                    <property name="severity" value="error"/>
-                    <property name="eachLine" value="true"/>
-                  </module>
-                  <module name="TreeWalker">
-                    <!-- Import settings: getting rid of redundant import, forbid star notation, defined order of imports. -->
-                    <module name="RedundantImport"/>
-                    <module name="AvoidStarImport">
-                      <property name="excludes"
-                                value="org.junit.Assert,org.assertj.core.api.Assertions,org.mockito.Mockito"/>
-                      <property name="allowClassImports" value="false"/>
-                      <property name="allowStaticMemberImports" value="false"/>
-                    </module>
-                    <module name="CustomImportOrder">
-                      <property name="customImportOrderRules"
-                                value="STANDARD_JAVA_PACKAGE###THIRD_PARTY_PACKAGE###STATIC"/>
-                      <property name="sortImportsInGroupAlphabetically" value="true"/>
-                      <property name="separateLineBetweenGroups" value="true"/>
-                    </module>
-                    <module name="NeedBraces">
-                      <property name="tokens"
-                                value="LITERAL_IF, LITERAL_ELSE, LITERAL_FOR, LITERAL_WHILE, LITERAL_DO"/>
-                    </module>
-                    <module name="EqualsHashCode"/>
-                  </module>
-                </module>
-              </checkstyleRules>
-              <outputFile>${project.build.directory}/checkstyle.log</outputFile>
-              <includeTestSourceDirectory>true</includeTestSourceDirectory>
-              <includeResources>true</includeResources>
-              <includeTestResources>true</includeTestResources>
-              <consoleOutput>false</consoleOutput>
-              <logViolationsToConsole>false</logViolationsToConsole>
-              <failsOnError>false</failsOnError>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <executions>
