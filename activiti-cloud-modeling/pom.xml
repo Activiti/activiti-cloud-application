@@ -37,6 +37,7 @@
     <dependency>
       <groupId>org.activiti.cloud</groupId>
       <artifactId>activiti-cloud-starter-juel</artifactId>
+      <version>${activiti-cloud.version}</version>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
