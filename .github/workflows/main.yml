@@ -4,7 +4,7 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the develop branch
   push:
-    branches: [ develop ]
+    branches: [ develop, hotfix-M17.4 ]
   pull_request:
     branches: [ develop ]
 
@@ -83,15 +83,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Set up jx-release-version
-        if: ${{ github.event_name == 'push' }}
-        uses: Alfresco/alfresco-build-tools/.github/actions/setup-jx-release-version@v1.1.5
-
-      - name: Bump version with jx-release-version
+      - name: Bump version to temporary tag 7.1.1126
         if: ${{ github.event_name == 'push' }}
         run: |
           git fetch --tags -q
-          echo $(jx-release-version -next-version increment) > VERSION
+          echo 7.1.1126 > VERSION
 
       - name: Set BRANCH_NAME env variable
         id: set-branch-name
@@ -444,10 +440,6 @@ jobs:
           git config --global user.email $GITHUB_USERNAME@users.noreply.github.com
         env:
           GITHUB_USERNAME: ${{ secrets.BOT_GITHUB_USERNAME }}
-
-      - name: Set up updatebot
-        if: ${{ github.event_name == 'push' }}
-        uses: Alfresco/alfresco-build-tools/.github/actions/setup-updatebot@v1.1.5
 
       - name: Set up helm-docs
         if: ${{ github.event_name == 'push' }}
