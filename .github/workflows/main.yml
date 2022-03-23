@@ -4,7 +4,7 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the develop branch
   push:
-    branches: [ develop, hotfix-M17.4 ]
+    branches: [ develop, hotfix-M17.5 ]
   pull_request:
     branches: [ develop ]
 
@@ -83,11 +83,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Bump version to temporary tag 7.1.1126
+      - name: Bump version to temporary tag 7.1.1127
         if: ${{ github.event_name == 'push' }}
         run: |
           git fetch --tags -q
-          echo 7.1.1126 > VERSION
+          echo 7.1.1127 > VERSION
 
       - name: Set BRANCH_NAME env variable
         id: set-branch-name
