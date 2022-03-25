@@ -67,9 +67,8 @@ class MQServiceTaskProcessKafka extends Simulation {
     )
     .exitHere
 
-
   setUp(
-    scn.inject(atOnceUsers(40))
+    scn.inject(atOnceUsers(30))
 //    scn.inject(rampUsersPerSec(1) to 5 during (60 seconds), constantUsersPerSec(5) during (5 minutes))
 //    scn.inject(      // Traffic shape definition....pretty self explanatory
 //      nothingFor(2 seconds),
@@ -84,6 +83,6 @@ class MQServiceTaskProcessKafka extends Simulation {
 //      .separatedByRampsLasting(3.seconds) // optional
 //      .startingFrom(30))
   ).protocols(kafkaConf)
-    .maxDuration(10 minutes)
+   .maxDuration(10 minutes)
 
 }
