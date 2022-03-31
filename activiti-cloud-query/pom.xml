@@ -124,7 +124,6 @@
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
-      <scope>test</scope>
     </dependency>
     <!-- Marker Pom for Dependency Conversion Validation  -->
   </dependencies>
