@@ -11,12 +11,14 @@
   <name>Activiti Cloud :: Modeling Acceptance Tests</name>
   <dependencies>
     <dependency>
-      <groupId>org.activiti</groupId>
-      <artifactId>activiti-api-dependencies</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.activiti.cloud</groupId>
       <artifactId>activiti-cloud-acceptance-tests-modeling</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter-engine</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>
