@@ -62,7 +62,7 @@ public class SwaggerActions {
                 .contains("payloadType")
                 .doesNotContain("PagedModel")
                 .doesNotContain("ResourcesResource")
-                .doesNotContain("Resource");
+                .doesNotContain("\"Resource\"");
 
         assertThat(swaggerSpecifications.get(SwaggerSpecifications.QUERY))
                 .contains("ListResponseContentCloudProcessDefinition")
@@ -70,7 +70,7 @@ public class SwaggerActions {
                 .contains("EntryResponseContentCloudProcessDefinition")
                 .doesNotContain("PagedModel")
                 .doesNotContain("ResourcesResource")
-                .doesNotContain("Resource");
+                .doesNotContain("\"Resource\"");
 
         assertThat(swaggerSpecifications.get(SwaggerSpecifications.AUDIT))
                 .contains("ListResponseContentCloudRuntimeEventobjectAndstring")
@@ -79,7 +79,7 @@ public class SwaggerActions {
                 .contains("CloudRuntimeEventModel")
                 .doesNotContain("PagedModel")
                 .doesNotContain("ResourcesResource")
-                .doesNotContain("Resource")
+                .doesNotContain("\"Resource\"")
                 .doesNotContain("Enum");
     }
 
