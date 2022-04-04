@@ -41,8 +41,8 @@ public class ModelingSwaggerActions {
                 .contains("EntriesResponseContent")
                 .contains("EntryResponseContent")
                 .doesNotContain("PagedModel")
-                .doesNotContain("ResourcesOfResource")
-                .doesNotContain("Resource");
+                .doesNotContain("ResourcesResource")
+                .doesNotContain("\"Resource\"");
     }
 
 }

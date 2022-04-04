@@ -73,9 +73,9 @@ public class SwaggerActions {
                 .doesNotContain("\"Resource\"");
 
         assertThat(swaggerSpecifications.get(SwaggerSpecifications.AUDIT))
-                .contains("ListResponseContentCloudRuntimeEventobjectAndstring")
-                .contains("EntriesResponseContentCloudRuntimeEventobjectAndstring")
-                .contains("EntryResponseContentCloudRuntimeEventobjectAndstring")
+                .contains("ListResponseContentCloudRuntimeEventObjectCloudRuntimeEventType")
+                .contains("EntriesResponseContentCloudRuntimeEventObjectCloudRuntimeEventType")
+                .contains("EntryResponseContentCloudRuntimeEventObjectCloudRuntimeEventType")
                 .contains("CloudRuntimeEventModel")
                 .doesNotContain("PagedModel")
                 .doesNotContain("ResourcesResource")
