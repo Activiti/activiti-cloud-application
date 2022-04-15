@@ -1,0 +1,41 @@
+version: "3.2"
+
+services:
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+#  metrics-collector:
+#    image: activiti/metrics-collector-rabbit
+#    container_name: metrics-collector
+#    ports:
+#      - "9080:8080"
+#    volumes:
+#      - apm-agent:/mnt/apm-agent:ro
+#    environment:
+#      SPRING_RABBITMQ_HOST: rabbitmq
+#      JAVA_TOOL_OPTIONS: |
+#        -Dspring.cloud.stream.kafka.binder.brokers=kafka
+#        -Dspring.rabbitmq.host=rabbitmq
+#        -javaagent:/mnt/apm-agent/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar
+#        -Delastic.apm.enabled=${ELASTIC_APM_ENABLED}
+#        -Delastic.apm.service_name=metrics-collector
+#        -Delastic.apm.server_urls=http://apm-server:8200
+#        -Delastic.apm.log_level=INFO
+#        -Delastic.apm.secret_token=${ELASTIC_APM_SERVICE_SECRET_TOKEN}
+#        -Delastic.apm.environment=${APM_ENVIRONMENT}
+#        -Delastic.apm.application_packages=org.springframework.cloud.dataflow
+#        -Delastic.apm.profiling_inferred_spans_enabled=true
+#        -Delastic.apm.profiling_inferred_spans_sampling_interval=${SAMPLING_INTERVAL}
+#        -Delastic.apm.transaction_sample_rate=${SAMPLE_RATE}
+#    depends_on:
+#      - apm-agent-download
+
+volumes:
+  rabbitmq_data: {}

@@ -1,0 +1,77 @@
+version: "3.2"
+
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    volumes:
+      - "zookeeper_data:/bitnami"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.0.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  # This "container" is a workaround to pre-create topics
+  kafka-setup:
+    image: confluentinc/cp-kafka:7.0.0
+    hostname: kafka-setup
+    container_name: kafka-setup
+    depends_on:
+      - kafka
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       cub kafka-ready -b kafka:9092 1 20 && \
+                       kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --partitions ${PARTITION_COUNT} --replication-factor 1 --topic engineEvents'"
+    environment:
+      # The following settings are listed here only to satisfy the image's requirements.
+      # We override the image's `command` anyways, hence this container will not start a broker.
+      KAFKA_BROKER_ID: ignored
+      KAFKA_ZOOKEEPER_CONNECT: ignored
+
+  metrics-collector:
+    image: activiti/metrics-collector-kafka
+    container_name: metrics-collector
+    ports:
+      - "9080:8080"
+    volumes:
+      - apm-agent:/mnt/apm-agent:ro
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      JAVA_TOOL_OPTIONS: |
+        -Dspring.cloud.stream.kafka.binder.brokers=kafka
+        -Dspring.rabbitmq.host=rabbitmq
+        -javaagent:/mnt/apm-agent/elastic-apm-agent-${ELASTIC_APM_AGENT_VERSION}.jar
+        -Delastic.apm.enabled=${ELASTIC_APM_ENABLED}
+        -Delastic.apm.service_name=metrics-collector
+        -Delastic.apm.server_urls=http://apm-server:8200
+        -Delastic.apm.log_level=INFO
+        -Delastic.apm.secret_token=${ELASTIC_APM_SERVICE_SECRET_TOKEN}
+        -Delastic.apm.environment=${APM_ENVIRONMENT}
+        -Delastic.apm.application_packages=org.springframework.cloud.dataflow
+        -Delastic.apm.profiling_inferred_spans_enabled=true
+        -Delastic.apm.profiling_inferred_spans_sampling_interval=${SAMPLING_INTERVAL}
+        -Delastic.apm.transaction_sample_rate=${SAMPLE_RATE}
+    depends_on:
+      - apm-agent-download
+
+volumes:
+  kafka_data: {}
+  zookeeper_data: {}

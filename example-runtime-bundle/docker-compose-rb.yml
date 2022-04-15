@@ -1,0 +1,38 @@
+version: "3.2"
+
+services:
+
+  rb:
+    image: activiti/example-runtime-bundle:${VERSION}
+    container_name: rb
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    volumes: []
+#      - apm-agent:/mnt/apm-agent:ro
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      ACTIVITI_KEYCLOAK_CLIENT_SECRET: dummysecret
+      SERVER_PORT: 8080
+      SPRING_RABBITMQ_HOST: rabbitmq
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005
+      JAVA_OPTS: |
+        -Dactiviti.cloud.messaging.broker=${BROKER}
+        -Dspring.cloud.stream.kafka.binder.brokers=kafka
+        -Dspring.cloud.stream.kafka.binder.configuration.partition.assignment.strategy=org.apache.kafka.clients.consumer.RoundRobinAssignor
+        -Dactiviti.cloud.messaging.partitioned=true
+        -Dactiviti.cloud.messaging.partition-count=${PARTITION_COUNT}
+        -Dspring.cloud.stream.bindings.applicationMetrics.destination=metrics
+        -Dspring.cloud.stream.metrics.properties=spring.cloud.dataflow**,spring.cloud.application**,spring.application**
+        -Dspring.cloud.stream.metrics.scheduleInterval=1s
+        -Dspring.cloud.application.guid=8009cdc3-eae5-41f0-9ee1-773965f00cb6
+        -Dspring.cloud.dataflow.stream.app.label=default-app
+        -Dspring.cloud.dataflow.stream.name=query
+        -Dspring.application.index=0
+        -Djava.security.egd=file:/dev/./urandom
+    depends_on:
+      - postgres
+
+volumes: {}

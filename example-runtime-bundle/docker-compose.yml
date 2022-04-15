@@ -1,0 +1,106 @@
+version: "3.2"
+
+services:
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgres
+    environment:
+      POSTGRES_PASSWORD: password
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+    environment:
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - cluster.name=docker-cluster
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-XX:UseAVX=2 -Xms1g -Xmx1g
+    ports:
+      - "9200:9200"
+    ulimits:
+      memlock:
+        hard: -1
+        soft: -1
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      interval: 20s
+      retries: 10
+      test: curl -s http://localhost:9200/_cluster/health | grep -vq '"status":"red"'
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
+    environment:
+      - "SERVER_HOST=0.0.0.0"
+      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+      - "ELASTICSEARCH_HOSTS=http://elasticsearch:9200"
+    ports:
+      - "5601:5601"
+    healthcheck:
+      interval: 10s
+      retries: 20
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:5601/api/status
+    depends_on:
+      - elasticsearch
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:16.1.1
+    ports:
+      - "8180:8080"
+    volumes:
+      - ./activiti-realm.json:/opt/jboss/keycloak/activiti-realm.json
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      DB_VENDOR: h2
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/activiti-realm.json
+
+#  apm-server:
+#    container_name: apm-server
+#    cap_add: ["CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID"]
+#    cap_drop: ["ALL"]
+#    image: docker.elastic.co/apm/apm-server:${ELASTIC_VERSION}
+#    ports:
+#      - "8200:8200"
+#    environment:
+#      - output.elasticsearch.hosts=['http://elasticsearch:9200']
+#      - apm-server.host="0.0.0.0:8200"
+#      - apm-server.secret_token=${ELASTIC_APM_SERVICE_SECRET_TOKEN}
+#      - apm-server.kibana.enabled=true
+#      - apm-server.kibana.host=kibana:5601
+#      - logging.to_files=false
+#      - apm-server.rum.enabled=true
+#      - setup.template.settings.index.number_of_replicas=0
+#      - output.elasticsearch.bulk_max_size=5120
+#      - output.elasticsearch.worker=3
+#      - queue.mem.events=15360
+#    healthcheck:
+#      interval: 10s
+#      retries: 12
+#      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8200/
+#    depends_on:
+#      - elasticsearch
+#      - kibana
+
+volumes:
+  es_data: {}
+  postgres_data: {}
+  rabbitmq_data: {}

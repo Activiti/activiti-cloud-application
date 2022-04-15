@@ -1,0 +1,315 @@
+{
+  "realm": "activiti",
+  "enabled": true,
+  "internationalizationEnabled": false,
+  "roles": {
+    "realm": [
+      {
+        "name": "ACTIVITI_USER",
+        "composites": {
+          "client": {
+            "realm-management": [
+              "view-users",
+              "view-clients"
+            ]
+          }
+        }
+      },
+      {
+        "name": "ACTIVITI_ADMIN",
+        "composites": {
+          "client": {
+            "realm-management": [
+              "view-users",
+              "view-clients"
+            ]
+          }
+        }
+      },
+      {
+        "name": "ACTIVITI_MODELER",
+        "composites": {
+          "client": {
+            "realm-management": [
+              "view-users",
+              "view-clients"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "groups": [
+    {
+      "name": "hr"
+    },
+    {
+      "name": "testgroup"
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-activiti-keycloak",
+      "enabled": true,
+      "serviceAccountClientId": "activiti-keycloak",
+      "clientRoles": {
+        "realm-management": [
+          "query-realms",
+          "view-users"
+        ]
+      }
+    },
+    {
+      "username": "admin",
+      "enabled": true,
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@example.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password"
+        }
+      ],
+      "realmRoles": [
+        "offline_access",
+        "uma_authorization",
+        "ACTIVITI_ADMIN"
+      ],
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "manage-clients",
+          "manage-authorization",
+          "manage-events",
+          "manage-realm",
+          "create-client",
+          "impersonation",
+          "realm-admin"
+        ]
+      }
+    },
+    {
+      "id": "5f682999-d11d-4a42-bc42-86b7e6752222",
+      "createdTimestamp": 1528383051279,
+      "username": "testActivitiAdmin",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": false,
+      "firstName": "testActivitiAdmin",
+      "lastName": "testActivitiAdmin",
+      "email": "testActivitiAdmin@test.com",
+      "credentials": [
+        {
+          "type": "password",
+          "hashedSaltedValue": "05tcUaYgNzF71eB1HKeaH9IC7Do7JUig2JNLSXiADgLx0YfyOPnL5t7TuZ+Rxj3ttsyLkWqp0TM0UbLWGOvuLQ==",
+          "salt": "xZovRbq5QU0Cm5aQWEW2bg==",
+          "hashIterations": 27500,
+          "counter": 0,
+          "algorithm": "pbkdf2-sha256",
+          "digits": 0,
+          "period": 0,
+          "createdDate": 1522141994128,
+          "config": {}
+        }
+      ],
+      "disableableCredentialTypes": [
+        "password"
+      ],
+      "requiredActions": [],
+      "realmRoles": [
+        "uma_authorization",
+        "ACTIVITI_ADMIN",
+        "offline_access"
+      ],
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
+      "notBefore": 0,
+      "groups": [
+        "/testgroup"
+      ]
+    },
+    {
+      "username": "hradmin",
+      "enabled": true,
+      "firstName": "HR",
+      "lastName": "Admin",
+      "email": "hradmin@example.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password"
+        }
+      ],
+      "realmRoles": [
+        "ACTIVITI_USER",
+        "uma_authorization",
+        "ACTIVITI_ADMIN",
+        "offline_access"
+      ],
+      "groups": [
+        "/hr"
+      ]
+    },
+    {
+      "username": "hruser",
+      "enabled": true,
+      "firstName": "HR",
+      "lastName": "User",
+      "email": "hr@example.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password"
+        }
+      ],
+      "realmRoles": [
+        "ACTIVITI_USER",
+        "uma_authorization",
+        "offline_access"
+      ],
+      "groups": [
+        "/hr"
+      ]
+    },
+    {
+      "username": "modeler",
+      "enabled": true,
+      "firstName": "activiti",
+      "lastName": "modeler",
+      "email": "modeler@example.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password"
+        }
+      ]
+    },
+    {
+      "username": "testadmin",
+      "enabled": true,
+      "firstName": "Test",
+      "lastName": "Admin",
+      "email": "testadmin@example.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password"
+        }
+      ],
+      "realmRoles": [
+        "ACTIVITI_USER",
+        "uma_authorization",
+        "ACTIVITI_ADMIN",
+        "offline_access"
+      ],
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
+      "groups": [
+        "/testgroup"
+      ]
+    },
+    {
+      "username": "testuser",
+      "enabled": true,
+      "firstName": "Test",
+      "lastName": "User",
+      "email": "testuser@example.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password"
+        }
+      ],
+      "realmRoles": [
+        "ACTIVITI_USER",
+        "uma_authorization",
+        "offline_access"
+      ],
+      "groups": [
+        "/testgroup"
+      ]
+    },
+    {
+      "id": "331a12d1-766e-4897-b0a8-309ae5caeb12",
+      "createdTimestamp": 1498557164913,
+      "username": "testdevops",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": false,
+      "firstName": "test",
+      "lastName": "devops",
+      "email": "testdevops@test.com",
+      "credentials": [
+        {
+          "type": "password",
+          "hashedSaltedValue": "IKMsbXtjX7K+2h4gvVPtYCVSm4T73DqYs8m1sS2+VMw/IBWL/KOxYMl/Q1GEyYZWHbih7QfNsIOGA/Kv8+fC2g==",
+          "salt": "OsGQRYz1p7VsRdCOYBCb0Q==",
+          "hashIterations": 20000,
+          "counter": 0,
+          "algorithm": "pbkdf2",
+          "digits": 0,
+          "period": 0,
+          "createdDate": 1498566963313,
+          "config": {}
+        }
+      ],
+      "disableableCredentialTypes": [
+        "password"
+      ],
+      "requiredActions": [],
+      "realmRoles": [
+        "ACTIVITI_DEVOPS",
+        "uma_authorization",
+        "offline_access"
+      ],
+      "clientRoles": {
+        "account": [
+          "manage-account",
+          "view-profile"
+        ]
+      },
+      "notBefore": 0,
+      "groups": [
+        "/testgroup"
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "activiti",
+      "enabled": true,
+      "implicitFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "publicClient": true,
+      "redirectUris": [
+        "*"
+      ],
+      "webOrigins": [
+        "*"
+      ]
+    },
+    {
+      "clientId": "activiti-keycloak",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "545bc187-f10f-41f9-8d5f-cfca3dbada9c",
+      "redirectUris": [],
+      "webOrigins": [],
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect"
+    }
+  ]
+}
