@@ -15,28 +15,13 @@
  */
 package org.activiti.cloud.qa.story;
 
-import static org.activiti.cloud.acc.core.helper.Filters.checkProcessInstances;
-import static org.activiti.cloud.qa.helpers.ProcessDefinitionRegistry.processDefinitionKeyMatcher;
-import static org.activiti.cloud.qa.helpers.ProcessDefinitionRegistry.processDefinitionKeys;
-import static org.activiti.cloud.qa.helpers.ProcessDefinitionRegistry.withTasks;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.awaitility.Awaitility.await;
-
 import feign.FeignException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
 import org.activiti.api.model.shared.event.VariableEvent;
 import org.activiti.api.process.model.ProcessDefinition;
 import org.activiti.api.process.model.ProcessInstance;
+import org.activiti.api.process.model.events.BPMNActivityEvent;
 import org.activiti.api.process.model.events.ProcessRuntimeEvent;
 import org.activiti.api.task.model.Task;
 import org.activiti.api.task.model.builders.TaskPayloadBuilder;
@@ -60,6 +45,23 @@ import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.jbehave.core.model.ExamplesTable;
 import org.springframework.hateoas.PagedModel;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.activiti.cloud.acc.core.helper.Filters.checkProcessInstances;
+import static org.activiti.cloud.qa.helpers.ProcessDefinitionRegistry.processDefinitionKeyMatcher;
+import static org.activiti.cloud.qa.helpers.ProcessDefinitionRegistry.processDefinitionKeys;
+import static org.activiti.cloud.qa.helpers.ProcessDefinitionRegistry.withTasks;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.awaitility.Awaitility.await;
 
 public class ProcessInstanceTasks {
 
@@ -688,5 +690,22 @@ public class ProcessInstanceTasks {
         assertThat(auditAdminSteps.getEventsAdmin()).isEmpty();
     }
 
+    @Then("the generated ACTIVITY_COMPLETED events for activity $elementId have the expected count of $count")
+    public void verifyEventActivityCompleted(String elementId, Integer count) {
+        String processId = Serenity.sessionVariableCalled("processInstanceId");
 
+        await().untilAsserted(() -> {
+            Collection<CloudRuntimeEvent> generatedEvents = auditSteps
+                .getEventsByProcessInstanceId(processId)
+                .stream()
+                .filter(cloudRuntimeEvent -> cloudRuntimeEvent.getEventType()
+                                                              .equals(BPMNActivityEvent.ActivityEvents.ACTIVITY_COMPLETED))
+                .filter(cloudRuntimeEvent -> BPMNActivityEvent.class.cast(cloudRuntimeEvent)
+                                                                    .getEntity().getElementId().equals(elementId)
+                )
+                .collect(Collectors.toList());
+
+            assertThat(generatedEvents).hasSize(count);
+        });
+    }
 }
