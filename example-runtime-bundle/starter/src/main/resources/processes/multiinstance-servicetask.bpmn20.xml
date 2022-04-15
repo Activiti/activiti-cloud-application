@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://bpmn.io/schema/bpmn" id="model-2f8b6f46-6c87-4f4d-9902-f446dc01493c" name="multiinstance-servicetask" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+<bpmn2:definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                   xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                   xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+                   xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema"
+                   expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://bpmn.io/schema/bpmn"
+                   id="model-2f8b6f46-6c87-4f4d-9902-f446dc01493c" name="multiinstance-servicetask"
+                   xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
   <bpmn2:process id="Process_B-f96qb1" name="multiinstance-servicetask" isExecutable="true">
     <bpmn2:startEvent id="StartEvent_1">
       <bpmn2:outgoing>SequenceFlow_0wbhks6</bpmn2:outgoing>
