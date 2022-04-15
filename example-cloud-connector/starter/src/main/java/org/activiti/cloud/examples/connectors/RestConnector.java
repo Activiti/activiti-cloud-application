@@ -33,6 +33,8 @@ import java.util.Map;
 @Component
 @EnableBinding(RestConnector.Channels.class)
 public class RestConnector {
+    private final IntegrationResultSender integrationResultSender;
+    private final ConnectorProperties connectorProperties;
 
     interface Channels {
         public final String POST = "restConnectorPost";
@@ -40,10 +42,6 @@ public class RestConnector {
         @Input(POST)
         SubscribableChannel restConnectorPost();
     }
-
-    private final IntegrationResultSender integrationResultSender;
-    private final ConnectorProperties connectorProperties;
-
 
     public RestConnector(IntegrationResultSender integrationResultSender,
                          ConnectorProperties connectorProperties) {
