@@ -72,6 +72,7 @@
     <project.scm.organization>Activiti</project.scm.organization>
     <project.scm.repository>activiti-cloud-application</project.scm.repository>
     <project.year>2020</project.year>
+    <h2.version>1.4.200</h2.version>
   </properties>
   <repositories>
     <repository>
