@@ -15,16 +15,10 @@
     <java.release>11</java.release>
     <java.version>1.${java.release}</java.version>
     <maven.compiler.release>${java.release}</maven.compiler.release>
-    <activiti-cloud.version>0.0.1-PR-700-1543-SNAPSHOT</activiti-cloud.version>
-    <h2.version>1.4.200</h2.version>
+    <activiti-cloud.version>0.0.1-PR-700-1539-SNAPSHOT</activiti-cloud.version>
   </properties>
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <version>${h2.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.activiti.cloud</groupId>
         <artifactId>activiti-cloud-query-dependencies</artifactId>
