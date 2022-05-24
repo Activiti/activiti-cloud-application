@@ -201,9 +201,6 @@ jobs:
         with:
           version: v3.5.2
 
-      - name: Set up yq
-        uses: Alfresco/alfresco-build-tools/.github/actions/setup-yq@v1.5.0
-
       - name: Set up rancher
         uses: Alfresco/alfresco-build-tools/.github/actions/setup-rancher-cli@v1.5.0
         with:
