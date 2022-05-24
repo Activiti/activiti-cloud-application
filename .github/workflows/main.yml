@@ -19,7 +19,7 @@ env:
 jobs:
 
   pre-commit:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -29,7 +29,7 @@ jobs:
         uses: pre-commit/action@v2.0.0
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: pre-commit
     # Map a step output to a job output
     outputs:
@@ -85,12 +85,12 @@ jobs:
 
       - uses: actions/setup-python@v2
         if: ${{ github.event_name == 'push' }}
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-pysemver@v1.2.1
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-pysemver@v1.5.0
         if: ${{ github.event_name == 'push' }}
       - id: next-release
         if: ${{ github.event_name == 'push' }}
         name: Calculate next internal release
-        uses: Alfresco/alfresco-build-tools/.github/actions/calculate-next-internal-version@v1.2.1
+        uses: Alfresco/alfresco-build-tools/.github/actions/calculate-next-internal-version@v1.5.0
         with:
           next-version: 7.4.0
 
@@ -143,7 +143,7 @@ jobs:
         run: make mvn/activiti-cloud-modeling/liquibase docker/activiti-cloud-modeling
 
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: build
     strategy:
       fail-fast: false
@@ -202,10 +202,10 @@ jobs:
           version: v3.5.2
 
       - name: Set up yq
-        uses: Alfresco/alfresco-build-tools/.github/actions/setup-yq@v1.2.1
+        uses: Alfresco/alfresco-build-tools/.github/actions/setup-yq@v1.5.0
 
       - name: Set up rancher
-        uses: Alfresco/alfresco-build-tools/.github/actions/setup-rancher-cli@v1.2.1
+        uses: Alfresco/alfresco-build-tools/.github/actions/setup-rancher-cli@v1.5.0
         with:
           url: ${{ secrets.RANCHER2_URL }}
           access-key: ${{ secrets.RANCHER2_ACCESS_KEY }}
@@ -397,11 +397,11 @@ jobs:
             fi
 
   promote:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [build,test]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Java JDK 11
         uses: actions/setup-java@v1
@@ -440,29 +440,9 @@ jobs:
         with:
           version: v3.5.2
 
-      - name: Set up yq
-        uses: Alfresco/alfresco-build-tools/.github/actions/setup-yq@v1.2.1
-
-      - name: Configure git user
-        if: ${{ github.event_name == 'push' }}
-        run: |
-          git config --global user.name $GITHUB_USERNAME
-          git config --global user.email $GITHUB_USERNAME@users.noreply.github.com
-        env:
-          GITHUB_USERNAME: ${{ secrets.BOT_GITHUB_USERNAME }}
-
-      - name: Set up updatebot
-        if: ${{ github.event_name == 'push' }}
-        uses: Alfresco/alfresco-build-tools/.github/actions/setup-updatebot@v1.2.1
-
-      - name: Set up helm-docs
-        if: ${{ github.event_name == 'push' }}
-        uses: Alfresco/alfresco-build-tools/.github/actions/setup-helm-docs@v1.2.1
-
       - name: Promote Release
         if: ${{ github.event_name == 'push' }}
         run: |
-          echo -e "https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
           echo $VERSION > VERSION
           make promote
         env:
@@ -477,3 +457,42 @@ jobs:
           mvn $MAVEN_CLI_OPTS deploy -pl activiti-cloud-dependencies/dependencies -am -DskipTests
         env:
           VERSION: ${{ needs.build.outputs.version }}
+
+  propagate-to-helm:
+    runs-on: ubuntu-latest
+    needs: [build,test]
+    if: ${{ github.event_name == 'push' }}
+    env:
+      VERSION: ${{ needs.build.outputs.version }}
+      UPDATEBOT_FULL_CHART_REPO_PATH: .updatebot-repos/github/activiti/activiti-cloud-full-chart
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-updatebot@v1.5.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-helm-docs@v1.5.0
+
+      - name: Run updatebot
+        env:
+          GITHUB_USERNAME: ${{ secrets.BOT_GITHUB_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+        run: |
+          echo -e "https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
+          updatebot push-version --kind helm \
+            runtime-bundle ${VERSION} \
+            activiti-cloud-connector ${VERSION} \
+            activiti-cloud-query ${VERSION} \
+            activiti-cloud-modeling ${VERSION}
+
+      - name: Update helm docs
+        working-directory: ${{ env.UPDATEBOT_FULL_CHART_REPO_PATH}}
+        run: helm-docs
+
+      - uses: Alfresco/alfresco-build-tools/.github/actions/git-commit-changes@v1.5.0
+        with:
+          username: ${{ secrets.BOT_GITHUB_USERNAME }}
+          add-options: charts/activiti-cloud-full-example/README.md
+          repository-directory: ${{ env.UPDATEBOT_FULL_CHART_REPO_PATH}}
+          commit-message: "update helm-docs for full chart $VERSION"
+
+      - name: Push helm docs update
+        working-directory: ${{ env.UPDATEBOT_FULL_CHART_REPO_PATH}}
+        run: git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)
