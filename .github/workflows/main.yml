@@ -393,9 +393,10 @@ jobs:
                 make docker-delete-all
             fi
 
-  promote:
+  publish:
     runs-on: ubuntu-latest
     needs: [build,test]
+    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && contains(github.head_ref, 'preview')) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -432,30 +433,26 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
-      - name: Set up Helm
-        uses: azure/setup-helm@v1
-        with:
-          version: v3.5.2
+      - name: Update POM files to the next version
+        run: mvn ${MAVEN_CLI_OPTS} versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$VERSION
 
-      - name: Promote Release
+      - uses: Alfresco/alfresco-build-tools/.github/actions/git-commit-changes@v1.5.0
+        if: ${{ github.event_name == 'push' }}
+        with:
+          username: ${{ secrets.BOT_GITHUB_USERNAME }}
+          add-options: -u
+          commit-message: "Release $VERSION"
+
+      - name: Create tag
         if: ${{ github.event_name == 'push' }}
         run: |
-          echo $VERSION > VERSION
-          make promote
-        env:
-          GITHUB_USERNAME: ${{ secrets.BOT_GITHUB_USERNAME }}
-          GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
-          VERSION: ${{ needs.build.outputs.version }}
+          git tag -a $VERSION -m "Release version $VERSION"
+          git push origin $VERSION
 
-      - name: Deploy preview
-        if: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
-        run: |
-          mvn $MAVEN_CLI_OPTS versions:set -DnewVersion=$VERSION -DprocessAllModules=true -DgenerateBackupPoms=false
-          mvn $MAVEN_CLI_OPTS deploy -pl activiti-cloud-dependencies/dependencies -am -DskipTests
-        env:
-          VERSION: ${{ needs.build.outputs.version }}
+      - name: Deploy Maven artifacts
+        run: mvn $MAVEN_CLI_OPTS deploy -pl activiti-cloud-dependencies/dependencies -am -DskipTests
 
-  propagate-to-helm:
+  propagate:
     runs-on: ubuntu-latest
     needs: [build,test]
     if: ${{ github.event_name == 'push' }}
@@ -467,17 +464,22 @@ jobs:
       - uses: Alfresco/alfresco-build-tools/.github/actions/setup-updatebot@v1.5.0
       - uses: Alfresco/alfresco-build-tools/.github/actions/setup-helm-docs@v1.5.0
 
-      - name: Run updatebot
+      - name: Run updatebot for Maven
+        run: |
+          echo -e "https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
+          updatebot push-version --kind maven \
+            org.activiti.cloud:activiti-cloud-dependencies $VERSION
+
+      - name: Run updatebot for Helm
         env:
           GITHUB_USERNAME: ${{ secrets.BOT_GITHUB_USERNAME }}
           GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
         run: |
-          echo -e "https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
           updatebot push-version --kind helm \
-            runtime-bundle ${VERSION} \
-            activiti-cloud-connector ${VERSION} \
-            activiti-cloud-query ${VERSION} \
-            activiti-cloud-modeling ${VERSION}
+            runtime-bundle $VERSION \
+            activiti-cloud-connector $VERSION \
+            activiti-cloud-query $VERSION \
+            activiti-cloud-modeling $VERSION
 
       - name: Update helm docs
         working-directory: ${{ env.UPDATEBOT_FULL_CHART_REPO_PATH}}
