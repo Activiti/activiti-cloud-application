@@ -145,6 +145,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: build
+    if: ${{ false }}
     strategy:
       fail-fast: false
       matrix:
@@ -395,7 +396,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    needs: [build,test]
+    needs: [build]
     if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && contains(github.head_ref, 'preview')) }}
     steps:
       - name: Checkout repository
