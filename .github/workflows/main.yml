@@ -490,7 +490,7 @@ jobs:
         with:
           path: ${{ env.FULL_CHART_DIR }}
           repository: Activiti/activiti-cloud-full-chart
-          ref: $ ${{ env.FULL_CHART_BASE_BRANCH }}
+          ref: ${{ env.FULL_CHART_BASE_BRANCH }}
           token: ${{ secrets.BOT_GITHUB_TOKEN }}
       - name: Update image tags in Helm chart
         working-directory: ${{ env.FULL_CHART_DIR }}/charts/activiti-cloud-full-example
@@ -516,5 +516,5 @@ jobs:
       - name: Create propagation PR
         working-directory: ${{ env.FULL_CHART_DIR}}
         run: |
-          git push origin FULL_CHART_PR_BRANCH
+          git push origin $FULL_CHART_PR_BRANCH
           gh pr create --fill --base $FULL_CHART_BASE_BRANCH --label updatebot
