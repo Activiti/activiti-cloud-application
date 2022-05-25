@@ -490,7 +490,7 @@ jobs:
         with:
           path: ${{ env.FULL_CHART_DIR }}
           repository: Activiti/activiti-cloud-full-chart
-          ref: $ ${{ env.FULL_CHART_BASE_BRANCH }}
+          ref: ${{ env.FULL_CHART_BASE_BRANCH }}
           token: ${{ secrets.BOT_GITHUB_TOKEN }}
       - name: Update image tags in Helm chart
         working-directory: ${{ env.FULL_CHART_DIR }}/charts/activiti-cloud-full-example
