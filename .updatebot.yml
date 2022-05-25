@@ -5,8 +5,3 @@ github:
         - name: alfresco-process
           branch: aae-8884-temp
           useSinglePullRequest: true
-    - name: activiti
-      repositories:
-        - name: activiti-cloud-full-chart
-          branch: aae-8884-temp
-          useSinglePullRequest: true
