@@ -1,7 +1,5 @@
 name: CI
-# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the develop branch
   push:
     branches: [7.2.x]
   pull_request:
@@ -440,7 +438,7 @@ jobs:
     env:
       VERSION: ${{ needs.build.outputs.version }}
       FULL_CHART_DIR: full-chart
-      FULL_CHART_BASE_BRANCH: master
+      FULL_CHART_BASE_BRANCH: 7.2.x
       FULL_CHART_PR_BRANCH: update-docker-images-${{ needs.build.outputs.version }}
     steps:
       - uses: actions/checkout@v3
