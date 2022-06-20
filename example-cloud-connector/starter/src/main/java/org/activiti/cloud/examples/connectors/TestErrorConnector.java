@@ -36,6 +36,10 @@ public class TestErrorConnector {
 
     @StreamListener(value = Channels.CHANNEL)
     public void handle(IntegrationRequest integrationRequest) {
-        throw new RuntimeException("TestErrorConnector");
+        String var = integrationRequest.getIntegrationContext()
+                                       .getInBoundVariable("var");
+        if (!"replay".equals(var)) {
+            throw new RuntimeException("TestErrorConnector");
+        }
     }
 }
