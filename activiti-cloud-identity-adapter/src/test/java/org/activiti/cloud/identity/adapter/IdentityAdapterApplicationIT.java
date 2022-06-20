@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.activiti.cloud.modeling;
+package org.activiti.cloud.identity.adapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.activiti.cloud.identity.adapter.IdentityAdapterApplication;
 import org.activiti.cloud.services.test.containers.KeycloakContainerApplicationInitializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
