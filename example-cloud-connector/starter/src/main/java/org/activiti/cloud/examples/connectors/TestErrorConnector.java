@@ -31,6 +31,9 @@ import org.springframework.stereotype.Component;
 @EnableBinding(TestErrorConnector.Channels.class)
 public class TestErrorConnector {
 
+    private final IntegrationResultSender integrationResultSender;
+    private final ConnectorProperties connectorProperties;
+
     public interface Channels {
 
         String CHANNEL = "testErrorConnectorInput";
@@ -38,9 +41,6 @@ public class TestErrorConnector {
         @Input(CHANNEL)
         SubscribableChannel testErrorConnectorInput();
     }
-
-    private final IntegrationResultSender integrationResultSender;
-    private final ConnectorProperties connectorProperties;
 
     public TestErrorConnector(IntegrationResultSender integrationResultSender,
                               ConnectorProperties connectorProperties) {
