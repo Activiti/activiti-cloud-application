@@ -16,9 +16,14 @@
 package org.activiti.cloud.examples.connectors;
 
 import org.activiti.cloud.api.process.model.IntegrationRequest;
+import org.activiti.cloud.api.process.model.IntegrationResult;
+import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
+import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
+import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +39,15 @@ public class TestErrorConnector {
         SubscribableChannel testErrorConnectorInput();
     }
 
+    private final IntegrationResultSender integrationResultSender;
+    private final ConnectorProperties connectorProperties;
+
+    public TestErrorConnector(IntegrationResultSender integrationResultSender,
+                              ConnectorProperties connectorProperties) {
+        this.integrationResultSender = integrationResultSender;
+        this.connectorProperties = connectorProperties;
+    }
+
     @StreamListener(value = Channels.CHANNEL)
     public void handle(IntegrationRequest integrationRequest) {
         String var = integrationRequest.getIntegrationContext()
@@ -41,5 +55,9 @@ public class TestErrorConnector {
         if (!"replay".equals(var)) {
             throw new RuntimeException("TestErrorConnector");
         }
+
+        Message<IntegrationResult> message = IntegrationResultBuilder.resultFor(integrationRequest, connectorProperties)
+                                                                     .buildMessage();
+        integrationResultSender.send(message);
     }
 }
