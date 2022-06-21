@@ -120,7 +120,7 @@ public class ProcessInstanceSignalEvents {
     }
 
 
-    @Then("collect number of processes with processDefinitionKey $processDefinitionKey")
+    @Then("query number of processes with processDefinitionKey $processDefinitionKey")
     public void checkProcessCount(String processDefinitionKey) throws Exception {
         List<CloudProcessInstance> processes = getProcessesByProcessDefinitionKey(processDefinitionKey);
         Serenity.setSessionVariable("checkCnt").to(processes.size());
