@@ -15,11 +15,13 @@
  */
 package org.activiti.cloud.qa.story;
 
+import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.task.model.Task;
 import org.activiti.cloud.acc.core.steps.audit.AuditSteps;
 import org.activiti.cloud.acc.core.steps.query.ProcessQuerySteps;
+import org.activiti.cloud.acc.core.steps.query.admin.ProcessQueryAdminSteps;
 import org.activiti.cloud.acc.core.steps.runtime.ProcessRuntimeBundleSteps;
 import org.activiti.cloud.acc.core.steps.runtime.admin.ProcessRuntimeAdminSteps;
 import org.activiti.cloud.api.model.shared.events.CloudRuntimeEvent;
@@ -49,12 +51,14 @@ public class ProcessInstanceSignalEvents {
     private ProcessQuerySteps processQuerySteps;
 
     @Steps
+    private ProcessQueryAdminSteps processQueryAdminSteps;
+
+    @Steps
     private AuditSteps auditSteps;
 
     private CloudProcessInstance processInstanceCatchSignal;
     private CloudProcessInstance processInstanceBoundarySignal;
     private CloudProcessInstance processInstanceThrowSignal;
-    private int checkCnt=0;
 
     @When("services are started")
     public void checkServicesStatus() {
@@ -116,20 +120,19 @@ public class ProcessInstanceSignalEvents {
     }
 
 
-    @Then("check number of processes with processDefinitionKey $processDefinitionKey")
+    @Then("collect number of processes with processDefinitionKey $processDefinitionKey")
     public void checkProcessCount(String processDefinitionKey) throws Exception {
         List<CloudProcessInstance> processes = getProcessesByProcessDefinitionKey(processDefinitionKey);
-        checkCnt = processes.size();
+        Serenity.setSessionVariable("checkCnt").to(processes.size());
     }
 
     @Then("check number of processes with processDefinitionKey $processDefinitionKey increased")
     public void checkProcessCountIncreased(String processDefinitionKey) throws Exception {
+        Integer checkCnt = Serenity.sessionVariableCalled("checkCnt");
         await().untilAsserted(() -> {
             List<CloudProcessInstance> processes = getProcessesByProcessDefinitionKey(processDefinitionKey);
             assertThat(processes).isNotEmpty();
-
             assertThat(processes.size()).isGreaterThan(checkCnt);
-            checkCnt=processes.size();
         });
     }
 
@@ -146,7 +149,7 @@ public class ProcessInstanceSignalEvents {
     }
 
     public List<CloudProcessInstance> getProcessesByProcessDefinitionKey(String processDefinitionKey) throws Exception {
-        return processQuerySteps
+        return processQueryAdminSteps
                 .getProcessInstancesByProcessDefinitionKey(processDefinitionKey)
                 .getContent()
                 .stream()
