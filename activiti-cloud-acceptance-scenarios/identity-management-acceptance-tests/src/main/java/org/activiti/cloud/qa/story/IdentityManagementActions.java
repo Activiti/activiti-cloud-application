@@ -15,10 +15,10 @@
  */
 package org.activiti.cloud.qa.story;
 
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
-import org.activiti.cloud.qa.steps.IdentityManagementSteps;
+import org.activiti.cloud.qa.story.step.IdentityManagementSteps;
+import org.jbehave.core.annotations.Then;
+import org.jbehave.core.annotations.When;
 
 /**
  * Identity Management projects scenarios
@@ -37,7 +37,6 @@ public class IdentityManagementActions {
         identityManagementSteps.getRoles();
     }
 
-
     @Then("roles list contains global role $role")
     public void containsGlobalRole(String role) {
         identityManagementSteps.containsGlobalAccessRole(role);
@@ -46,5 +45,22 @@ public class IdentityManagementActions {
     @Then("roles list for $application contains  role $role")
     public void containsApplicationRole(String application, String role) {
         identityManagementSteps.containsApplicationAccessRole(application, role);
+    }
+
+    @When("the user searches for users containing $searchKey")
+    public void searchUsers(String searchKey) {
+    }
+
+    @Then("user search contains $username")
+    public void usersSearchContains(String username) {
+    }
+
+    @When("the user searches for groups containing $searchKey")
+    public void searchGroups(String searchKey) {
+    }
+
+    @Then("group search contains $groupName")
+    public void groupsSearchContains(String groupName) {
+
     }
 }
