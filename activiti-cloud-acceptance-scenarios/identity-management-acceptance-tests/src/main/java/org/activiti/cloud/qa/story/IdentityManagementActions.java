@@ -18,6 +18,7 @@ package org.activiti.cloud.qa.story;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import net.thucydides.core.annotations.Steps;
+import org.activiti.cloud.qa.steps.IdentityManagementSteps;
 
 /**
  * Identity Management projects scenarios
