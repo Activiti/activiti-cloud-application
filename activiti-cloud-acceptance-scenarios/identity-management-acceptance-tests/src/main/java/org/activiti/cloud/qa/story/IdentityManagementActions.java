@@ -49,18 +49,31 @@ public class IdentityManagementActions {
 
     @When("the user searches for users containing $searchKey")
     public void searchUsers(String searchKey) {
+        identityManagementSteps.searchUsers(searchKey);
     }
 
     @Then("user search contains $username")
     public void usersSearchContains(String username) {
+        identityManagementSteps.usersSearchResultContains(username);
+    }
+
+    @Then("user search does not contain $username")
+    public void usersSearchDoesNotContain(String username) {
+        identityManagementSteps.usersSearchResultDoesNotContain(username);
     }
 
     @When("the user searches for groups containing $searchKey")
     public void searchGroups(String searchKey) {
+        identityManagementSteps.searchGroups(searchKey);
     }
 
     @Then("group search contains $groupName")
     public void groupsSearchContains(String groupName) {
+        identityManagementSteps.groupsSearchResultContains(groupName);
+    }
 
+    @Then("group search does not contain $groupName")
+    public void groupsSearchDoesNotContain(String groupName) {
+        identityManagementSteps.groupsSearchResultDoesNotContain(groupName);
     }
 }

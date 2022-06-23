@@ -16,9 +16,14 @@
 package org.activiti.cloud.qa.story.client;
 
 import feign.Headers;
+import java.util.List;
+import java.util.Set;
+import org.activiti.cloud.identity.model.Group;
+import org.activiti.cloud.identity.model.User;
 import org.activiti.cloud.identity.model.UserRoles;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface IdentityManagementClient {
 
@@ -26,12 +31,18 @@ public interface IdentityManagementClient {
     @Headers("Content-Type: application/json")
     UserRoles getUserRoles();
 
-    /**List<Group> getGroups(@RequestParam(value = "search", required = false) String search,
-     @RequestParam(value = "role", required = false)  Set<String> roles,
-     @RequestParam(value = "application", required = false)  String application) {
-     public List<User> getUsers(@RequestParam(value = "search", required = false) String search,
-     @RequestParam(value = "role", required = false)  Set<String> roles,
-     @RequestParam(value = "group", required = false)  Set<String> groups,
-     @RequestParam(value = "application", required = false)  String application) {**/
+    @RequestMapping(method = RequestMethod.GET, value = "/v1/identity/groups")
+    @Headers("Content-Type: application/json")
+    List<Group> searchGroups(@RequestParam(value = "search", required = false) String search,
+                          @RequestParam(value = "role", required = false) Set<String> roles,
+                          @RequestParam(value = "application", required = false) String application);
+
+
+    @RequestMapping(method = RequestMethod.GET, value = "/v1/identity/users")
+    @Headers("Content-Type: application/json")
+    List<User> searchUsers(@RequestParam(value = "search", required = false) String search,
+                        @RequestParam(value = "role", required = false) Set<String> roles,
+                        @RequestParam(value = "group", required = false) Set<String> groups,
+                        @RequestParam(value = "application", required = false) String application);
 
 }
