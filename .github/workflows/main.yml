@@ -367,6 +367,7 @@ jobs:
           # Launching the tests
           make test/modeling-acceptance-tests
           make test/runtime-acceptance-tests
+          make test/identity-adapter-acceptance-tests
 
       - name: Delete Helm chart for ${{ matrix.messaging-broker }}
         if: ${{ always() }}
