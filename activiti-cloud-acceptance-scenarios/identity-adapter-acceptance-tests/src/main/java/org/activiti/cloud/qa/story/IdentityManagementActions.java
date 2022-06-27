@@ -28,10 +28,6 @@ public class IdentityManagementActions {
     @Steps
     private IdentityManagementSteps identityManagementSteps;
 
-    public IdentityManagementActions() {
-
-    }
-
     @When("the user retrieves his roles")
     public void getRoles() {
         identityManagementSteps.getRoles();

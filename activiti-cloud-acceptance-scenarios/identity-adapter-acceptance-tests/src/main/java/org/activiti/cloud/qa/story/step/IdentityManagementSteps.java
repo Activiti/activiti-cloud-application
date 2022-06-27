@@ -22,7 +22,7 @@ import org.activiti.cloud.identity.model.Group;
 import org.activiti.cloud.identity.model.User;
 import org.activiti.cloud.identity.model.UserRoles;
 import org.activiti.cloud.qa.story.client.IdentityManagementClient;
-import org.activiti.cloud.qa.story.config.EnableIdentityManagementContext;
+import org.activiti.cloud.qa.story.configuration.EnableIdentityManagementContext;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,9 +35,6 @@ public class IdentityManagementSteps {
 
     @Autowired
     private IdentityManagementClient identityManagementClient;
-
-    public IdentityManagementSteps() {
-    }
 
     public void getRoles() {
         UserRoles userRoles = identityManagementClient.getUserRoles();
