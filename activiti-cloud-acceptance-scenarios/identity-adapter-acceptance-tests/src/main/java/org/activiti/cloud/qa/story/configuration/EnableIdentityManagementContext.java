@@ -27,4 +27,3 @@ import org.springframework.test.context.ContextConfiguration;
 public @interface EnableIdentityManagementContext {
 
 }
-
