@@ -38,11 +38,6 @@ public class IdentityManagementActions {
         identityManagementSteps.containsGlobalAccessRole(role);
     }
 
-    @Then("roles list for $application contains  role $role")
-    public void containsApplicationRole(String application, String role) {
-        identityManagementSteps.containsApplicationAccessRole(application, role);
-    }
-
     @When("the user searches for users containing $searchKey")
     public void searchUsers(String searchKey) {
         identityManagementSteps.searchUsers(searchKey);

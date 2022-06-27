@@ -13,16 +13,12 @@ Scenario: retrieve roles for user logged as test user
 Given the user is authenticated as testuser
 When the user retrieves his roles
 Then roles list contains global role ACTIVITI_USER
-And roles list for simpleapp contains role ACTIVITI_USER
 
 Scenario: search groups by name
 Given the user is authenticated as testuser
 When the user searches  for groups containing sa
 Then group search contains sales
-And group search contains processanalytics
 And group search contains processadmin
-And group search does not contain hr
-And group search does not contain testgroup
 
 Scenario: search users by name
 Given the user is authenticated as testuser
