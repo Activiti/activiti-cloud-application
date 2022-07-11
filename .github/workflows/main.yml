@@ -4,9 +4,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the develop branch
   push:
-    branches: [ develop ]
+    branches: [7.4.x]
   pull_request:
-    branches: [ develop ]
+    branches: [7.4.x]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -92,7 +92,7 @@ jobs:
         name: Calculate next internal release
         uses: Alfresco/alfresco-build-tools/.github/actions/calculate-next-internal-version@v1.5.0
         with:
-          next-version: 7.4.0
+          next-version: 7.4.1
 
       - name: Update VERSION file
         if: ${{ github.event_name == 'push' }}
@@ -480,7 +480,7 @@ jobs:
     env:
       VERSION: ${{ needs.build.outputs.version }}
       FULL_CHART_DIR: full-chart
-      FULL_CHART_BASE_BRANCH: master
+      FULL_CHART_BASE_BRANCH: 7.4.x
       FULL_CHART_PR_BRANCH: update-docker-images-${{ needs.build.outputs.version }}
     steps:
       - uses: actions/checkout@v3
