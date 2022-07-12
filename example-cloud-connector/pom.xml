@@ -9,10 +9,10 @@
   <parent>
     <groupId>org.activiti.cloud</groupId>
     <artifactId>activiti-cloud-application</artifactId>
-    <version>7.4.1-SNAPSHOT</version>
+    <version>7.4.1-alpha.4</version>
   </parent>
   <artifactId>example-cloud-connector</artifactId>
-  <version>7.4.1-SNAPSHOT</version>
+  <version>7.4.1-alpha.4</version>
   <name>Activiti Cloud :: Example Cloud Connector</name>
   <properties>
     <maven.deploy.skip>true</maven.deploy.skip>
