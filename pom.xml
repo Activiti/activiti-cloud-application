@@ -32,6 +32,7 @@
     <module>example-cloud-connector</module>
     <module>activiti-cloud-modeling/liquibase</module>
     <module>activiti-cloud-modeling</module>
+    <module>activiti-cloud-identity-adapter</module>
     <module>activiti-cloud-acceptance-scenarios</module>
     <module>activiti-cloud-dependencies</module>
   </modules>
