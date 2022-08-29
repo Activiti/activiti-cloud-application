@@ -68,8 +68,6 @@ public class ProcessInstanceServiceTasks {
     @Steps
     private ServiceTasksAdminSteps serviceTasksAdminSteps;
 
-    private ProcessInstance processInstance;
-
     @When("services are started")
     public void checkServicesStatus() {
         processRuntimeBundleSteps.checkServicesHealth();
@@ -79,7 +77,7 @@ public class ProcessInstanceServiceTasks {
 
     @When("the user starts a process with service tasks called $processName")
     public void startProcess(String processName) throws IOException, InterruptedException {
-        processInstance = processRuntimeBundleSteps.startProcess(processDefinitionKeyMatcher(processName),false);
+        ProcessInstance processInstance = processRuntimeBundleSteps.startProcess(processDefinitionKeyMatcher(processName),false);
         Serenity.setSessionVariable("processInstanceId").to(processInstance.getId());
     }
 
@@ -216,6 +214,7 @@ public class ProcessInstanceServiceTasks {
     public void verifyIntegrationContextEventsForProcess() throws Exception {
 
         String processId = Serenity.sessionVariableCalled("processInstanceId");
+        ProcessInstance processInstance = processQuerySteps.getProcessInstance(processId);
 
         await().untilAsserted(() -> {
             Collection<CloudRuntimeEvent> events = auditSteps.getEventsByProcessInstanceId(processId);
@@ -255,6 +254,7 @@ public class ProcessInstanceServiceTasks {
     public void verifyIntegrationContextErrorEventsForProcess() throws Exception {
 
         String processId = Serenity.sessionVariableCalled("processInstanceId");
+        ProcessInstance processInstance = processQuerySteps.getProcessInstance(processId);
 
         await().untilAsserted(() -> {
             Collection<CloudRuntimeEvent> events = auditSteps.getEventsByProcessInstanceId(processId);
