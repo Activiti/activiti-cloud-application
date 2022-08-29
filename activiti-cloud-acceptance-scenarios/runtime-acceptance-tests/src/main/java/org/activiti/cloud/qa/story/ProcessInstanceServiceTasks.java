@@ -231,22 +231,42 @@ public class ProcessInstanceServiceTasks {
                                 event -> integrationContext(event).getProcessInstanceId()
                     )
                     .containsOnly(
-                                     tuple(IntegrationEvent.IntegrationEvents.INTEGRATION_RESULT_RECEIVED,
-                                           processInstance.getProcessDefinitionId(),
-                                           processInstance.getId(),
-                                           processInstance.getProcessDefinitionKey(),
-                                           processInstance.getBusinessKey(),
-                                           processInstance.getProcessDefinitionId(),
-                                           processInstance.getId()
-                                     ),
-                                     tuple(IntegrationEvent.IntegrationEvents.INTEGRATION_REQUESTED,
-                                           processInstance.getProcessDefinitionId(),
-                                           processInstance.getId(),
-                                           processInstance.getProcessDefinitionKey(),
-                                           processInstance.getBusinessKey(),
-                                           processInstance.getProcessDefinitionId(),
-                                           processInstance.getId()
-                                     ));
+                        integrationEvent(IntegrationEvent.IntegrationEvents.INTEGRATION_RESULT_RECEIVED,
+                                         processInstance),
+                        integrationEvent(IntegrationEvent.IntegrationEvents.INTEGRATION_REQUESTED,
+                                         processInstance));
+        });
+    }
+
+    @Then("all integration context events are emitted for the process")
+    public void verifyAllIntegrationContextEventsForProcess() throws Exception {
+
+        String processId = Serenity.sessionVariableCalled("processInstanceId");
+        ProcessInstance processInstance = processQuerySteps.getProcessInstance(processId);
+
+        await().untilAsserted(() -> {
+            Collection<CloudRuntimeEvent> events = auditSteps.getEventsByProcessInstanceId(processId);
+
+            assertThat(events)
+                .filteredOn(CloudIntegrationEvent.class::isInstance)
+                .isNotEmpty()
+                .extracting(CloudRuntimeEvent::getEventType,
+                            CloudRuntimeEvent::getProcessDefinitionId,
+                            CloudRuntimeEvent::getProcessInstanceId,
+                            CloudRuntimeEvent::getProcessDefinitionKey,
+                            CloudRuntimeEvent::getBusinessKey,
+                            event -> integrationContext(event).getProcessDefinitionId(),
+                            event -> integrationContext(event).getProcessInstanceId()
+                )
+                .containsOnly(
+                    integrationEvent(IntegrationEvent.IntegrationEvents.INTEGRATION_RESULT_RECEIVED,
+                                     processInstance),
+                    integrationEvent(IntegrationEvent.IntegrationEvents.INTEGRATION_REQUESTED,
+                                     processInstance),
+                    integrationEvent(IntegrationEvent.IntegrationEvents.INTEGRATION_ERROR_RECEIVED,
+                                     processInstance),
+                    integrationEvent(IntegrationEvent.IntegrationEvents.INTEGRATION_REQUESTED,
+                                     processInstance));
         });
     }
 
@@ -271,22 +291,10 @@ public class ProcessInstanceServiceTasks {
                                 event -> integrationContext(event).getProcessInstanceId()
                     )
                     .containsOnly(
-                                     tuple(IntegrationEvent.IntegrationEvents.INTEGRATION_ERROR_RECEIVED,
-                                           processInstance.getProcessDefinitionId(),
-                                           processInstance.getId(),
-                                           processInstance.getProcessDefinitionKey(),
-                                           processInstance.getBusinessKey(),
-                                           processInstance.getProcessDefinitionId(),
-                                           processInstance.getId()
-                                     ),
-                                     tuple(IntegrationEvent.IntegrationEvents.INTEGRATION_REQUESTED,
-                                           processInstance.getProcessDefinitionId(),
-                                           processInstance.getId(),
-                                           processInstance.getProcessDefinitionKey(),
-                                           processInstance.getBusinessKey(),
-                                           processInstance.getProcessDefinitionId(),
-                                           processInstance.getId()
-                                     ));
+                        integrationEvent(IntegrationEvent.IntegrationEvents.INTEGRATION_ERROR_RECEIVED,
+                                         processInstance),
+                        integrationEvent(IntegrationEvent.IntegrationEvents.INTEGRATION_REQUESTED,
+                                         processInstance));
         });
     }
 
@@ -316,5 +324,17 @@ public class ProcessInstanceServiceTasks {
             serviceTasksAdminSteps.replayServiceTask(executionId,
                                                      new ReplayServiceTaskRequest(clientId));
         });
+    }
+
+    private org.assertj.core.groups.Tuple integrationEvent(IntegrationEvent.IntegrationEvents type,
+                                                           ProcessInstance processInstance) {
+        return tuple(type,
+                     processInstance.getProcessDefinitionId(),
+                     processInstance.getId(),
+                     processInstance.getProcessDefinitionKey(),
+                     processInstance.getBusinessKey(),
+                     processInstance.getProcessDefinitionId(),
+                     processInstance.getId()
+        );
     }
 }
