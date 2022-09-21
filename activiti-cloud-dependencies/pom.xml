@@ -9,7 +9,7 @@
     <relativePath/>
   </parent>
   <artifactId>activiti-cloud-dependencies-parent</artifactId>
-  <version>7.5.1-SNAPSHOT</version>
+  <version>7.5.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Activiti Cloud :: BOM (Bill of Materials) Parent</name>
   <properties>
