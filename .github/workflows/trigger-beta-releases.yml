@@ -18,9 +18,12 @@ jobs:
           ref: ${{ env.ACTIVITI_SCRIPTS_BRANCH }}
           token: ${{ secrets.BOT_GITHUB_TOKEN }}
 
-      - name: Update Activiti Cloud Application base tag
-        working-directory: ${{ env.ACT_SCRIPT_PATH }}
-        run: yq -i e '.release.baseTag.activitiCloudApplication = env(ALPHA_VERSION)' release.yaml
+      - uses: Alfresco/alfresco-build-tools/.github/actions/update-project-base-tag@aae-8916-beta-tags-update-base-tag
+        with:
+          release-descriptor: ${{ env.ACT_SCRIPT_PATH }}/release.yaml
+          project: activitiCloudApplication
+          tag: ${{ env.ALPHA_VERSION }}
+
 
       - uses: Alfresco/alfresco-build-tools/.github/actions/git-commit-changes@v1.15.0
         with:
