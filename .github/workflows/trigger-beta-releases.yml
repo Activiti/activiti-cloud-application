@@ -34,4 +34,4 @@ jobs:
 
       - name: Push changes
         working-directory: ${{ env.ACT_SCRIPT_PATH }}
-        run: git push origin ${{ env.ACTIVITI_SCRIPTS_BRANCH }}
+        run: git push origin HEAD
