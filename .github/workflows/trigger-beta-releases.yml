@@ -15,7 +15,7 @@ jobs:
     env:
       ACT_SCRIPT_PATH: repos/scripts
       ALPHA_VERSION: ${{ github.ref_name }}
-      ACTIVITI_SCRIPTS_BRANCH: master
+      ACTIVITI_SCRIPTS_BRANCH: test-beta
     steps:
       - name: Checkout activiti-scripts
         uses: actions/checkout@v3
