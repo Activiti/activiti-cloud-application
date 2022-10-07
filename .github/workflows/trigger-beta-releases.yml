@@ -1,11 +1,16 @@
 name: Trigger beta releases
 
 on:
-  push:
-    tags: ['[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+']
+  release:
+    types: [published]
 
 jobs:
+  info:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{github.ref_name}}
   trigger-beta-release:
+    if: contains(github.ref_name, 'alpha')
     runs-on: ubuntu-latest
     env:
       ACT_SCRIPT_PATH: repos/scripts
