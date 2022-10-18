@@ -57,7 +57,6 @@ public class SwaggerActions {
     public void isFollowingAlfrescoMediaType(){
         assertThat(swaggerSpecifications.get(SwaggerSpecifications.RUNTIME_BUNDLE))
                 .contains("ListResponseContentExtendedCloudProcessDefinition")
-                .contains("EntriesResponseContentCloudProcessDefinition")
                 .contains("EntryResponseContentCloudProcessDefinition")
                 .contains("payloadType")
                 .doesNotContain("PagedModel")
