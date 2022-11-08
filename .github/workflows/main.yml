@@ -499,3 +499,14 @@ jobs:
         run: |
           git push origin $FULL_CHART_PR_BRANCH
           gh pr create --fill --base $FULL_CHART_BASE_BRANCH --label updatebot
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: propagate-helm
+    if: always() && failure() && github.event_name == 'push'
+    steps:
+      - name: Slack Notification
+        uses: Alfresco/alfresco-build-tools/.github/actions/send-slack-notification@v1.20.0
+        with:
+          channel-id: 'eng-hxp-studio-activiti-gh-notifs'
+          token: ${{ secrets.SLACK_NOTIFICATION_BOT_TOKEN }}
