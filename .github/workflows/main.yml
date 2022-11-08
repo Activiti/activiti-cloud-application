@@ -11,6 +11,10 @@ on:
   # Allows to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name || github.run_id }}
+  cancel-in-progress: true
+
 env:
   CLUSTER_NAME: activiti-test
   CLUSTER_DOMAIN: envalfresco.com
@@ -37,10 +41,6 @@ jobs:
       branch-name: ${{ steps.set-branch-name.outputs.branch-name }}
       preview-name: ${{ steps.set-preview-name.outputs.preview-name }}
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.8.0
-        with:
-          access_token: ${{ github.token }}
 
       - name: Checkout repository
         uses: actions/checkout@v3
