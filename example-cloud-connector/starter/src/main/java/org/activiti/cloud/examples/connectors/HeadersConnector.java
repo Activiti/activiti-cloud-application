@@ -15,24 +15,21 @@
  */
 package org.activiti.cloud.examples.connectors;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.annotation.Headers;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@Component
-@EnableBinding(HeadersConnectorChannels.class)
-public class HeadersConnector {
+@Component(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER)
+public class HeadersConnector implements Consumer<Message<IntegrationRequest>> {
 
     private final IntegrationResultSender integrationResultSender;
     private final ConnectorProperties connectorProperties;
@@ -44,9 +41,10 @@ public class HeadersConnector {
         this.connectorProperties = connectorProperties;
     }
 
-    @StreamListener(value = HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER,
-                    condition = "headers['processDefinitionVersion']!=null")
-    public void receiveHeadersConnector(IntegrationRequest integrationRequest, @Headers Map<String, Object> headers) {
+    @Override
+    public void accept(Message<IntegrationRequest> integrationRequestMessage) {
+        MessageHeaders headers = integrationRequestMessage.getHeaders();
+        IntegrationRequest integrationRequest = integrationRequestMessage.getPayload();
 
         Map<String, Object> result = new HashMap<>();
 
@@ -55,8 +53,8 @@ public class HeadersConnector {
         result.put("processDefinitionId", headers.get("processDefinitionId"));
 
         Message<IntegrationResult> message = IntegrationResultBuilder.resultFor(integrationRequest, connectorProperties)
-                .withOutboundVariables(result)
-                .buildMessage();
+            .withOutboundVariables(result)
+            .buildMessage();
 
         integrationResultSender.send(message);
     }

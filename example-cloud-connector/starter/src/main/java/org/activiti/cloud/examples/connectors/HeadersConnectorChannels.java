@@ -15,13 +15,9 @@
  */
 package org.activiti.cloud.examples.connectors;
 
-import org.springframework.cloud.stream.annotation.Input;
-import org.springframework.messaging.SubscribableChannel;
-
 public interface HeadersConnectorChannels {
 
     String HEADERS_CONNECTOR_CONSUMER = "headersConnectorConsumer";
+    String HEADERS_CONNECTOR_ROUTER = "headersConnectorRouter";
 
-    @Input(HEADERS_CONNECTOR_CONSUMER)
-    SubscribableChannel headersConnectorConsumer();
 }
