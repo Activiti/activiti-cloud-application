@@ -10,5 +10,4 @@
 [![licensing status](https://www.meterian.io/badge/gh/Activiti/activiti-cloud-application/licensing)](https://www.meterian.io/report/gh/Activiti/activiti-cloud-application)
 
 
-Activiti Cloud Application example and acceptance test suite.
-
+Test Activiti Cloud Application example and acceptance test suite.
