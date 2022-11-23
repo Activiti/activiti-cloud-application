@@ -36,7 +36,6 @@ Then the project can be exported due to validation errors
 Scenario: the project should contain validation errors
 Given the user is authenticated as modeler
 And an project 'mission-europe' with process model 'landing-rover-not-executable'
-Then the project should contain validation errors
 
 Scenario: validate an invalid project containing user task with no assignee
 Given the user is authenticated as modeler
