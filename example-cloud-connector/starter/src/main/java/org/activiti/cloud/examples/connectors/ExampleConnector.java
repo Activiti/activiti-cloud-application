@@ -69,65 +69,92 @@ public class ExampleConnector implements Consumer<IntegrationRequest> {
     public void accept(IntegrationRequest event) {
         logger.info(append("service-name", appName), ">>> In example-cloud-connector");
 
-        String var1 = ExampleConnector.class.getSimpleName()+" was called for instance " + event.getIntegrationContext().getProcessInstanceId();
+        String var1 = ExampleConnector.class.getSimpleName() + " was called for instance " + event.getIntegrationContext().getProcessInstanceId();
 
-        var1Copy = String.valueOf(var1);
+        var1Copy = var1;
 
         Object jsonVar = event.getIntegrationContext().getInBoundVariables().get("test_json_variable_name");
         Object longJsonVar = event.getIntegrationContext().getInBoundVariables().get("test_long_json_variable_name");
 
         Map<String, Object> results = new HashMap<>();
 
-        if(jsonVar != null){
-            logger.info("jsonVar value type "+jsonVar.getClass().getTypeName());
-            logger.info("jsonVar value as string "+jsonVar.toString());
+        processJsonVar(jsonVar, results);
 
-            CustomPojo customPojo = objectMapper.convertValue(jsonVar,CustomPojo.class);
-            results.put("test_json_variable_result","able to convert test_json_variable_name to "+CustomPojo.class.getName());
-        }
-
-
-        if( longJsonVar != null && longJsonVar instanceof LinkedHashMap){
-            if(((LinkedHashMap) longJsonVar).get("verylongjson").toString().length() >= 4000){
-                results.put("test_long_json_variable_result","able to read long json");
-            }
-
-        }
+        processLongJsonVar(longJsonVar, results);
 
         Object intVar = event.getIntegrationContext().getInBoundVariables().get("test_int_variable_name");
-        if( intVar != null && intVar instanceof Integer){
-            results.put("test_int_variable_result","able to read integer");
-        }
+        processIntVar(results, intVar);
 
         Object boolVar = event.getIntegrationContext().getInBoundVariables().get("test_bool_variable_name");
-        if( boolVar != null && boolVar instanceof Boolean){
-            results.put("test_bool_variable_result","able to read boolean");
-        }
+        processBoolVar(results, boolVar);
 
         Object bigDecimalVar = event.getIntegrationContext().getInBoundVariable("test_bigdecimal_variable_name");
-        logger.info("bigDecimalVar value as string "+ bigDecimalVar);
-        if( bigDecimalVar != null && bigDecimalVar instanceof BigDecimal && BigDecimal.valueOf(1234567890L, 2).equals(bigDecimalVar)) {
-            results.put("test_bigdecimal_variable_result", bigDecimalVar);
-        }
+        processBigDecimalVar(results, bigDecimalVar);
 
         Object longVar = event.getIntegrationContext().getInBoundVariable("test_long_variable_name");
-        logger.info("longVar value as string "+ longVar);
-        if( longVar != null && longVar instanceof Long && Long.valueOf(1234567890L).equals(longVar)) {
-            results.put("test_long_variable_result", longVar);
-        }
+        processLongVar(results, longVar);
 
         Object dateVar = event.getIntegrationContext().getInBoundVariable("test_date_variable_name");
-        logger.info("dateVar value as string "+ dateVar);
-        if( dateVar != null && dateVar instanceof Date) {
-            results.put("test_date_variable_result", dateVar);
-        }
+        processDateVar(results, dateVar);
 
-        results.put("var1",
-                    var1);
+        results.put("var1", var1);
+
         Message<IntegrationResult> message = IntegrationResultBuilder.resultFor(event, connectorProperties)
                 .withOutboundVariables(results)
                 .buildMessage();
+
         integrationResultSender.send(message);
+    }
+
+    private void processJsonVar(Object jsonVar, Map<String, Object> results) {
+        if (jsonVar != null) {
+            logger.info("jsonVar value type " + jsonVar.getClass().getTypeName());
+            logger.info("jsonVar value as string " + jsonVar.toString());
+
+            CustomPojo customPojo = objectMapper.convertValue(jsonVar, CustomPojo.class);
+            results.put("test_json_variable_result", "able to convert test_json_variable_name to " + CustomPojo.class.getName());
+        }
+    }
+
+    private void processLongJsonVar(Object longJsonVar, Map<String, Object> results) {
+        if (longJsonVar instanceof LinkedHashMap) {
+            if (((LinkedHashMap<?, ?>) longJsonVar).get("verylongjson").toString().length() >= 4000) {
+                results.put("test_long_json_variable_result", "able to read long json");
+            }
+        }
+    }
+
+    private void processIntVar(Map<String, Object> results, Object intVar) {
+        if (intVar instanceof Integer) {
+            results.put("test_int_variable_result", "able to read integer");
+        }
+    }
+
+    private void processBoolVar(Map<String, Object> results, Object boolVar) {
+        if (boolVar instanceof Boolean) {
+            results.put("test_bool_variable_result", "able to read boolean");
+        }
+    }
+
+    private void processBigDecimalVar(Map<String, Object> results, Object bigDecimalVar) {
+        logger.info("bigDecimalVar value as string " + bigDecimalVar);
+        if (bigDecimalVar instanceof BigDecimal && BigDecimal.valueOf(1234567890L, 2).equals(bigDecimalVar)) {
+            results.put("test_bigdecimal_variable_result", bigDecimalVar);
+        }
+    }
+
+    private void processLongVar(Map<String, Object> results, Object longVar) {
+        logger.info("longVar value as string " + longVar);
+        if (longVar instanceof Long && Long.valueOf(1234567890L).equals(longVar)) {
+            results.put("test_long_variable_result", longVar);
+        }
+    }
+
+    private void processDateVar(Map<String, Object> results, Object dateVar) {
+        logger.info("dateVar value as string " + dateVar);
+        if (dateVar instanceof Date) {
+            results.put("test_date_variable_result", dateVar);
+        }
     }
 
     public String getVar1Copy() {
