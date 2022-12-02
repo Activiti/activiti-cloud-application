@@ -79,7 +79,7 @@ public class TestErrorConnector implements Consumer<IntegrationRequest> {
 
             integrationResultSender.send(message);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 }
