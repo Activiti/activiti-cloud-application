@@ -20,13 +20,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.activiti.cloud.examples.connectors.CustomPojo;
+import org.activiti.cloud.examples.connectors.ExampleConnectorChannels;
+import org.activiti.cloud.examples.connectors.HeadersConnectorChannels;
+import org.activiti.cloud.examples.connectors.MoviesDescriptionConnectorChannels;
+import org.activiti.cloud.examples.connectors.MultiInstanceConnector;
+import org.activiti.cloud.examples.connectors.TestBpmnErrorConnector;
+import org.activiti.cloud.examples.connectors.TestErrorConnector;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.function.context.FunctionCatalog;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = {CloudConnectorApp.class})
+@AutoConfigureMockMvc
+@TestPropertySource(locations = "classpath:application.properties")
 public class CloudConnectorAppIT {
 
     @Autowired
@@ -38,11 +49,27 @@ public class CloudConnectorAppIT {
     @Value("${spring.application.name}")
     private String appName;
 
+    @Autowired
+    private FunctionCatalog functionCatalog;
+
     @Test
     public void contextShouldLoad() throws Exception {
         //then
         assertThat(context).isNotNull();
         assertThat(appName).isNotEmpty();
+
+        assertThat(functionCatalog).isNotNull();
+    }
+
+    @Test
+    public void functionCatalogContainsFunctionDefinitions(){
+        assertThat(functionCatalog.<Object>lookup(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER + "Connector")).isNotNull();
+        assertThat(functionCatalog.<Object>lookup(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER + "Connector")).isNotNull();
+        assertThat(functionCatalog.<Object>lookup(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER + "Connector")).isNotNull();
+        assertThat(functionCatalog.<Object>lookup(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER + "Connector")).isNotNull();
+        assertThat(functionCatalog.<Object>lookup(MultiInstanceConnector.Channels.CHANNEL + "Connector")).isNotNull();
+        assertThat(functionCatalog.<Object>lookup(TestBpmnErrorConnector.Channels.CHANNEL + "Connector")).isNotNull();
+        assertThat(functionCatalog.<Object>lookup(TestErrorConnector.Channels.CHANNEL + "Connector")).isNotNull();
     }
 
     @Test
