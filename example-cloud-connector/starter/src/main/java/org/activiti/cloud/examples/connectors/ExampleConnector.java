@@ -23,8 +23,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
+import org.activiti.cloud.common.messaging.functional.FunctionBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
@@ -32,14 +34,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
-@Component
-@EnableBinding(ExampleConnectorChannels.class)
-public class ExampleConnector {
+@FunctionBinding(input = ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER)
+@Component(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER + "Connector")
+public class ExampleConnector implements Consumer<IntegrationRequest> {
 
     private final Logger logger = LoggerFactory.getLogger(ExampleConnector.class);
 
@@ -49,28 +49,31 @@ public class ExampleConnector {
     //just a convenience - not recommended in real implementations
     private String var1Copy = "";
 
-    @Autowired
-    private ConnectorProperties connectorProperties;
+    private final ConnectorProperties connectorProperties;
 
     private final ObjectMapper objectMapper;
 
     private final IntegrationResultSender integrationResultSender;
 
-    public ExampleConnector(IntegrationResultSender integrationResultSender, ObjectMapper objectMapper) {
+    @Autowired
+    public ExampleConnector(ConnectorProperties connectorProperties,
+        IntegrationResultSender integrationResultSender,
+        ObjectMapper objectMapper) {
+        this.connectorProperties = connectorProperties;
         this.objectMapper = objectMapper;
         this.integrationResultSender = integrationResultSender;
     }
 
-    @StreamListener(value = ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER)
-    public void performTask(IntegrationRequest event) throws InterruptedException {
+    @Override
+    public void accept(IntegrationRequest event) {
         logger.info(append("service-name", appName), ">>> In example-cloud-connector");
 
         String var1 =
             ExampleConnector.class.getSimpleName() +
-            " was called for instance " +
-            event.getIntegrationContext().getProcessInstanceId();
+                " was called for instance " +
+                event.getIntegrationContext().getProcessInstanceId();
 
-        var1Copy = String.valueOf(var1);
+        var1Copy = var1;
 
         Object jsonVar = event.getIntegrationContext().getInBoundVariables().get("test_json_variable_name");
         Object longJsonVar = event.getIntegrationContext().getInBoundVariables().get("test_long_json_variable_name");
@@ -108,8 +111,8 @@ public class ExampleConnector {
         logger.info("bigDecimalVar value as string " + bigDecimalVar);
         if (
             bigDecimalVar != null &&
-            bigDecimalVar instanceof BigDecimal &&
-            BigDecimal.valueOf(1234567890L, 2).equals(bigDecimalVar)
+                bigDecimalVar instanceof BigDecimal &&
+                BigDecimal.valueOf(1234567890L, 2).equals(bigDecimalVar)
         ) {
             results.put("test_bigdecimal_variable_result", bigDecimalVar);
         }

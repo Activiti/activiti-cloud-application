@@ -18,32 +18,33 @@ package org.activiti.cloud.examples.connectors;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import org.activiti.api.process.model.IntegrationContext;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
+import org.activiti.cloud.common.messaging.functional.FunctionBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
+import org.activiti.cloud.examples.connectors.MultiInstanceConnector.Channels;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.Input;
-import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
-@Component
-@EnableBinding(MultiInstanceConnector.Channels.class)
-public class MultiInstanceConnector {
+
+@FunctionBinding(input = Channels.CHANNEL)
+@Component(Channels.CHANNEL + "Connector")
+public class MultiInstanceConnector implements Consumer<IntegrationRequest> {
 
     private final IntegrationResultSender integrationResultSender;
     private final ConnectorProperties connectorProperties;
     private final AtomicInteger counter = new AtomicInteger(0);
 
     public interface Channels {
+
         String CHANNEL = "miCloudConnectorInput";
 
-        @Input(CHANNEL)
         SubscribableChannel miCloudConnectorInput();
     }
 
@@ -56,8 +57,9 @@ public class MultiInstanceConnector {
         this.connectorProperties = connectorProperties;
     }
 
-    @StreamListener(value = Channels.CHANNEL)
-    public void handle(IntegrationRequest integrationRequest) {
+    @Override
+    public void accept(IntegrationRequest integrationRequest) {
+
         Integer instanceCount = getVariableValue(integrationRequest.getIntegrationContext(), "instanceCount");
         if (instanceCount == counter.get()) {
             counter.set(0);
