@@ -17,35 +17,35 @@ package org.activiti.cloud.examples.connectors;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
+import org.activiti.cloud.common.messaging.functional.FunctionBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
+import org.activiti.cloud.examples.connectors.TestErrorConnector.Channels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.Input;
-import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
-@Component
-@EnableBinding(TestErrorConnector.Channels.class)
-public class TestErrorConnector {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestErrorConnector.class);
+@FunctionBinding(input = Channels.CHANNEL)
+@Component(Channels.CHANNEL + "Connector")
+public class TestErrorConnector implements Consumer<IntegrationRequest> {
 
+    private final static Logger logger = LoggerFactory.getLogger(TestErrorConnector.class);
     private final IntegrationResultSender integrationResultSender;
     private final ConnectorProperties connectorProperties;
 
     private CountDownLatch countDownLatch;
 
     public interface Channels {
+
         String CHANNEL = "testErrorConnectorInput";
 
-        @Input(CHANNEL)
         SubscribableChannel testErrorConnectorInput();
     }
 
@@ -57,8 +57,10 @@ public class TestErrorConnector {
         this.connectorProperties = connectorProperties;
     }
 
-    @StreamListener(value = Channels.CHANNEL)
-    public void handle(IntegrationRequest integrationRequest) throws InterruptedException {
+
+    @Override
+    public void accept(IntegrationRequest integrationRequest) {
+
         String var = integrationRequest.getIntegrationContext().getInBoundVariable("var");
         if (!"replay".equals(var)) {
             throw new RuntimeException("TestErrorConnector");
@@ -68,14 +70,16 @@ public class TestErrorConnector {
 
         logger.info("Processing integration request: {}", integrationRequest);
 
-        Message<IntegrationResult> message = IntegrationResultBuilder
-            .resultFor(integrationRequest, connectorProperties)
+        Message<IntegrationResult> message = IntegrationResultBuilder.resultFor(integrationRequest, connectorProperties)
             .buildMessage();
+        try {
+            countDownLatch.await(10, TimeUnit.SECONDS);
 
-        countDownLatch.await(10, TimeUnit.SECONDS);
+            logger.info("Sending integration result: {}", message.getPayload());
 
-        logger.info("Sending integration result: {}", message.getPayload());
-
-        integrationResultSender.send(message);
+            integrationResultSender.send(message);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
