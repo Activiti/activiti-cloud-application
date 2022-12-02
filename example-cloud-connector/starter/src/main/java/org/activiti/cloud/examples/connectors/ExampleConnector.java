@@ -134,7 +134,59 @@ public class ExampleConnector implements Consumer<IntegrationRequest> {
             .resultFor(event, connectorProperties)
             .withOutboundVariables(results)
             .buildMessage();
+
         integrationResultSender.send(message);
+    }
+
+    private void processJsonVar(Object jsonVar, Map<String, Object> results) {
+        if (jsonVar != null) {
+            logger.info("jsonVar value type " + jsonVar.getClass().getTypeName());
+            logger.info("jsonVar value as string " + jsonVar.toString());
+
+            CustomPojo customPojo = objectMapper.convertValue(jsonVar, CustomPojo.class);
+            results.put("test_json_variable_result", "able to convert test_json_variable_name to " + CustomPojo.class.getName());
+        }
+    }
+
+    private void processLongJsonVar(Object longJsonVar, Map<String, Object> results) {
+        if (longJsonVar instanceof LinkedHashMap) {
+            if (((LinkedHashMap<?, ?>) longJsonVar).get("verylongjson").toString().length() >= 4000) {
+                results.put("test_long_json_variable_result", "able to read long json");
+            }
+        }
+    }
+
+    private void processIntVar(Map<String, Object> results, Object intVar) {
+        if (intVar instanceof Integer) {
+            results.put("test_int_variable_result", "able to read integer");
+        }
+    }
+
+    private void processBoolVar(Map<String, Object> results, Object boolVar) {
+        if (boolVar instanceof Boolean) {
+            results.put("test_bool_variable_result", "able to read boolean");
+        }
+    }
+
+    private void processBigDecimalVar(Map<String, Object> results, Object bigDecimalVar) {
+        logger.info("bigDecimalVar value as string " + bigDecimalVar);
+        if (bigDecimalVar instanceof BigDecimal && BigDecimal.valueOf(1234567890L, 2).equals(bigDecimalVar)) {
+            results.put("test_bigdecimal_variable_result", bigDecimalVar);
+        }
+    }
+
+    private void processLongVar(Map<String, Object> results, Object longVar) {
+        logger.info("longVar value as string " + longVar);
+        if (longVar instanceof Long && Long.valueOf(1234567890L).equals(longVar)) {
+            results.put("test_long_variable_result", longVar);
+        }
+    }
+
+    private void processDateVar(Map<String, Object> results, Object dateVar) {
+        logger.info("dateVar value as string " + dateVar);
+        if (dateVar instanceof Date) {
+            results.put("test_date_variable_result", dateVar);
+        }
     }
 
     public String getVar1Copy() {
