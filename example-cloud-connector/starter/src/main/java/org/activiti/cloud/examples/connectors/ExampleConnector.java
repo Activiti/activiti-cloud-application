@@ -117,10 +117,9 @@ public class ExampleConnector implements Consumer<IntegrationRequest> {
     }
 
     private void processLongJsonVar(Object longJsonVar, Map<String, Object> results) {
-        if (longJsonVar instanceof LinkedHashMap) {
-            if (((LinkedHashMap<?, ?>) longJsonVar).get("verylongjson").toString().length() >= 4000) {
-                results.put("test_long_json_variable_result", "able to read long json");
-            }
+        if (longJsonVar instanceof LinkedHashMap &&
+                ((LinkedHashMap<?, ?>) longJsonVar).get("verylongjson").toString().length() >= 4000) {
+            results.put("test_long_json_variable_result", "able to read long json");
         }
     }
 
