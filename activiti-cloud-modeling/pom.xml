@@ -27,7 +27,7 @@
         <type>pom</type>
       </dependency>
     </dependencies>
-  </dependencyManagement> 
+  </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>org.activiti.cloud</groupId>
