@@ -22,8 +22,13 @@ import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.SubscribableChannel;
 
 @Configuration
-public class ConnectorConfiguration implements ExampleConnectorChannels, HeadersConnectorChannels,
-        MoviesDescriptionConnectorChannels, MultiInstanceConnector.Channels, TestBpmnErrorConnector.Channels,
+public class ConnectorConfiguration
+    implements
+        ExampleConnectorChannels,
+        HeadersConnectorChannels,
+        MoviesDescriptionConnectorChannels,
+        MultiInstanceConnector.Channels,
+        TestBpmnErrorConnector.Channels,
         TestErrorConnector.Channels{
 
     @Bean
