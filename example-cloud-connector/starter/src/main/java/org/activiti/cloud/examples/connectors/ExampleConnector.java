@@ -15,7 +15,15 @@
  */
 package org.activiti.cloud.examples.connectors;
 
+import static net.logstash.logback.marker.Markers.append;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.common.messaging.functional.FunctionBinding;
@@ -28,15 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-
-import static net.logstash.logback.marker.Markers.append;
 
 @FunctionBinding(input = ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER)
 @Component(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER + "Connector")
@@ -147,7 +146,10 @@ public class ExampleConnector implements Consumer<IntegrationRequest> {
             logger.info("jsonVar value as string " + jsonVar.toString());
 
             CustomPojo customPojo = objectMapper.convertValue(jsonVar, CustomPojo.class);
-            results.put("test_json_variable_result", "able to convert test_json_variable_name to " + CustomPojo.class.getName());
+            results.put(
+                "test_json_variable_result",
+                "able to convert test_json_variable_name to " + CustomPojo.class.getName()
+            );
         }
     }
 
