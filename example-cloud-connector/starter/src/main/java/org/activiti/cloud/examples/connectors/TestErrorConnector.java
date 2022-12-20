@@ -70,7 +70,8 @@ public class TestErrorConnector implements Consumer<IntegrationRequest> {
 
         logger.info("Processing integration request: {}", integrationRequest);
 
-        Message<IntegrationResult> message = IntegrationResultBuilder.resultFor(integrationRequest, connectorProperties)
+        Message<IntegrationResult> message = IntegrationResultBuilder
+            .resultFor(integrationRequest, connectorProperties)
             .buildMessage();
         try {
             countDownLatch.await(10, TimeUnit.SECONDS);

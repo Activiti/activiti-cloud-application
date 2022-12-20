@@ -29,7 +29,7 @@ public class ConnectorConfiguration
         MoviesDescriptionConnectorChannels,
         MultiInstanceConnector.Channels,
         TestBpmnErrorConnector.Channels,
-        TestErrorConnector.Channels{
+        TestErrorConnector.Channels {
 
     @Bean
     @Override

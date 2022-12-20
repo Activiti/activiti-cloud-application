@@ -15,7 +15,10 @@
  */
 package org.activiti.cloud.examples;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import org.activiti.cloud.examples.connectors.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +28,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.function.context.FunctionCatalog;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestPropertySource;
-
-import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = { CloudConnectorApp.class })
 @AutoConfigureMockMvc
@@ -64,7 +63,9 @@ public class CloudConnectorAppIT {
             .isNotNull();
         assertThat(functionCatalog.<Object>lookup(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER + "Connector"))
             .isNotNull();
-        assertThat(functionCatalog.<Object>lookup(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER + "Connector"))
+        assertThat(
+            functionCatalog.<Object>lookup(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER + "Connector")
+        )
             .isNotNull();
         assertThat(functionCatalog.<Object>lookup(MultiInstanceConnector.Channels.CHANNEL + "Connector"))
             .isNotNull();
