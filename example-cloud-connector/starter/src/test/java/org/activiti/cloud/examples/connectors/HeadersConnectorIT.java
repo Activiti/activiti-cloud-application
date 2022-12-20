@@ -60,8 +60,7 @@ public class HeadersConnectorIT {
 
         byte[] payload = objectMapper.writeValueAsBytes(integrationRequest);
 
-        Message<?> message = MessageBuilder.withPayload(payload)
-            .setHeader("processDefinitionVersion", "1").build();
+        Message<?> message = MessageBuilder.withPayload(payload).setHeader("processDefinitionVersion", "1").build();
 
         //when
         input.send(message, HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER);
@@ -76,8 +75,10 @@ public class HeadersConnectorIT {
     public void headersConnectorShouldNotSendIntegrationResult() {
         //given
         IntegrationRequest integrationRequest = buildIntegrationRequest();
-        Message<IntegrationRequest> message = MessageBuilder.withPayload(integrationRequest)
-            .setHeader("processDefinitionVersion", null).build();
+        Message<IntegrationRequest> message = MessageBuilder
+            .withPayload(integrationRequest)
+            .setHeader("processDefinitionVersion", null)
+            .build();
 
         //when
         input.send(message, HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER);

@@ -15,15 +15,7 @@
  */
 package org.activiti.cloud.examples.connectors;
 
-import static net.logstash.logback.marker.Markers.append;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.function.Consumer;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.common.messaging.functional.FunctionBinding;
@@ -36,6 +28,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import static net.logstash.logback.marker.Markers.append;
 
 @FunctionBinding(input = ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER)
 @Component(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER + "Connector")
@@ -56,9 +57,11 @@ public class ExampleConnector implements Consumer<IntegrationRequest> {
     private final IntegrationResultSender integrationResultSender;
 
     @Autowired
-    public ExampleConnector(ConnectorProperties connectorProperties,
+    public ExampleConnector(
+        ConnectorProperties connectorProperties,
         IntegrationResultSender integrationResultSender,
-        ObjectMapper objectMapper) {
+        ObjectMapper objectMapper
+    ) {
         this.connectorProperties = connectorProperties;
         this.objectMapper = objectMapper;
         this.integrationResultSender = integrationResultSender;
@@ -70,8 +73,8 @@ public class ExampleConnector implements Consumer<IntegrationRequest> {
 
         String var1 =
             ExampleConnector.class.getSimpleName() +
-                " was called for instance " +
-                event.getIntegrationContext().getProcessInstanceId();
+            " was called for instance " +
+            event.getIntegrationContext().getProcessInstanceId();
 
         var1Copy = var1;
 
@@ -111,8 +114,8 @@ public class ExampleConnector implements Consumer<IntegrationRequest> {
         logger.info("bigDecimalVar value as string " + bigDecimalVar);
         if (
             bigDecimalVar != null &&
-                bigDecimalVar instanceof BigDecimal &&
-                BigDecimal.valueOf(1234567890L, 2).equals(bigDecimalVar)
+            bigDecimalVar instanceof BigDecimal &&
+            BigDecimal.valueOf(1234567890L, 2).equals(bigDecimalVar)
         ) {
             results.put("test_bigdecimal_variable_result", bigDecimalVar);
         }
@@ -149,8 +152,10 @@ public class ExampleConnector implements Consumer<IntegrationRequest> {
     }
 
     private void processLongJsonVar(Object longJsonVar, Map<String, Object> results) {
-        if (longJsonVar instanceof LinkedHashMap &&
-                ((LinkedHashMap<?, ?>) longJsonVar).get("verylongjson").toString().length() >= 4000) {
+        if (
+            longJsonVar instanceof LinkedHashMap &&
+            ((LinkedHashMap<?, ?>) longJsonVar).get("verylongjson").toString().length() >= 4000
+        ) {
             results.put("test_long_json_variable_result", "able to read long json");
         }
     }
