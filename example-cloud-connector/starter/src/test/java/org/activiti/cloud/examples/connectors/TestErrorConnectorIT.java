@@ -39,39 +39,39 @@ import org.springframework.messaging.support.MessageBuilder;
 @Import(TestChannelBinderConfiguration.class)
 public class TestErrorConnectorIT {
 
-  @Autowired
-  private InputDestination input;
+    @Autowired
+    private InputDestination input;
 
-  @Autowired
-  private OutputDestination output;
+    @Autowired
+    private OutputDestination output;
 
-  @Autowired
-  private ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-  @Test
-  public void accept_ShouldThrowAndSendIntegrationError() throws JsonProcessingException {
-    //given
-    IntegrationContextImpl integrationContext = new IntegrationContextImpl();
-    IntegrationRequestImpl integrationRequest = new IntegrationRequestImpl(integrationContext);
-    integrationRequest.setServiceFullName("myApp");
-    integrationRequest.setAppName("myAppName");
-    integrationRequest.setAppVersion("1.0");
-    integrationRequest.setServiceType("RUNTIME_BUNDLE");
-    integrationRequest.setServiceVersion("1.0");
+    @Test
+    public void accept_ShouldThrowAndSendIntegrationError() throws JsonProcessingException {
+        //given
+        IntegrationContextImpl integrationContext = new IntegrationContextImpl();
+        IntegrationRequestImpl integrationRequest = new IntegrationRequestImpl(integrationContext);
+        integrationRequest.setServiceFullName("myApp");
+        integrationRequest.setAppName("myAppName");
+        integrationRequest.setAppVersion("1.0");
+        integrationRequest.setServiceType("RUNTIME_BUNDLE");
+        integrationRequest.setServiceVersion("1.0");
 
-    byte[] payload = objectMapper.writeValueAsBytes(integrationRequest);
+        byte[] payload = objectMapper.writeValueAsBytes(integrationRequest);
 
-    Message<?> message = MessageBuilder.withPayload(payload)
-        .setHeader(IntegrationContextMessageHeaders.INTEGRATION_CONTEXT_ID, UUID.randomUUID().toString())
-        .build();
+        Message<?> message = MessageBuilder.withPayload(payload)
+            .setHeader(IntegrationContextMessageHeaders.INTEGRATION_CONTEXT_ID, UUID.randomUUID().toString())
+            .build();
 
-    //when
-    input.send(message, TestErrorConnector.Channels.CHANNEL);
+        //when
+        input.send(message, TestErrorConnector.Channels.CHANNEL);
 
-    //then
-    Message<?> outputMessage = output.receive(500, "integrationError_myApp");
-    assertThat(outputMessage).isNotNull();
-    assertThat(outputMessage.getPayload()).isNotNull().isNotEqualTo(message.getPayload());
-  }
+        //then
+        Message<?> outputMessage = output.receive(500, "integrationError_myApp");
+        assertThat(outputMessage).isNotNull();
+        assertThat(outputMessage.getPayload()).isNotNull().isNotEqualTo(message.getPayload());
+    }
 
 }
