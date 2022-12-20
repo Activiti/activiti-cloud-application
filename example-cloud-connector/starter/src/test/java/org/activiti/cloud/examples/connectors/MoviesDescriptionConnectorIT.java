@@ -69,5 +69,4 @@ public class MoviesDescriptionConnectorIT {
         assertThat(outputMessage).isNotNull();
         assertThat(outputMessage.getPayload()).isNotNull().isNotEqualTo(message.getPayload());
     }
-
 }
