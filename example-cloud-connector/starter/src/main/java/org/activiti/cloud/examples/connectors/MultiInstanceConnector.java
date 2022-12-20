@@ -32,7 +32,6 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
-
 @FunctionBinding(input = Channels.CHANNEL)
 @Component(Channels.CHANNEL + "Connector")
 public class MultiInstanceConnector implements Consumer<IntegrationRequest> {
@@ -42,7 +41,6 @@ public class MultiInstanceConnector implements Consumer<IntegrationRequest> {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     public interface Channels {
-
         String CHANNEL = "miCloudConnectorInput";
 
         SubscribableChannel miCloudConnectorInput();
@@ -59,7 +57,6 @@ public class MultiInstanceConnector implements Consumer<IntegrationRequest> {
 
     @Override
     public void accept(IntegrationRequest integrationRequest) {
-
         Integer instanceCount = getVariableValue(integrationRequest.getIntegrationContext(), "instanceCount");
         if (instanceCount == counter.get()) {
             counter.set(0);

@@ -31,7 +31,6 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
-
 @FunctionBinding(input = Channels.CHANNEL)
 @Component(Channels.CHANNEL + "Connector")
 public class TestErrorConnector implements Consumer<IntegrationRequest> {
@@ -43,7 +42,6 @@ public class TestErrorConnector implements Consumer<IntegrationRequest> {
     private CountDownLatch countDownLatch;
 
     public interface Channels {
-
         String CHANNEL = "testErrorConnectorInput";
 
         SubscribableChannel testErrorConnectorInput();
@@ -57,10 +55,8 @@ public class TestErrorConnector implements Consumer<IntegrationRequest> {
         this.connectorProperties = connectorProperties;
     }
 
-
     @Override
     public void accept(IntegrationRequest integrationRequest) {
-
         String var = integrationRequest.getIntegrationContext().getInBoundVariable("var");
         if (!"replay".equals(var)) {
             throw new RuntimeException("TestErrorConnector");
