@@ -82,54 +82,24 @@ public class ExampleConnector implements Consumer<IntegrationRequest> {
 
         Map<String, Object> results = new HashMap<>();
 
-        if (jsonVar != null) {
-            logger.info("jsonVar value type " + jsonVar.getClass().getTypeName());
-            logger.info("jsonVar value as string " + jsonVar.toString());
+        processJsonVar(jsonVar, results);
 
-            CustomPojo customPojo = objectMapper.convertValue(jsonVar, CustomPojo.class);
-            results.put(
-                "test_json_variable_result",
-                "able to convert test_json_variable_name to " + CustomPojo.class.getName()
-            );
-        }
-
-        if (longJsonVar != null && longJsonVar instanceof LinkedHashMap) {
-            if (((LinkedHashMap) longJsonVar).get("verylongjson").toString().length() >= 4000) {
-                results.put("test_long_json_variable_result", "able to read long json");
-            }
-        }
+        processLongJsonVar(longJsonVar, results);
 
         Object intVar = event.getIntegrationContext().getInBoundVariables().get("test_int_variable_name");
-        if (intVar != null && intVar instanceof Integer) {
-            results.put("test_int_variable_result", "able to read integer");
-        }
+        processIntVar(results, intVar);
 
         Object boolVar = event.getIntegrationContext().getInBoundVariables().get("test_bool_variable_name");
-        if (boolVar != null && boolVar instanceof Boolean) {
-            results.put("test_bool_variable_result", "able to read boolean");
-        }
+        processBoolVar(results, boolVar);
 
         Object bigDecimalVar = event.getIntegrationContext().getInBoundVariable("test_bigdecimal_variable_name");
-        logger.info("bigDecimalVar value as string " + bigDecimalVar);
-        if (
-            bigDecimalVar != null &&
-            bigDecimalVar instanceof BigDecimal &&
-            BigDecimal.valueOf(1234567890L, 2).equals(bigDecimalVar)
-        ) {
-            results.put("test_bigdecimal_variable_result", bigDecimalVar);
-        }
+        processBigDecimalVar(results, bigDecimalVar);
 
         Object longVar = event.getIntegrationContext().getInBoundVariable("test_long_variable_name");
-        logger.info("longVar value as string " + longVar);
-        if (longVar != null && longVar instanceof Long && Long.valueOf(1234567890L).equals(longVar)) {
-            results.put("test_long_variable_result", longVar);
-        }
+        processLongVar(results, longVar);
 
         Object dateVar = event.getIntegrationContext().getInBoundVariable("test_date_variable_name");
-        logger.info("dateVar value as string " + dateVar);
-        if (dateVar != null && dateVar instanceof Date) {
-            results.put("test_date_variable_result", dateVar);
-        }
+        processDateVar(results, dateVar);
 
         results.put("var1", var1);
         Message<IntegrationResult> message = IntegrationResultBuilder
