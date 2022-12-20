@@ -27,9 +27,10 @@ import feign.FeignException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
-
 import java.util.Optional;
 import java.util.stream.Collectors;
+import net.serenitybdd.core.Serenity;
+import net.thucydides.core.annotations.Steps;
 import net.thucydides.core.steps.StepEventBus;
 import org.activiti.api.process.model.IntegrationContext;
 import org.activiti.api.process.model.ProcessDefinition;
@@ -50,9 +51,6 @@ import org.activiti.cloud.services.rest.api.ReplayServiceTaskRequest;
 import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 import org.springframework.hateoas.PagedModel;
-
-import net.serenitybdd.core.Serenity;
-import net.thucydides.core.annotations.Steps;
 
 public class ProcessInstanceServiceTasks {
 
@@ -368,19 +366,20 @@ public class ProcessInstanceServiceTasks {
     public void verifyEventActivityCompleted(String elementId, Integer count) {
         String processId = Serenity.sessionVariableCalled("processInstanceId");
 
-        await().untilAsserted(() -> {
-            Collection<CloudRuntimeEvent> generatedEvents = auditSteps
-                .getEventsByProcessInstanceId(processId)
-                .stream()
-                .filter(cloudRuntimeEvent -> cloudRuntimeEvent.getEventType()
-                                                              .equals(BPMNActivityEvent.ActivityEvents.ACTIVITY_COMPLETED))
-                .filter(cloudRuntimeEvent -> BPMNActivityEvent.class.cast(cloudRuntimeEvent)
-                                                                    .getEntity().getElementId().equals(elementId)
-                )
-                .collect(Collectors.toList());
+        await()
+            .untilAsserted(() -> {
+                Collection<CloudRuntimeEvent> generatedEvents = auditSteps
+                    .getEventsByProcessInstanceId(processId)
+                    .stream()
+                    .filter(cloudRuntimeEvent ->
+                        cloudRuntimeEvent.getEventType().equals(BPMNActivityEvent.ActivityEvents.ACTIVITY_COMPLETED)
+                    )
+                    .filter(cloudRuntimeEvent ->
+                        BPMNActivityEvent.class.cast(cloudRuntimeEvent).getEntity().getElementId().equals(elementId)
+                    )
+                    .collect(Collectors.toList());
 
-            assertThat(generatedEvents).hasSize(count);
-        });
+                assertThat(generatedEvents).hasSize(count);
+            });
     }
-
 }

@@ -15,6 +15,8 @@
  */
 package org.activiti.cloud.examples.connectors;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
@@ -27,12 +29,10 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Component
 @EnableBinding(RestConnector.Channels.class)
 public class RestConnector {
+
     private final IntegrationResultSender integrationResultSender;
     private final ConnectorProperties connectorProperties;
 
@@ -43,8 +43,7 @@ public class RestConnector {
         SubscribableChannel restConnectorPost();
     }
 
-    public RestConnector(IntegrationResultSender integrationResultSender,
-                         ConnectorProperties connectorProperties) {
+    public RestConnector(IntegrationResultSender integrationResultSender, ConnectorProperties connectorProperties) {
         this.integrationResultSender = integrationResultSender;
         this.connectorProperties = connectorProperties;
     }
@@ -55,11 +54,11 @@ public class RestConnector {
 
         result.put("restStatus", 201);
 
-        Message<IntegrationResult> message = IntegrationResultBuilder.resultFor(integrationRequest, connectorProperties)
-                                                                     .withOutboundVariables(result)
-                                                                     .buildMessage();
+        Message<IntegrationResult> message = IntegrationResultBuilder
+            .resultFor(integrationRequest, connectorProperties)
+            .withOutboundVariables(result)
+            .buildMessage();
 
         integrationResultSender.send(message);
     }
-
 }
