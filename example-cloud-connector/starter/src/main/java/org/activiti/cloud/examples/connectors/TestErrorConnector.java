@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 @Component(Channels.CHANNEL + "Connector")
 public class TestErrorConnector implements Consumer<IntegrationRequest> {
 
-    private final static Logger logger = LoggerFactory.getLogger(TestErrorConnector.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestErrorConnector.class);
     private final IntegrationResultSender integrationResultSender;
     private final ConnectorProperties connectorProperties;
 

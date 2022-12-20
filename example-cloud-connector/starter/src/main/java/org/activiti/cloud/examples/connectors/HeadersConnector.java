@@ -29,8 +29,10 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Component;
 
-@ConditionalFunctionBinding(input = HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER,
-    condition = "headers['processDefinitionVersion']!=null")
+@ConditionalFunctionBinding(
+    input = HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER,
+    condition = "headers['processDefinitionVersion']!=null"
+)
 @Component(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER + "Connector")
 public class HeadersConnector implements Consumer<Message<IntegrationRequest>> {
 
