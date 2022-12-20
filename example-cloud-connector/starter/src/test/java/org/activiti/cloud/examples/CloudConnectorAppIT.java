@@ -67,12 +67,9 @@ public class CloudConnectorAppIT {
             functionCatalog.<Object>lookup(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER + "Connector")
         )
             .isNotNull();
-        assertThat(functionCatalog.<Object>lookup(MultiInstanceConnector.Channels.CHANNEL + "Connector"))
-            .isNotNull();
-        assertThat(functionCatalog.<Object>lookup(TestBpmnErrorConnector.Channels.CHANNEL + "Connector"))
-            .isNotNull();
-        assertThat(functionCatalog.<Object>lookup(TestErrorConnector.Channels.CHANNEL + "Connector"))
-            .isNotNull();
+        assertThat(functionCatalog.<Object>lookup(MultiInstanceConnector.Channels.CHANNEL + "Connector")).isNotNull();
+        assertThat(functionCatalog.<Object>lookup(TestBpmnErrorConnector.Channels.CHANNEL + "Connector")).isNotNull();
+        assertThat(functionCatalog.<Object>lookup(TestErrorConnector.Channels.CHANNEL + "Connector")).isNotNull();
     }
 
     @Test
