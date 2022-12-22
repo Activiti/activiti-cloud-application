@@ -18,7 +18,6 @@ package org.activiti.cloud.examples.connectors;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.common.messaging.functional.FunctionBinding;
