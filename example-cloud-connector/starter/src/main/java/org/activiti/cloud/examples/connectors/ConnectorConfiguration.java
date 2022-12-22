@@ -29,36 +29,48 @@ public class ConnectorConfiguration
         MoviesDescriptionConnectorChannels,
         MultiInstanceConnector.Channels,
         TestBpmnErrorConnector.Channels,
+        RestConnector.Channels,
         TestErrorConnector.Channels {
 
-    @Bean
+    @Bean(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER)
     @Override
     public SubscribableChannel exampleConnectorConsumer() {
         return MessageChannels.publishSubscribe(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER).get();
     }
 
+    @Bean(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER)
     @Override
     public SubscribableChannel headersConnectorConsumer() {
         return MessageChannels.publishSubscribe(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER).get();
     }
 
+    @Bean(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER)
     @Override
     public SubscribableChannel moviesDescriptionConsumer() {
         return MessageChannels.publishSubscribe(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER).get();
     }
 
+    @Bean(MultiInstanceConnector.Channels.CHANNEL)
     @Override
     public SubscribableChannel miCloudConnectorInput() {
         return MessageChannels.publishSubscribe(MultiInstanceConnector.Channels.CHANNEL).get();
     }
 
+    @Bean(TestBpmnErrorConnector.Channels.CHANNEL)
     @Override
     public SubscribableChannel testBpmnErrorConnectorInput() {
         return MessageChannels.publishSubscribe(TestBpmnErrorConnector.Channels.CHANNEL).get();
     }
 
+    @Bean(TestErrorConnector.Channels.CHANNEL)
     @Override
     public SubscribableChannel testErrorConnectorInput() {
         return MessageChannels.publishSubscribe(TestErrorConnector.Channels.CHANNEL).get();
+    }
+
+    @Bean(RestConnector.Channels.POST)
+    @Override
+    public SubscribableChannel restConnectorPost() {
+        return MessageChannels.publishSubscribe(RestConnector.Channels.POST).get();
     }
 }
