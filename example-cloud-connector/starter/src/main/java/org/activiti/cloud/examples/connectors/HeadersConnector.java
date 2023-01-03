@@ -21,6 +21,8 @@ import java.util.function.Consumer;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.common.messaging.functional.ConditionalFunctionBinding;
+import org.activiti.cloud.common.messaging.functional.Connector;
+import org.activiti.cloud.common.messaging.functional.ConnectorBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
@@ -29,12 +31,12 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Component;
 
-@ConditionalFunctionBinding(
+@ConnectorBinding(
     input = HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER,
     condition = "headers['processDefinitionVersion']!=null"
 )
 @Component(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER + "Connector")
-public class HeadersConnector implements Consumer<Message<IntegrationRequest>> {
+public class HeadersConnector implements Connector<Message<IntegrationRequest>, Void> {
 
     private final IntegrationResultSender integrationResultSender;
     private final ConnectorProperties connectorProperties;
@@ -46,7 +48,12 @@ public class HeadersConnector implements Consumer<Message<IntegrationRequest>> {
     }
 
     @Override
-    public void accept(Message<IntegrationRequest> integrationRequestMessage) {
+    public Void apply(Message<IntegrationRequest> event) {
+        receiveHeadersConnector(event);
+        return null;
+    }
+
+    public void receiveHeadersConnector(Message<IntegrationRequest> integrationRequestMessage) {
         MessageHeaders headers = integrationRequestMessage.getHeaders();
         IntegrationRequest integrationRequest = integrationRequestMessage.getPayload();
 

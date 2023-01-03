@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 import org.activiti.api.process.model.IntegrationContext;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
+import org.activiti.cloud.common.messaging.functional.Connector;
+import org.activiti.cloud.common.messaging.functional.ConnectorBinding;
 import org.activiti.cloud.common.messaging.functional.FunctionBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
@@ -32,9 +34,9 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
-@FunctionBinding(input = Channels.CHANNEL)
+@ConnectorBinding(input = Channels.CHANNEL, condition = "")
 @Component(Channels.CHANNEL + "Connector")
-public class MultiInstanceConnector implements Consumer<IntegrationRequest> {
+public class MultiInstanceConnector implements Connector<IntegrationRequest, Void> {
 
     private final IntegrationResultSender integrationResultSender;
     private final ConnectorProperties connectorProperties;
@@ -56,7 +58,12 @@ public class MultiInstanceConnector implements Consumer<IntegrationRequest> {
     }
 
     @Override
-    public void accept(IntegrationRequest integrationRequest) {
+    public Void apply(IntegrationRequest event) {
+        handle(event);
+        return null;
+    }
+
+    public void handle(IntegrationRequest integrationRequest) {
         Integer instanceCount = getVariableValue(integrationRequest.getIntegrationContext(), "instanceCount");
         if (instanceCount == counter.get()) {
             counter.set(0);
