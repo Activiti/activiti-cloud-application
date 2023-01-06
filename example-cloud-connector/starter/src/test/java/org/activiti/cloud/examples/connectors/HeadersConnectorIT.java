@@ -18,11 +18,12 @@ package org.activiti.cloud.examples.connectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.activiti.api.runtime.model.impl.IntegrationContextImpl;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
+import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.api.process.model.impl.IntegrationRequestImpl;
+import org.activiti.cloud.api.process.model.impl.IntegrationResultImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class HeadersConnectorIT {
     }
 
     @Test
-    public void accept_ShouldSendIntegrationResult() throws JsonProcessingException {
+    public void accept_ShouldSendIntegrationResult() throws Exception {
         //given
         IntegrationRequest integrationRequest = buildIntegrationRequest();
 
@@ -67,7 +68,12 @@ public class HeadersConnectorIT {
         //then
         Message<?> outputMessage = output.receive(500, "integrationResult_myApp");
         assertThat(outputMessage).isNotNull();
-        assertThat(outputMessage.getPayload()).isNotNull().isNotEqualTo(message.getPayload());
+        IntegrationResult integrationResult = objectMapper.readValue(
+            (byte[]) outputMessage.getPayload(),
+            IntegrationResultImpl.class
+        );
+        assertThat(integrationResult.getIntegrationContext().getOutBoundVariables())
+            .containsEntry("processDefinitionVersion", "1");
     }
 
     @Test

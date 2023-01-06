@@ -18,9 +18,11 @@ package org.activiti.cloud.examples.connectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.activiti.api.runtime.model.impl.IntegrationContextImpl;
+import org.activiti.cloud.api.process.model.CloudBpmnError;
+import org.activiti.cloud.api.process.model.IntegrationError;
+import org.activiti.cloud.api.process.model.impl.IntegrationErrorImpl;
 import org.activiti.cloud.api.process.model.impl.IntegrationRequestImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +48,7 @@ public class TestBpmnErrorConnectorIT {
     private ObjectMapper objectMapper;
 
     @Test
-    public void accept_ShouldSendCloudBpmnError() throws JsonProcessingException {
+    public void accept_ShouldSendCloudBpmnError() throws Exception {
         //given
         IntegrationContextImpl integrationContext = new IntegrationContextImpl();
         IntegrationRequestImpl integrationRequest = new IntegrationRequestImpl(integrationContext);
@@ -66,6 +68,16 @@ public class TestBpmnErrorConnectorIT {
         //then
         Message<?> outputMessage = output.receive(500, "integrationError_myApp");
         assertThat(outputMessage).isNotNull();
-        assertThat(outputMessage.getPayload()).isNotNull().isNotEqualTo(message.getPayload());
+        IntegrationError integrationError = objectMapper.readValue(
+            (byte[]) outputMessage.getPayload(),
+            IntegrationErrorImpl.class
+        );
+        assertThat(integrationError)
+            .extracting(
+                IntegrationError::getErrorClassName,
+                IntegrationError::getErrorCode,
+                IntegrationError::getErrorMessage
+            )
+            .contains(CloudBpmnError.class.getName(), "CLOUD_BPMN_ERROR", "CLOUD_BPMN_ERROR");
     }
 }
