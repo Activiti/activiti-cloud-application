@@ -18,11 +18,12 @@ package org.activiti.cloud.examples.connectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import org.activiti.api.runtime.model.impl.IntegrationContextImpl;
 import org.activiti.cloud.api.model.shared.messages.IntegrationContextMessageHeaders;
+import org.activiti.cloud.api.process.model.IntegrationError;
+import org.activiti.cloud.api.process.model.impl.IntegrationErrorImpl;
 import org.activiti.cloud.api.process.model.impl.IntegrationRequestImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class TestErrorConnectorIT {
     private ObjectMapper objectMapper;
 
     @Test
-    public void accept_ShouldThrowAndSendIntegrationError() throws JsonProcessingException {
+    public void accept_ShouldThrowAndSendIntegrationError() throws Exception {
         //given
         IntegrationContextImpl integrationContext = new IntegrationContextImpl();
         IntegrationRequestImpl integrationRequest = new IntegrationRequestImpl(integrationContext);
@@ -71,6 +72,16 @@ public class TestErrorConnectorIT {
         //then
         Message<?> outputMessage = output.receive(500, "integrationError_myApp");
         assertThat(outputMessage).isNotNull();
-        assertThat(outputMessage.getPayload()).isNotNull().isNotEqualTo(message.getPayload());
+        IntegrationError integrationError = objectMapper.readValue(
+            (byte[]) outputMessage.getPayload(),
+            IntegrationErrorImpl.class
+        );
+        assertThat(integrationError)
+            .extracting(
+                IntegrationError::getErrorClassName,
+                IntegrationError::getErrorCode,
+                IntegrationError::getErrorMessage
+            )
+            .contains(RuntimeException.class.getName(), null, "TestErrorConnector");
     }
 }
