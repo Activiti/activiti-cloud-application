@@ -18,13 +18,11 @@ package org.activiti.cloud.examples.connectors;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 import org.activiti.api.process.model.IntegrationContext;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.common.messaging.functional.Connector;
 import org.activiti.cloud.common.messaging.functional.ConnectorBinding;
-import org.activiti.cloud.common.messaging.functional.FunctionBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
@@ -35,10 +33,8 @@ import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
 @ConnectorBinding(input = Channels.CHANNEL, condition = "")
-//@FunctionBinding(input = Channels.CHANNEL)
 @Component(Channels.CHANNEL + "Connector")
 public class MultiInstanceConnector implements Connector<IntegrationRequest, Void> {
-//public class MultiInstanceConnector implements Consumer<IntegrationRequest> {
 
     private final IntegrationResultSender integrationResultSender;
     private final ConnectorProperties connectorProperties;
@@ -61,7 +57,6 @@ public class MultiInstanceConnector implements Connector<IntegrationRequest, Voi
 
     @Override
     public Void apply(IntegrationRequest event) {
-//    public void accept(IntegrationRequest event) {
         handle(event);
         return null;
     }
@@ -80,7 +75,6 @@ public class MultiInstanceConnector implements Connector<IntegrationRequest, Voi
             .buildMessage();
 
         integrationResultSender.send(message);
-        System.out.println("Result: " + result.get("executionCount"));
     }
 
     @SuppressWarnings("unchecked")
