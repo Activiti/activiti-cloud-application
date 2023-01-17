@@ -23,10 +23,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
-import org.activiti.cloud.common.messaging.functional.FunctionBinding;
+import org.activiti.cloud.common.messaging.functional.Connector;
+import org.activiti.cloud.common.messaging.functional.ConnectorBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
@@ -37,9 +37,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
-@FunctionBinding(input = ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER)
+@ConnectorBinding(input = ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER, condition = "", outputHeader = "")
 @Component(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER + "Connector")
-public class ExampleConnector implements Consumer<IntegrationRequest> {
+public class ExampleConnector implements Connector<IntegrationRequest, Void> {
 
     private final Logger logger = LoggerFactory.getLogger(ExampleConnector.class);
 
@@ -67,7 +67,12 @@ public class ExampleConnector implements Consumer<IntegrationRequest> {
     }
 
     @Override
-    public void accept(IntegrationRequest event) {
+    public Void apply(IntegrationRequest event) {
+        performTask(event);
+        return null;
+    }
+
+    public void performTask(IntegrationRequest event) {
         logger.info(append("service-name", appName), ">>> In example-cloud-connector");
 
         String var1 =

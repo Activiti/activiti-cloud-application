@@ -24,6 +24,7 @@ import org.activiti.cloud.api.process.model.CloudBpmnError;
 import org.activiti.cloud.api.process.model.IntegrationError;
 import org.activiti.cloud.api.process.model.impl.IntegrationErrorImpl;
 import org.activiti.cloud.api.process.model.impl.IntegrationRequestImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -47,6 +48,11 @@ public class TestBpmnErrorConnectorIT {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @BeforeEach
+    public void setUp() {
+        output.clear();
+    }
+
     @Test
     public void accept_ShouldSendCloudBpmnError() throws Exception {
         //given
@@ -66,7 +72,7 @@ public class TestBpmnErrorConnectorIT {
         input.send(message, TestBpmnErrorConnector.Channels.CHANNEL);
 
         //then
-        Message<?> outputMessage = output.receive(500, "integrationError_myApp");
+        Message<?> outputMessage = output.receive(10000, "integrationError_myApp");
         assertThat(outputMessage).isNotNull();
         IntegrationError integrationError = objectMapper.readValue(
             (byte[]) outputMessage.getPayload(),

@@ -16,6 +16,8 @@
 
 package org.activiti.cloud.examples.connectors;
 
+import static org.activiti.cloud.common.messaging.utilities.InternalChannelHelper.INTERNAL_CHANNEL_PREFIX;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.dsl.MessageChannels;
@@ -32,43 +34,43 @@ public class ConnectorConfiguration
         RestConnector.Channels,
         TestErrorConnector.Channels {
 
-    @Bean(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER)
+    @Bean(INTERNAL_CHANNEL_PREFIX + ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER)
     @Override
     public SubscribableChannel exampleConnectorConsumer() {
         return MessageChannels.publishSubscribe(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER).get();
     }
 
-    @Bean(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER)
+    @Bean(INTERNAL_CHANNEL_PREFIX + HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER)
     @Override
     public SubscribableChannel headersConnectorConsumer() {
         return MessageChannels.publishSubscribe(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER).get();
     }
 
-    @Bean(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER)
+    @Bean(INTERNAL_CHANNEL_PREFIX + MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER)
     @Override
     public SubscribableChannel moviesDescriptionConsumer() {
         return MessageChannels.publishSubscribe(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER).get();
     }
 
-    @Bean(MultiInstanceConnector.Channels.CHANNEL)
+    @Bean(INTERNAL_CHANNEL_PREFIX + MultiInstanceConnector.Channels.CHANNEL)
     @Override
     public SubscribableChannel miCloudConnectorInput() {
         return MessageChannels.publishSubscribe(MultiInstanceConnector.Channels.CHANNEL).get();
     }
 
-    @Bean(TestBpmnErrorConnector.Channels.CHANNEL)
+    @Bean(INTERNAL_CHANNEL_PREFIX + TestBpmnErrorConnector.Channels.CHANNEL)
     @Override
     public SubscribableChannel testBpmnErrorConnectorInput() {
         return MessageChannels.publishSubscribe(TestBpmnErrorConnector.Channels.CHANNEL).get();
     }
 
-    @Bean(TestErrorConnector.Channels.CHANNEL)
+    @Bean(INTERNAL_CHANNEL_PREFIX + TestErrorConnector.Channels.CHANNEL)
     @Override
     public SubscribableChannel testErrorConnectorInput() {
         return MessageChannels.publishSubscribe(TestErrorConnector.Channels.CHANNEL).get();
     }
 
-    @Bean(RestConnector.Channels.POST)
+    @Bean(INTERNAL_CHANNEL_PREFIX + RestConnector.Channels.POST)
     @Override
     public SubscribableChannel restConnectorPost() {
         return MessageChannels.publishSubscribe(RestConnector.Channels.POST).get();
