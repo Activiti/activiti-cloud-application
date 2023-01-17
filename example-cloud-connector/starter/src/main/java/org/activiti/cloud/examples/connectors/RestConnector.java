@@ -30,7 +30,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
-@ConnectorBinding(input = RestConnector.Channels.POST, condition = "")
+@ConnectorBinding(input = RestConnector.Channels.POST, condition = "", outputHeader = "")
 @Component
 public class RestConnector implements Connector<IntegrationRequest, Void> {
 

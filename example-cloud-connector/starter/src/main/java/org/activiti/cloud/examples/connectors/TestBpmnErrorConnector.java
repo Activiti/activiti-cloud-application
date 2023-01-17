@@ -29,7 +29,7 @@ import org.activiti.cloud.examples.connectors.TestBpmnErrorConnector.Channels;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
-@ConnectorBinding(input = Channels.CHANNEL, condition = "")
+@ConnectorBinding(input = Channels.CHANNEL, condition = "", outputHeader = "")
 @Component(Channels.CHANNEL + "Connector")
 public class TestBpmnErrorConnector implements Connector<IntegrationRequest, Void> {
 

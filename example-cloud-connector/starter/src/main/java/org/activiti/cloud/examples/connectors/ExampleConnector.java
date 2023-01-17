@@ -39,7 +39,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
-@ConnectorBinding(input = ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER, condition = "")
+@ConnectorBinding(input = ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER, condition = "", outputHeader = "")
 @Component(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER + "Connector")
 public class ExampleConnector implements Connector<IntegrationRequest, Void> {
 

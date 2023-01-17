@@ -33,7 +33,8 @@ import org.springframework.stereotype.Component;
 
 @ConnectorBinding(
     input = HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER,
-    condition = "headers['processDefinitionVersion']!=null"
+    condition = "headers['processDefinitionVersion']!=null",
+    outputHeader = ""
 )
 @Component(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER + "Connector")
 public class HeadersConnector implements Connector<Message<IntegrationRequest>, Void> {
