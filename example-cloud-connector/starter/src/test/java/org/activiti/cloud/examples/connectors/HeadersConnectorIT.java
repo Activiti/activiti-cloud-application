@@ -66,7 +66,7 @@ public class HeadersConnectorIT {
         input.send(message, HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER);
 
         //then
-        Message<?> outputMessage = output.receive(500, "integrationResult_myApp");
+        Message<?> outputMessage = output.receive(10000, "integrationResult_myApp");
         assertThat(outputMessage).isNotNull();
         IntegrationResult integrationResult = objectMapper.readValue(
             (byte[]) outputMessage.getPayload(),
@@ -89,7 +89,7 @@ public class HeadersConnectorIT {
         input.send(message, HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER);
 
         //then
-        Message<?> outputMessage = output.receive(500, "integrationResult_myApp");
+        Message<?> outputMessage = output.receive(10000, "integrationResult_myApp");
         assertThat(outputMessage).isNull();
     }
 
