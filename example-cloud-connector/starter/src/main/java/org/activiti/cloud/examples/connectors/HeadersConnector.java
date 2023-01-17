@@ -15,6 +15,8 @@
  */
 package org.activiti.cloud.examples.connectors;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.common.messaging.functional.Connector;
@@ -26,9 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @ConnectorBinding(
     input = HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER,

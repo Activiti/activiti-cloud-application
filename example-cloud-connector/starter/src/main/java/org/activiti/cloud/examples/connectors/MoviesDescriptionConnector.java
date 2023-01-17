@@ -15,6 +15,7 @@
  */
 package org.activiti.cloud.examples.connectors;
 
+import java.util.Map;
 import org.activiti.api.process.model.IntegrationContext;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.common.messaging.functional.Connector;
@@ -25,8 +26,6 @@ import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 @ConnectorBinding(
     input = MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER,

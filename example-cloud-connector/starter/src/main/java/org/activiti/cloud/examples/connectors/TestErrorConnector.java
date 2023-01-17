@@ -15,6 +15,8 @@
  */
 package org.activiti.cloud.examples.connectors;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.common.messaging.functional.Connector;
@@ -28,9 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 @ConnectorBinding(input = Channels.CHANNEL, condition = "", outputHeader = "")
 @Component(Channels.CHANNEL + "Connector")
