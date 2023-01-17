@@ -17,10 +17,10 @@ package org.activiti.cloud.examples.connectors;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
-import org.activiti.cloud.common.messaging.functional.FunctionBinding;
+import org.activiti.cloud.common.messaging.functional.Connector;
+import org.activiti.cloud.common.messaging.functional.ConnectorBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
@@ -31,9 +31,9 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
-@FunctionBinding(input = Channels.CHANNEL)
+@ConnectorBinding(input = Channels.CHANNEL, condition = "", outputHeader = "")
 @Component(Channels.CHANNEL + "Connector")
-public class TestErrorConnector implements Consumer<IntegrationRequest> {
+public class TestErrorConnector implements Connector<IntegrationRequest, Void> {
 
     private static final Logger logger = LoggerFactory.getLogger(TestErrorConnector.class);
     private final IntegrationResultSender integrationResultSender;
@@ -56,7 +56,12 @@ public class TestErrorConnector implements Consumer<IntegrationRequest> {
     }
 
     @Override
-    public void accept(IntegrationRequest integrationRequest) {
+    public Void apply(IntegrationRequest event) {
+        handle(event);
+        return null;
+    }
+
+    public void handle(IntegrationRequest integrationRequest) {
         String var = integrationRequest.getIntegrationContext().getInBoundVariable("var");
         if (!"replay".equals(var)) {
             throw new RuntimeException("TestErrorConnector");

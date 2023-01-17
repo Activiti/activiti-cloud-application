@@ -17,10 +17,10 @@ package org.activiti.cloud.examples.connectors;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
-import org.activiti.cloud.common.messaging.functional.FunctionBinding;
+import org.activiti.cloud.common.messaging.functional.Connector;
+import org.activiti.cloud.common.messaging.functional.ConnectorBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
@@ -28,9 +28,9 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
-@FunctionBinding(input = RestConnector.Channels.POST)
+@ConnectorBinding(input = RestConnector.Channels.POST, condition = "", outputHeader = "")
 @Component
-public class RestConnector implements Consumer<IntegrationRequest> {
+public class RestConnector implements Connector<IntegrationRequest, Void> {
 
     private final IntegrationResultSender integrationResultSender;
     private final ConnectorProperties connectorProperties;
@@ -47,7 +47,12 @@ public class RestConnector implements Consumer<IntegrationRequest> {
     }
 
     @Override
-    public void accept(IntegrationRequest integrationRequest) {
+    public Void apply(IntegrationRequest event) {
+        handlePost(event);
+        return null;
+    }
+
+    public void handlePost(IntegrationRequest integrationRequest) {
         Map<String, Object> result = new HashMap<>();
 
         result.put("restStatus", 201);
