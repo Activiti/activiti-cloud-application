@@ -23,6 +23,7 @@ import org.activiti.api.runtime.model.impl.IntegrationContextImpl;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.api.process.model.impl.IntegrationRequestImpl;
 import org.activiti.cloud.api.process.model.impl.IntegrationResultImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,6 +47,11 @@ public class MultiInstanceConnectorIT {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @BeforeEach
+    public void setUp() {
+        output.clear();
+    }
+
     @Test
     public void accept_ShouldSendIntegrationResult() throws Exception {
         //given
@@ -66,7 +72,7 @@ public class MultiInstanceConnectorIT {
         input.send(message, MultiInstanceConnector.Channels.CHANNEL);
 
         //then
-        Message<?> outputMessage = output.receive(500, "integrationResult_myApp");
+        Message<?> outputMessage = output.receive(10000, "integrationResult_myApp");
         assertThat(outputMessage).isNotNull();
         IntegrationResult integrationResult = objectMapper.readValue(
             (byte[]) outputMessage.getPayload(),

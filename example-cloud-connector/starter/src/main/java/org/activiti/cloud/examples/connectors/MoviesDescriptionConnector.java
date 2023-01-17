@@ -16,10 +16,10 @@
 package org.activiti.cloud.examples.connectors;
 
 import java.util.Map;
-import java.util.function.Consumer;
 import org.activiti.api.process.model.IntegrationContext;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
-import org.activiti.cloud.common.messaging.functional.FunctionBinding;
+import org.activiti.cloud.common.messaging.functional.Connector;
+import org.activiti.cloud.common.messaging.functional.ConnectorBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
@@ -27,9 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@FunctionBinding(input = MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER)
+@ConnectorBinding(
+    input = MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER,
+    condition = "",
+    outputHeader = ""
+)
 @Component(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER + "Connector")
-public class MoviesDescriptionConnector implements Consumer<IntegrationRequest> {
+public class MoviesDescriptionConnector implements Connector<IntegrationRequest, Void> {
 
     private Logger logger = LoggerFactory.getLogger(MoviesDescriptionConnector.class);
 
@@ -45,7 +49,12 @@ public class MoviesDescriptionConnector implements Consumer<IntegrationRequest> 
     }
 
     @Override
-    public void accept(IntegrationRequest integrationRequest) {
+    public Void apply(IntegrationRequest event) {
+        receive(event);
+        return null;
+    }
+
+    public void receive(IntegrationRequest integrationRequest) {
         IntegrationContext integrationContext = integrationRequest.getIntegrationContext();
         Map<String, Object> inBoundVariables = integrationContext.getInBoundVariables();
         logger.info(">>inbound: " + inBoundVariables);
