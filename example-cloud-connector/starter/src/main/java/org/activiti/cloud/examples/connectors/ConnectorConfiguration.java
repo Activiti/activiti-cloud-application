@@ -16,12 +16,12 @@
 
 package org.activiti.cloud.examples.connectors;
 
+import static org.activiti.cloud.common.messaging.utilities.InternalChannelHelper.INTERNAL_CHANNEL_PREFIX;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.SubscribableChannel;
-
-import static org.activiti.cloud.common.messaging.utilities.InternalChannelHelper.INTERNAL_CHANNEL_PREFIX;
 
 @Configuration
 public class ConnectorConfiguration
