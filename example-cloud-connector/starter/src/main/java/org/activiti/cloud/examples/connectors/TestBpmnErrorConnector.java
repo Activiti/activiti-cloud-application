@@ -16,12 +16,10 @@
 
 package org.activiti.cloud.examples.connectors;
 
-import java.util.function.Consumer;
 import org.activiti.cloud.api.process.model.CloudBpmnError;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.common.messaging.functional.Connector;
 import org.activiti.cloud.common.messaging.functional.ConnectorBinding;
-import org.activiti.cloud.common.messaging.functional.FunctionBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationErrorSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationErrorBuilder;
@@ -29,11 +27,7 @@ import org.activiti.cloud.examples.connectors.TestBpmnErrorConnector.Channels;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
-@ConnectorBinding(
-    input = Channels.CHANNEL,
-    condition = "",
-    outputHeader = ""
-)
+@ConnectorBinding(input = Channels.CHANNEL, condition = "", outputHeader = "")
 @Component(Channels.CHANNEL + "Connector")
 public class TestBpmnErrorConnector implements Connector<IntegrationRequest, Void> {
 
