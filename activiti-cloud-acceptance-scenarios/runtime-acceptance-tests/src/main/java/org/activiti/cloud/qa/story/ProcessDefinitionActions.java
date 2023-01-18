@@ -15,6 +15,8 @@
  */
 package org.activiti.cloud.qa.story;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Comparator;
@@ -26,8 +28,6 @@ import org.jbehave.core.annotations.Then;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.ResourceUtils;
 import org.xmlunit.assertj3.XmlAssert;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProcessDefinitionActions {
 
@@ -55,7 +55,8 @@ public class ProcessDefinitionActions {
         String processDiagram = processRuntimeBundleSteps.getProcessDiagramByKey(matchingProcessDefinition.getId());
         File expectedResultFile = ResourceUtils.getFile(TEST_OUTPUT_RESULT_PATH + resultFileName);
 
-        XmlAssert.assertThat(processDiagram)
+        XmlAssert
+            .assertThat(processDiagram)
             .and(expectedResultFile)
             .ignoreWhitespace()
             .withNodeFilter(node -> !"path".equals(node.getNodeName()))
