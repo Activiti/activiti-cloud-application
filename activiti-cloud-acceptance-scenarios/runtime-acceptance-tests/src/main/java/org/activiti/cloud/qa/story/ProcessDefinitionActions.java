@@ -15,8 +15,9 @@
  */
 package org.activiti.cloud.qa.story;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Comparator;
 import net.thucydides.core.annotations.Steps;
 import org.activiti.api.process.model.ProcessDefinition;
 import org.activiti.cloud.acc.core.steps.query.ProcessQuerySteps;
@@ -26,9 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.util.ResourceUtils;
 import org.xmlunit.assertj3.XmlAssert;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Comparator;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ProcessDefinitionActions {
 
@@ -57,26 +56,26 @@ public class ProcessDefinitionActions {
         File expectedResultFile = ResourceUtils.getFile(TEST_OUTPUT_RESULT_PATH + resultFileName);
 
         XmlAssert.assertThat(processDiagram)
-                .and(expectedResultFile)
-                .ignoreWhitespace()
-                .withNodeFilter(node -> !"path".equals(node.getNodeName()))
-                .withAttributeFilter(attr -> !"style".equals(attr.getName()))
-                .areIdentical();
+            .and(expectedResultFile)
+            .ignoreWhitespace()
+            .withNodeFilter(node -> !"path".equals(node.getNodeName()))
+            .withAttributeFilter(attr -> !"style".equals(attr.getName()))
+            .areIdentical();
     }
 
     @NotNull
     private ProcessDefinition getProcessDefinition(String processDefinitionKey) {
         ProcessDefinition matchingProcessDefinition = processQuerySteps
-                .getProcessDefinitions()
-                .getContent()
-                .stream()
-                .filter(processDefinition -> processDefinition.getKey().equals(processDefinitionKey))
-                .max(Comparator.comparing(processDefinition -> Integer.valueOf(processDefinition.getAppVersion())))
-                .orElse(null);
+            .getProcessDefinitions()
+            .getContent()
+            .stream()
+            .filter(processDefinition -> processDefinition.getKey().equals(processDefinitionKey))
+            .max(Comparator.comparing(processDefinition -> Integer.valueOf(processDefinition.getAppVersion())))
+            .orElse(null);
 
         assertThat(matchingProcessDefinition)
-                .as("No process definition found matching key " + processDefinitionKey)
-                .isNotNull();
+            .as("No process definition found matching key " + processDefinitionKey)
+            .isNotNull();
         return matchingProcessDefinition;
     }
 }
