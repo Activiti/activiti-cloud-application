@@ -1,29 +1,23 @@
 name: CI
-
 on:
   push:
     branches:
-      - develop
+      - 7.8.x
   pull_request:
     branches:
-      - develop
-
+      - 7.8.x
   # Allows to run this workflow manually from the Actions tab
   workflow_dispatch:
-
 env:
   CLUSTER_NAME: activiti-test
   CLUSTER_DOMAIN: envalfresco.com
   GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
-
 jobs:
-
   pre-commit:
     runs-on: ubuntu-latest
     steps:
       - uses: Alfresco/alfresco-build-tools/.github/actions/pre-commit@v1.27.0
       - uses: Alfresco/alfresco-build-tools/.github/actions/pre-commit-default@v1.27.0
-
   build:
     runs-on: ubuntu-latest
     needs: pre-commit
@@ -33,23 +27,19 @@ jobs:
       branch-name: ${{ steps.set-branch-name.outputs.branch-name }}
       preview-name: ${{ steps.set-preview-name.outputs.preview-name }}
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v3
-
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-
       - name: Setup Java JDK 11
         uses: actions/setup-java@a18c333f3f14249953dab3e186e5e21bf3390f1d
         with:
           java-version: 11
           distribution: 'temurin'
-
       - name: Configure Maven
         run: |
           echo "MAVEN_USERNAME=$MAVEN_USERNAME" >> $GITHUB_ENV
@@ -58,22 +48,18 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
       - uses: Alfresco/alfresco-build-tools/.github/actions/update-pom-to-next-pre-release@v1.27.0
         id: update-pom-to-next-version
         if: github.event_name == 'push'
-
       - name: Update VERSION file
         if: github.event_name == 'push'
         run: |
           echo ${{steps.update-pom-to-next-version.outputs.next-prerelease}} > VERSION
-
       - name: Set BRANCH_NAME env variable
         id: set-branch-name
         run: |
@@ -83,7 +69,6 @@ jobs:
           echo set BRANCH_NAME=$BRANCH_NAME
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
           echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
-
       - name: Set PREVIEW_NAME env variable
         id: set-preview-name
         run: |
@@ -91,12 +76,10 @@ jobs:
           echo set PREVIEW_NAME=$PREVIEW_NAME
           echo "PREVIEW_NAME=$PREVIEW_NAME" >> $GITHUB_ENV
           echo "preview-name=$PREVIEW_NAME" >> $GITHUB_OUTPUT
-
       - name: Set preview version
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           echo 0.0.1-$PREVIEW_NAME-SNAPSHOT > VERSION
-
       - name: Set VERSION env variable
         id: set-version
         run: |
@@ -104,22 +87,16 @@ jobs:
           echo set VERSION=$VERSION
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-
       - name: Build Example Runtime Bundle
         run: make docker/example-runtime-bundle
-
       - name: Build Activiti Cloud Query
         run: make docker/activiti-cloud-query
-
       - name: Build Example Cloud Connector
         run: make docker/example-cloud-connector
-
       - name: Build Activiti Cloud Modeling
         run: make mvn/activiti-cloud-modeling/liquibase docker/activiti-cloud-modeling
-
       - name: Build Activiti Cloud Identity Adapter
         run: make docker/activiti-cloud-identity-adapter
-
   test:
     runs-on: ubuntu-latest
     needs: build
@@ -136,20 +113,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-
       - name: Setup Java JDK 11
         uses: actions/setup-java@a18c333f3f14249953dab3e186e5e21bf3390f1d
         with:
           java-version: 11
           distribution: 'temurin'
-
       - name: Configure Maven
         run: |
           echo "MAVEN_USERNAME=$MAVEN_USERNAME" >> $GITHUB_ENV
@@ -158,17 +132,14 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
         with:
           version: v1.19.6
-
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
           version: v3.5.2
-
       - name: Set up rancher
         uses: Alfresco/alfresco-build-tools/.github/actions/setup-rancher-cli@v1.27.0
         with:
@@ -176,7 +147,6 @@ jobs:
           access-key: ${{ secrets.RANCHER2_ACCESS_KEY }}
           secret-key: ${{ secrets.RANCHER2_SECRET_KEY }}
           context: ${{ env.CLUSTER_NAME }}
-
       - name: Setup environment for ${{ matrix.messaging-broker }}
         env:
           MESSAGING_BROKER: ${{ matrix.messaging-broker }}
@@ -202,12 +172,10 @@ jobs:
           echo PREVIEW_NAME=$PREVIEW_NAME
           echo BRANCH_NAME=$BRANCH_NAME
           echo VERSION=$VERSION
-
       - name: Delete preview for ${{ matrix.messaging-broker }}
         if: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
         run: |
           kubectl delete ns $PREVIEW_NAME || true
-
       - name: Install release for ${{ matrix.messaging-broker }}
         run: |
           ### Variables ###
@@ -221,7 +189,6 @@ jobs:
 
           echo "Installing release with make install"
           make install
-
       - name: (kafka,partitioned) Checks that consumers can be a different number from partitions
         if: ${{ matrix.messaging-broker == 'kafka' && matrix.messaging-partitioned == 'partitioned' && matrix.messaging-destinations == 'default-destinations' }}
         run: |
@@ -276,7 +243,6 @@ jobs:
           echo "It checks the deployment has 4 query topic patitions"
           count_query_topic_partitions
           check_result_is 4
-
       - name: Run Acceptance Tests for ${{ matrix.messaging-broker }}
         run: |
           ### Variables ###
@@ -333,20 +299,18 @@ jobs:
           make test/modeling-acceptance-tests
           make test/runtime-acceptance-tests
           make test/identity-adapter-acceptance-tests
-
       - name: Delete Helm chart for ${{ matrix.messaging-broker }}
         if: ${{ always() }}
         env:
           IS_PREVIEW: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
         run: |
-            if [ $IS_PREVIEW = true ]
-            then
-                echo "Skipping delete Helm release for preview"
-            else
-                echo "Delete Helm release"
-                make delete
-            fi
-
+          if [ $IS_PREVIEW = true ]
+          then
+              echo "Skipping delete Helm release for preview"
+          else
+              echo "Delete Helm release"
+              make delete
+          fi
   delete-test-images:
     runs-on: ubuntu-latest
     needs:
@@ -363,15 +327,14 @@ jobs:
           IS_PREVIEW: ${{ github.event_name == 'pull_request' && contains(github.head_ref, 'preview') }}
           VERSION: ${{ needs.build.outputs.version }}
         run: |
-            if [ $IS_PREVIEW = true ] || [ $GITHUB_EVENT_NAME = "push" ]
-            then
-                echo "Skipping delete Docker images"
-            else
-                echo $VERSION > VERSION
-                echo "Delete Docker images"
-                make docker-delete-all
-            fi
-
+          if [ $IS_PREVIEW = true ] || [ $GITHUB_EVENT_NAME = "push" ]
+          then
+              echo "Skipping delete Docker images"
+          else
+              echo $VERSION > VERSION
+              echo "Delete Docker images"
+              make docker-delete-all
+          fi
   publish:
     runs-on: ubuntu-latest
     needs:
@@ -386,20 +349,17 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.BOT_GITHUB_TOKEN }}
-
       - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-
       - name: Setup Java JDK 11
         uses: actions/setup-java@a18c333f3f14249953dab3e186e5e21bf3390f1d
         with:
           java-version: 11
           distribution: 'temurin'
-
       - name: Configure Maven
         run: |
           echo "MAVEN_USERNAME=$MAVEN_USERNAME" >> $GITHUB_ENV
@@ -408,26 +368,21 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-
       - name: Update POM files to the next version
         run: mvn ${MAVEN_CLI_OPTS} versions:set -DprocessAllModules=true -DgenerateBackupPoms=false -DnewVersion=$VERSION
-
       - uses: Alfresco/alfresco-build-tools/.github/actions/git-commit-changes@v1.27.0
         if: github.event_name == 'push'
         with:
           username: ${{ secrets.BOT_GITHUB_USERNAME }}
           add-options: -u
           commit-message: "Release $VERSION"
-
       - name: Create tag
         if: github.event_name == 'push'
         run: |
           git tag -a $VERSION -m "Release version $VERSION"
           git push origin $VERSION
-
       - name: Deploy Maven artifacts
         run: mvn $MAVEN_CLI_OPTS deploy -pl activiti-cloud-dependencies/dependencies -am -DskipTests
-
   propagate-maven:
     runs-on: ubuntu-latest
     needs:
@@ -448,7 +403,6 @@ jobs:
           echo -e "https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com" >>  ~/.git-credentials
           updatebot push-version --kind maven \
             org.activiti.cloud:activiti-cloud-dependencies $VERSION
-
   propagate-helm:
     runs-on: ubuntu-latest
     needs:
@@ -476,19 +430,16 @@ jobs:
           yq -i e '.activiti-cloud-connector.image.tag = env(VERSION)' values.yaml
           yq -i e '.activiti-cloud-modeling.image.tag = env(VERSION)' values.yaml
           yq -i e '.activiti-cloud-identity-adapter.image.tag = env(VERSION)' values.yaml
-
       - uses: Alfresco/alfresco-build-tools/.github/actions/setup-helm-docs@v1.27.0
       - name: Update helm docs
         working-directory: ${{ env.FULL_CHART_DIR}}
         run: helm-docs
-
       - uses: Alfresco/alfresco-build-tools/.github/actions/git-commit-changes@v1.27.0
         with:
           username: ${{ secrets.BOT_GITHUB_USERNAME }}
           add-options: -u
           repository-directory: ${{ env.FULL_CHART_DIR}}
           commit-message: "Update docker image tags to $VERSION"
-
       - name: Create propagation PR
         working-directory: ${{ env.FULL_CHART_DIR}}
         env:
@@ -496,7 +447,6 @@ jobs:
         run: |
           git push origin $FULL_CHART_PR_BRANCH
           gh pr create --fill --base $FULL_CHART_BASE_BRANCH --label updatebot
-
   notify:
     runs-on: ubuntu-latest
     needs:
