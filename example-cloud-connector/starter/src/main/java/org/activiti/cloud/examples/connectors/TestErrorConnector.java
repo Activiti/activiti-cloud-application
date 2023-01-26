@@ -61,12 +61,7 @@ public class TestErrorConnector implements Connector<IntegrationRequest, Void> {
     }
 
     @Override
-    public Void apply(IntegrationRequest event) {
-        handle(event);
-        return null;
-    }
-
-    public void handle(IntegrationRequest integrationRequest) {
+    public Void apply(IntegrationRequest integrationRequest) {
         String var = integrationRequest.getIntegrationContext().getInBoundVariable("var");
         if (!"replay".equals(var)) {
             throw new RuntimeException("TestErrorConnector");
@@ -88,5 +83,6 @@ public class TestErrorConnector implements Connector<IntegrationRequest, Void> {
         } catch (InterruptedException e) {
             throw new IllegalStateException(e);
         }
+        return null;
     }
 }
