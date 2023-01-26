@@ -15,10 +15,15 @@
  */
 package org.activiti.cloud.examples.connectors;
 
+import org.activiti.cloud.common.messaging.functional.OutputBinding;
+import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.SubscribableChannel;
 
 public interface MoviesDescriptionConnectorChannels {
     String MOVIES_DESCRIPTION_CONSUMER = "moviesDescriptionConsumer";
 
-    SubscribableChannel moviesDescriptionConsumer();
+    @OutputBinding(MOVIES_DESCRIPTION_CONSUMER)
+    default SubscribableChannel moviesDescriptionConsumer() {
+        return MessageChannels.publishSubscribe(MOVIES_DESCRIPTION_CONSUMER).get();
+    }
 }

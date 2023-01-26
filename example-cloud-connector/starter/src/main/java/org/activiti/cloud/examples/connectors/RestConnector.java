@@ -21,9 +21,11 @@ import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.common.messaging.functional.Connector;
 import org.activiti.cloud.common.messaging.functional.ConnectorBinding;
+import org.activiti.cloud.common.messaging.functional.OutputBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
+import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
@@ -38,7 +40,10 @@ public class RestConnector implements Connector<IntegrationRequest, Void> {
     interface Channels {
         public final String POST = "restConnectorPost";
 
-        SubscribableChannel restConnectorPost();
+        @OutputBinding(POST)
+        default SubscribableChannel restConnectorPost() {
+            return MessageChannels.publishSubscribe(POST).get();
+        }
     }
 
     public RestConnector(IntegrationResultSender integrationResultSender, ConnectorProperties connectorProperties) {

@@ -20,10 +20,12 @@ import org.activiti.cloud.api.process.model.CloudBpmnError;
 import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.common.messaging.functional.Connector;
 import org.activiti.cloud.common.messaging.functional.ConnectorBinding;
+import org.activiti.cloud.common.messaging.functional.OutputBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationErrorSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationErrorBuilder;
 import org.activiti.cloud.examples.connectors.TestBpmnErrorConnector.Channels;
+import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
 
@@ -45,7 +47,10 @@ public class TestBpmnErrorConnector implements Connector<IntegrationRequest, Voi
     public interface Channels {
         String CHANNEL = "testBpmnErrorConnectorInput";
 
-        SubscribableChannel testBpmnErrorConnectorInput();
+        @OutputBinding(CHANNEL)
+        default SubscribableChannel testBpmnErrorConnectorInput() {
+            return MessageChannels.publishSubscribe(CHANNEL).get();
+        }
     }
 
     @Override
