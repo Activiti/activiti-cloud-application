@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
-@ConnectorBinding(input = ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER, condition = "", outputHeader = "")
+@ConnectorBinding(input = ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER, condition = "")
 @Component(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER + "Connector")
 public class ExampleConnector implements Connector<IntegrationRequest, Void> {
 
@@ -68,11 +68,6 @@ public class ExampleConnector implements Connector<IntegrationRequest, Void> {
 
     @Override
     public Void apply(IntegrationRequest event) {
-        performTask(event);
-        return null;
-    }
-
-    public void performTask(IntegrationRequest event) {
         logger.info(append("service-name", appName), ">>> In example-cloud-connector");
 
         String var1 =
@@ -113,6 +108,7 @@ public class ExampleConnector implements Connector<IntegrationRequest, Void> {
             .buildMessage();
 
         integrationResultSender.send(message);
+        return null;
     }
 
     private void processJsonVar(Object jsonVar, Map<String, Object> results) {

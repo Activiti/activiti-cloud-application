@@ -38,7 +38,7 @@ public class RestConnector implements Connector<IntegrationRequest, Void> {
     private final ConnectorProperties connectorProperties;
 
     interface Channels {
-        public final String POST = "restConnectorPost";
+        String POST = "restConnectorPost";
 
         @OutputBinding(POST)
         default SubscribableChannel restConnectorPost() {
@@ -52,12 +52,7 @@ public class RestConnector implements Connector<IntegrationRequest, Void> {
     }
 
     @Override
-    public Void apply(IntegrationRequest event) {
-        handlePost(event);
-        return null;
-    }
-
-    public void handlePost(IntegrationRequest integrationRequest) {
+    public Void apply(IntegrationRequest integrationRequest) {
         Map<String, Object> result = new HashMap<>();
 
         result.put("restStatus", 201);
@@ -68,5 +63,6 @@ public class RestConnector implements Connector<IntegrationRequest, Void> {
             .buildMessage();
 
         integrationResultSender.send(message);
+        return null;
     }
 }

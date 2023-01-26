@@ -47,12 +47,7 @@ public class HeadersConnector implements Connector<Message<IntegrationRequest>, 
     }
 
     @Override
-    public Void apply(Message<IntegrationRequest> event) {
-        receiveHeadersConnector(event);
-        return null;
-    }
-
-    public void receiveHeadersConnector(Message<IntegrationRequest> integrationRequestMessage) {
+    public Void apply(Message<IntegrationRequest> integrationRequestMessage) {
         MessageHeaders headers = integrationRequestMessage.getHeaders();
         IntegrationRequest integrationRequest = integrationRequestMessage.getPayload();
 
@@ -68,5 +63,6 @@ public class HeadersConnector implements Connector<Message<IntegrationRequest>, 
             .buildMessage();
 
         integrationResultSender.send(message);
+        return null;
     }
 }

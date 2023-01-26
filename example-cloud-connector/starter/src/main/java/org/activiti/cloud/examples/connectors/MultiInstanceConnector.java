@@ -61,12 +61,7 @@ public class MultiInstanceConnector implements Connector<IntegrationRequest, Voi
     }
 
     @Override
-    public Void apply(IntegrationRequest event) {
-        handle(event);
-        return null;
-    }
-
-    public void handle(IntegrationRequest integrationRequest) {
+    public Void apply(IntegrationRequest integrationRequest) {
         Integer instanceCount = getVariableValue(integrationRequest.getIntegrationContext(), "instanceCount");
         if (instanceCount == counter.get()) {
             counter.set(0);
@@ -80,6 +75,7 @@ public class MultiInstanceConnector implements Connector<IntegrationRequest, Voi
             .buildMessage();
 
         integrationResultSender.send(message);
+        return null;
     }
 
     @SuppressWarnings("unchecked")
