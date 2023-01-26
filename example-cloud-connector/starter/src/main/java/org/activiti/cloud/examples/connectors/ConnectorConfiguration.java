@@ -27,6 +27,4 @@ public class ConnectorConfiguration
         MultiInstanceConnector.Channels,
         TestBpmnErrorConnector.Channels,
         RestConnector.Channels,
-        TestErrorConnector.Channels {
-
-}
+        TestErrorConnector.Channels {}
