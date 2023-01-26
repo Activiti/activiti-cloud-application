@@ -21,12 +21,14 @@ import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.common.messaging.functional.Connector;
 import org.activiti.cloud.common.messaging.functional.ConnectorBinding;
+import org.activiti.cloud.common.messaging.functional.OutputBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
 import org.activiti.cloud.examples.connectors.TestErrorConnector.Channels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.SubscribableChannel;
 import org.springframework.stereotype.Component;
@@ -44,7 +46,10 @@ public class TestErrorConnector implements Connector<IntegrationRequest, Void> {
     public interface Channels {
         String CHANNEL = "testErrorConnectorInput";
 
-        SubscribableChannel testErrorConnectorInput();
+        @OutputBinding(CHANNEL)
+        default SubscribableChannel testErrorConnectorInput() {
+            return MessageChannels.publishSubscribe(CHANNEL).get();
+        }
     }
 
     public TestErrorConnector(
