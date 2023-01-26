@@ -23,7 +23,7 @@ import org.activiti.cloud.api.process.model.IntegrationRequest;
 import org.activiti.cloud.api.process.model.IntegrationResult;
 import org.activiti.cloud.common.messaging.functional.Connector;
 import org.activiti.cloud.common.messaging.functional.ConnectorBinding;
-import org.activiti.cloud.common.messaging.functional.OutputBinding;
+import org.activiti.cloud.common.messaging.functional.InputBinding;
 import org.activiti.cloud.connectors.starter.channels.IntegrationResultSender;
 import org.activiti.cloud.connectors.starter.configuration.ConnectorProperties;
 import org.activiti.cloud.connectors.starter.model.IntegrationResultBuilder;
@@ -45,7 +45,7 @@ public class MultiInstanceConnector implements Connector<IntegrationRequest, Voi
     public interface Channels {
         String CHANNEL = "miCloudConnectorInput";
 
-        @OutputBinding(CHANNEL)
+        @InputBinding(CHANNEL)
         default SubscribableChannel miCloudConnectorInput() {
             return MessageChannels.publishSubscribe(CHANNEL).get();
         }

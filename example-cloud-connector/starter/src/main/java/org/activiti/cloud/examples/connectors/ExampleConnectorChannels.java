@@ -15,14 +15,14 @@
  */
 package org.activiti.cloud.examples.connectors;
 
-import org.activiti.cloud.common.messaging.functional.OutputBinding;
+import org.activiti.cloud.common.messaging.functional.InputBinding;
 import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.SubscribableChannel;
 
 public interface ExampleConnectorChannels {
     String EXAMPLE_CONNECTOR_CONSUMER = "exampleConnectorConsumer";
 
-    @OutputBinding(EXAMPLE_CONNECTOR_CONSUMER)
+    @InputBinding(EXAMPLE_CONNECTOR_CONSUMER)
     default SubscribableChannel exampleConnectorConsumer() {
         return MessageChannels.publishSubscribe(EXAMPLE_CONNECTOR_CONSUMER).get();
     }
