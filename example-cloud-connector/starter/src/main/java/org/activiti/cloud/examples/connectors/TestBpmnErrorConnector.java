@@ -54,15 +54,11 @@ public class TestBpmnErrorConnector implements Connector<IntegrationRequest, Voi
     }
 
     @Override
-    public Void apply(IntegrationRequest event) {
-        handle(event);
-        return null;
-    }
-
-    public void handle(IntegrationRequest integrationRequest) {
+    public Void apply(IntegrationRequest integrationRequest) {
         CloudBpmnError bpmnError = new CloudBpmnError("CLOUD_BPMN_ERROR");
         integrationErrorSender.send(
             IntegrationErrorBuilder.errorFor(integrationRequest, connectorProperties, bpmnError).buildMessage()
         );
+        return null;
     }
 }

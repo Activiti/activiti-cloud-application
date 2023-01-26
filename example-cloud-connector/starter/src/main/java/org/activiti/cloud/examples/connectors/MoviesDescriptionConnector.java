@@ -49,12 +49,7 @@ public class MoviesDescriptionConnector implements Connector<IntegrationRequest,
     }
 
     @Override
-    public Void apply(IntegrationRequest event) {
-        receive(event);
-        return null;
-    }
-
-    public void receive(IntegrationRequest integrationRequest) {
+    public Void apply(IntegrationRequest integrationRequest) {
         IntegrationContext integrationContext = integrationRequest.getIntegrationContext();
         Map<String, Object> inBoundVariables = integrationContext.getInBoundVariables();
         logger.info(">>inbound: " + inBoundVariables);
@@ -66,5 +61,6 @@ public class MoviesDescriptionConnector implements Connector<IntegrationRequest,
         integrationResultSender.send(
             IntegrationResultBuilder.resultFor(integrationRequest, connectorProperties).buildMessage()
         );
+        return null;
     }
 }
