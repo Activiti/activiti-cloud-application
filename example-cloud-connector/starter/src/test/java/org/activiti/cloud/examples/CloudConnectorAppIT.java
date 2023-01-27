@@ -15,10 +15,7 @@
  */
 package org.activiti.cloud.examples;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import org.activiti.cloud.examples.connectors.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +26,17 @@ import org.springframework.cloud.function.context.FunctionCatalog;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = { CloudConnectorApp.class })
+import java.io.IOException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.cloud.function.context.FunctionRegistration.REGISTRATION_NAME_SUFFIX;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK, classes = {CloudConnectorApp.class})
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class CloudConnectorAppIT {
+
+    private final static String CONNECTOR_SUFFIX = "Connector";
 
     @Autowired
     private ApplicationContext context;
@@ -57,19 +61,21 @@ public class CloudConnectorAppIT {
 
     @Test
     public void functionCatalogContainsFunctionDefinitions() {
-        assertThat(functionCatalog.<Object>lookup(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER + "Connector"))
+        assertThat(functionCatalog.<Object>lookup(getRegisteredConnectorName(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER)))
             .isNotNull();
-        assertThat(functionCatalog.<Object>lookup(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER + "Connector"))
+        assertThat(functionCatalog.<Object>lookup(getRegisteredConnectorName(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER)))
             .isNotNull();
-        assertThat(functionCatalog.<Object>lookup(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER + "Connector"))
+        assertThat(functionCatalog.<Object>lookup(getRegisteredConnectorName(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER)))
             .isNotNull();
         assertThat(
-            functionCatalog.<Object>lookup(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER + "Connector")
-        )
+            functionCatalog.<Object>lookup(getRegisteredConnectorName(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER)))
             .isNotNull();
-        assertThat(functionCatalog.<Object>lookup(MultiInstanceConnector.Channels.CHANNEL + "Connector")).isNotNull();
-        assertThat(functionCatalog.<Object>lookup(TestBpmnErrorConnector.Channels.CHANNEL + "Connector")).isNotNull();
-        assertThat(functionCatalog.<Object>lookup(TestErrorConnector.Channels.CHANNEL + "Connector")).isNotNull();
+        assertThat(functionCatalog.<Object>lookup(getRegisteredConnectorName(MultiInstanceConnector.Channels.CHANNEL)))
+            .isNotNull();
+        assertThat(functionCatalog.<Object>lookup(getRegisteredConnectorName(TestBpmnErrorConnector.Channels.CHANNEL)))
+            .isNotNull();
+        assertThat(functionCatalog.<Object>lookup(getRegisteredConnectorName(TestErrorConnector.Channels.CHANNEL)))
+            .isNotNull();
     }
 
     @Test
@@ -78,5 +84,9 @@ public class CloudConnectorAppIT {
         Object jsonValue = objectMapper.readValue(json, Object.class);
         CustomPojo customPojo = objectMapper.convertValue(jsonValue, CustomPojo.class);
         assertThat(customPojo).isNotNull();
+    }
+
+    private static String getRegisteredConnectorName(String functionName) {
+        return functionName + CONNECTOR_SUFFIX + REGISTRATION_NAME_SUFFIX;
     }
 }
