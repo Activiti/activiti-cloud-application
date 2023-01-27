@@ -61,12 +61,22 @@ public class CloudConnectorAppIT {
 
     @Test
     public void functionCatalogContainsFunctionDefinitions() {
-        assertThat(functionCatalog.<Object>lookup(getRegisteredConnectorName(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER)))
-            .isNotNull();
-        assertThat(functionCatalog.<Object>lookup(getRegisteredConnectorName(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER)))
-            .isNotNull();
-        assertThat(functionCatalog.<Object>lookup(getRegisteredConnectorName(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER)))
-            .isNotNull();
+        assertThat(
+            functionCatalog.<Object>lookup(
+                getRegisteredConnectorName(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER
+                )
+            )
+        ).isNotNull();
+        assertThat(
+            functionCatalog.<Object>lookup(
+                getRegisteredConnectorName(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER)
+            )
+        ).isNotNull();
+        assertThat(
+            functionCatalog.<Object>lookup(
+                getRegisteredConnectorName(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER)
+            )
+        ).isNotNull();
         assertThat(
             functionCatalog.<Object>lookup(getRegisteredConnectorName(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER)))
             .isNotNull();
