@@ -36,7 +36,7 @@ import static org.springframework.cloud.function.context.FunctionRegistration.RE
 @TestPropertySource(locations = "classpath:application.properties")
 public class CloudConnectorAppIT {
 
-    private final static String CONNECTOR_SUFFIX = "Connector";
+    private static final String CONNECTOR_SUFFIX = "Connector";
 
     @Autowired
     private ApplicationContext context;
@@ -63,8 +63,7 @@ public class CloudConnectorAppIT {
     public void functionCatalogContainsFunctionDefinitions() {
         assertThat(
             functionCatalog.<Object>lookup(
-                getRegisteredConnectorName(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER
-                )
+                getRegisteredConnectorName(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER)
             )
         )
             .isNotNull();
