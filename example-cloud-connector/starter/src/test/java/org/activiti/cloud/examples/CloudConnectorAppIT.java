@@ -66,22 +66,26 @@ public class CloudConnectorAppIT {
                 getRegisteredConnectorName(ExampleConnectorChannels.EXAMPLE_CONNECTOR_CONSUMER
                 )
             )
-        ).isNotNull();
+        )
+            .isNotNull();
         assertThat(
             functionCatalog.<Object>lookup(
                 getRegisteredConnectorName(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER)
             )
-        ).isNotNull();
+        )
+            .isNotNull();
         assertThat(
             functionCatalog.<Object>lookup(
                 getRegisteredConnectorName(HeadersConnectorChannels.HEADERS_CONNECTOR_CONSUMER)
             )
-        ).isNotNull();
+        )
+            .isNotNull();
         assertThat(
             functionCatalog.<Object>lookup(
                 getRegisteredConnectorName(MoviesDescriptionConnectorChannels.MOVIES_DESCRIPTION_CONSUMER)
             )
-        ).isNotNull();
+        )
+            .isNotNull();
         assertThat(functionCatalog.<Object>lookup(getRegisteredConnectorName(MultiInstanceConnector.Channels.CHANNEL)))
             .isNotNull();
         assertThat(functionCatalog.<Object>lookup(getRegisteredConnectorName(TestBpmnErrorConnector.Channels.CHANNEL)))
