@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.activiti.cloud</groupId>
     <artifactId>activiti-cloud-application</artifactId>
-    <version>7.9.0-alpha.18</version>
+    <version>7.9.0-mock</version>
   </parent>
   <artifactId>activiti-cloud-modeling</artifactId>
   <name>Activiti Cloud :: Modeling</name>
@@ -15,7 +15,7 @@
     <java.release>11</java.release>
     <java.version>1.${java.release}</java.version>
     <maven.compiler.release>${java.release}</maven.compiler.release>
-    <activiti-cloud.version>7.9.0-alpha.27</activiti-cloud.version>
+    <activiti-cloud.version>7.9.0-mock</activiti-cloud.version>
   </properties>
   <dependencyManagement>
     <dependencies>
