@@ -3,5 +3,5 @@ github:
     - name: alfresco
       repositories:
         - name: alfresco-process
-          branch: develop
+          branch: 7.9.x
           useSinglePullRequest: true
