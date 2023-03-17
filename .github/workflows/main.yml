@@ -160,7 +160,7 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
 
       - name: Set up kubectl
-        uses: azure/setup-kubectl@v1
+        uses: azure/setup-kubectl@v3
         with:
           version: v1.19.6
 
