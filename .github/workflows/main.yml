@@ -408,11 +408,11 @@ jobs:
     needs:
       - build
       - publish
-    if: github.event_name == 'push' && github.ref_name == 'develop'
+    if: github.event_name == 'push' && github.ref_name == '7.9.x'
     env:
       VERSION: ${{ needs.build.outputs.version }}
       FULL_CHART_DIR: full-chart
-      FULL_CHART_BASE_BRANCH: develop
+      FULL_CHART_BASE_BRANCH: 7.9.x
       FULL_CHART_PR_BRANCH: update-docker-images-${{ needs.build.outputs.version }}
     steps:
       - uses: actions/checkout@v3
