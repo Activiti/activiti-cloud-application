@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.activiti.cloud</groupId>
     <artifactId>activiti-cloud-application</artifactId>
-    <version>7.9.1-alpha.2</version>
+    <version>7.9.1</version>
   </parent>
   <artifactId>activiti-cloud-acceptance-scenarios-parent</artifactId>
   <packaging>pom</packaging>
@@ -32,7 +32,7 @@
     <java.release>11</java.release>
     <java.version>1.${java.release}</java.version>
     <maven.compiler.release>${java.release}</maven.compiler.release>
-    <activiti-cloud.version>7.9.1-alpha.2</activiti-cloud.version>
+    <activiti-cloud.version>7.9.1</activiti-cloud.version>
     <serenity-maven-plugin.version>2.4.34</serenity-maven-plugin.version>
   </properties>
   <dependencyManagement>
